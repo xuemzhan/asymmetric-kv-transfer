@@ -16,7 +16,7 @@ import torch
 sys.path.insert(0, "/workspace/apcs")
 sys.path.insert(0, "/workspace/v3")
 from phase0_g0 import load_model, capture_kv, build_cache, answer_loglik, \
-    greedy_answer, exact_match, KV
+    greedy_answer, exact_match, KV, HEAD_DIM, ROPE_THETA
 from apcs.mapper.math import AffineMapper
 from apcs.rope.runner import _rope_pairs, de_rope
 from stats_utils import bootstrap_ci95, paired_wilcoxon_test
