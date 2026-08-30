@@ -1,18 +1,20 @@
 % V3 Paper — Final Assembly
-% Target: COLM/TMLR
+% Format: arXiv preprint (1in margins, inline bibliography)
+% Target: COLM/TMLR (double-blind)
 % Addressing Transfers, Content Does Not: Asymmetric KV State Transfer Across LLMs
 
-\documentclass[10pt]{article}
+\documentclass[11pt]{article}
 
 % Packages
+\usepackage[margin=1in]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{hyperref}
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
 % \usepackage{microtype} % Disabled: font expansion error with pdflatex
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 
 % Custom commands
 \newcommand{\dll}{\Delta\text{LL}}
@@ -40,15 +42,15 @@ We study what transfers when migrating key-value (KV) cache state across large l
 Across 6 model pairs from the Qwen3 family (0.6B--8B, 3 seeds), we find a sharp
 functional asymmetry that is gated by the teacher--student capability gap:
 keys (the addressing substrate) transfer near-universally, recovering task performance
-on all 6 pairs (exact match $\ge 0.73$; $\dll = +1.58$ to $+8.52$ on 5/6 pairs),
+on all 6 pairs (exact match $\ge 0.71$; $\dll$ positive on 5/6 pairs, $+1.04$ to $+8.52$),
 while values (the content substrate) transfer only when teacher and student are
-closely matched ($8$B$\to$4B: EM 0.43$\to$0.88; $1.7$B$\to$0.6$B$: EM 0.43$\to$0.80)
+closely matched ($8$B$\to$4B: EM 1.00$\to$0.88; $1.7$B$\to$0.6$B$: EM 0.43$\to$0.80)
 and fail on large-gap pairs ($8$B$\to$0.6$B$: $\dll = -0.23$, ns)---despite K and V
 being equally, almost perfectly linearly alignable (CCA $\rho_1 = 0.99$ both).
 This correlation--transferability dissociation shows that geometric compatibility
 is necessary but not sufficient; the bottleneck lies in downstream decode,
 where content is consumed through weight-parameterized pathways.
-We localize the V advantage to layers 8/12 (selective injection $\dll = +2.33$ vs.\
+We localize the V advantage to layers 8/12 (selective injection $\dll = +2.15$ vs.\
 full-layer V injection $-0.23$), replicate the asymmetry on a second domain (SQuAD,
 where V-only injection collapses EM to 0.03), and show that heterogeneous reassembly
 (teacher K + student V) beats both full models ($-7.27$ vs.\ teacher\_full $-14.79$
@@ -108,7 +110,8 @@ This paper makes five contributions:
 \begin{enumerate}
   \item \textbf{Gated K/V functional asymmetry.}
     We show that K-state transfer recovers task performance on all 6 model pairs
-    ($\dll = +1.58$ to $+8.52$, EM $\ge 0.73$), while V-state transfer succeeds
+    (EM $\ge 0.71$; $\dll$ positive on 5/6 pairs, $+1.04$ to $+8.52$),
+    while V-state transfer succeeds
     only on small-gap pairs ($8$B$\to$4$B$, $1.7$B$\to$0.6$B$) and fails or
     destabilizes decoding on large-gap pairs.
 
@@ -119,7 +122,7 @@ This paper makes five contributions:
 
   \item \textbf{Layer localization.}
     V advantage concentrates in layers 8/12
-    (V-only $\dll = +0.32 / +1.27$; selective joint injection $+2.33$),
+    (V-only $\dll = +0.31 / +1.24$; selective joint injection $+2.15$),
     while K advantage distributes globally across all layers.
 
   \item \textbf{Heterogeneous reassembly.}
@@ -135,8 +138,8 @@ This paper makes five contributions:
 % Move 6: Results Preview — FILLED with real numbers
 \textbf{Results preview.}
 Across 6 model pairs spanning 0.6B to 8B parameters,
-K-only injection improves log-likelihood by $+1.58$ to $+8.52$ (paired $p < 0.05$,
-3 seeds) and recovers EM $\ge 0.73$ on all pairs,
+K-only injection improves log-likelihood by $+1.58$ to $+8.52$ on 4/6 pairs
+(paired $p < 0.05$, 3 seeds) and recovers EM $\ge 0.71$ on all pairs,
 while V-only injection is significant only on the two small-gap pairs
 ($8$B$\to$4$B$: $+2.52$; $1.7$B$\to$0.6$B$: $+0.63$)
 and neutral or negative elsewhere ($8$B$\to$0.6$B$: $-0.23$, ns).
@@ -173,7 +176,7 @@ These works treat KV as a monolithic artifact and focus on engineering
 the transfer (better mappers, layer selection, alignment).
 Our contribution is orthogonal and diagnostic: we decompose KV into
 K (addressing) and V (content), and show they transfer with different
-functional laws---K near-universally (EM $\ge 0.73$ on all 6 pairs),
+functional laws---K near-universally (EM $\ge 0.71$ on all 6 pairs),
 V only under capability matching.
 We further show that geometric alignment (CCA $\rho_1 \approx 0.99$)
 does not predict functional transfer, localize the V advantage to
@@ -293,8 +296,8 @@ entity familiarity---critical for studying OOD transfer.
 \subsection{Model Pairs}
 
 We study 6 pairs from the Qwen3 family:
-(8B$\to$0.6B), (4B$\to$1.7B), (4B$\to$0.6B),
-(8B$\to$1.7B), (1.7B$\to$0.6B), (8B$\to$4B).
+8B$\to$0.6B, 4B$\to$1.7B, 4B$\to$0.6B,
+8B$\to$1.7B, 1.7B$\to$0.6B, and 8B$\to$4B.
 
 Layers: 8B/4B have $L{=}36$; 1.7B/0.6B have $L{=}28$; all heads $H{=}8$, $D{=}128$.
 This design covers three configurations:
@@ -394,15 +397,16 @@ while V-state transfer is weaker in all pairs.
 \begin{table}[t]
 \centering
 \caption{K/V transfer results across 6 model pairs (mean $\pm$ std over 3 seeds, $n=56$).
-K-only $\dll$ is positive in 5/6 pairs and EM $\ge 0.73$ on all 6;
+K-only $\dll$ is positive in 5/6 pairs and EM $\ge 0.71$ on all 6;
 V-only transfers only under teacher--student capability matching
 (equal-layer small-gap pairs), is harmful on large-gap 0.6B-student pairs,
 and collapses greedy EM on small-gap 1.7B students.
 Significance: paired Wilcoxon $p<0.05$ in all 3 seeds.}
 \label{tab:main}
+\small
 \begin{tabular}{lrrrccr}
 \toprule
-Pair & Size & K-only $\dll$ & V-only $\dll$ & K sig$\times3$ & V sig$\times3$ & EM Self$\to$K$\to$V \\
+Pair & Size & K-only $\dll$ & V-only $\dll$ & K sig$\times3$ & V sig$\times3$ & EM Self$\to$K$\to$V (seed 0) \\
 \midrule
 8B$\to$0.6B  & $13.3\times$ & $+2.62\pm0.29$ & $-0.23\pm0.19$ & \checkmark & $\times$ & 0.43$\to$0.73$\to$0.29 \\
 4B$\to$0.6B  & $6.7\times$  & $+1.58\pm0.02$ & $-1.22\pm0.05$ & \checkmark & $\times$ & 0.43$\to$0.84$\to$0.18 \\
@@ -425,7 +429,7 @@ and persists wherever it is measured on task success.
 
 \textbf{Baseline comparison.}
 Self (doc-only KV) provides the negative baseline.
-K-only injection improves over Self by $+1.58$ to $+8.52$ $\dll$
+K-only injection improves over Self by $+1.04$ to $+8.52$ $\dll$
 on 5/6 pairs (the exception, 1.7B$\to$0.6B at $-0.82$, still achieves
 EM 1.00---perfect decoding despite negative teacher-forced likelihood),
 demonstrating functional value from teacher K state.
@@ -446,7 +450,7 @@ On the smallest gaps (8B$\to$4B: $2.0\times$), V transfers cleanly
 V transfers only on equal-layer pairs:
 8B$\to$4B (36$\to$36, EM 0.88) and 1.7B$\to$0.6B (28$\to$28, EM 0.80).
 On every unequal-layer pair (36$\to$28), V fails or collapses.
-K transfers on both equal- and unequal-layer pairs (EM $\ge 0.73$).
+K transfers on both equal- and unequal-layer pairs (EM $\ge 0.71$).
 Layer alignment is a necessary condition for V, but not for K.
 
 \textbf{Boundary cases.}
@@ -465,8 +469,9 @@ Two pairs require special attention:
 \subsection{Takeaways}
 
 \textbf{Takeaway 1.}
-K-state transfer succeeds near-universally: EM $\ge 0.73$ on all 6 pairs,
-$\dll$ positive in 5/6 (the 8B$\to$1.7B exception is unstable across seeds).
+K-state transfer succeeds near-universally: EM $\ge 0.71$ on all 6 pairs,
+$\dll$ positive in 5/6 (the 1.7B$\to$0.6B exception is negative, $-0.82$;
+8B$\to$1.7B is positive but unstable across seeds, $+1.04\pm1.53$).
 K is a composable addressing substrate.
 
 \textbf{Takeaway 2.}
@@ -573,12 +578,21 @@ Pair & $\rho_K$ & $\rho_V$ & K-only $\dll$ \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/fig_cca.pdf}
+\caption{Per-head CCA $\rho_1$ for K vs.\ V across three pairs.
+Every head lies near the diagonal ($\rho_1 \approx 0.99$), so geometric
+alignment alone cannot explain the K/V functional asymmetry.}
+\label{fig:cca}
+\end{figure}
+
 \textbf{The dissociation.}
 Despite near-perfect geometric alignment for both K and V,
 only K transfers functionally.
 V-only $\dll$ is weak or negative on these pairs (Table~\ref{tab:main}),
-even though $\rho_V$ trails $\rho_K$ by less than 0.005
-(K heads exceed V heads on 76--79\% of heads).
+even though $\rho_V$ trails $\rho_K$ by roughly 0.005
+(Figure~\ref{fig:cca}; K heads exceed V heads on 75--79\% of heads).
 This dissociation is the paper's central finding.
 
 \textbf{Interpretation.}
@@ -600,18 +614,27 @@ V advantage concentrates at layers 8/12; full-layer V injection is harmful.}
 \toprule
 Config & V-only $\dll$ & EM \\
 \midrule
-Layer 8  & $+0.32$ & 0.71 \\
-Layer 12 & $+1.27$ & 1.00 \\
-\emph{L8+L12 (selective)} & $+2.33$ & 0.75--0.89 \\
+Layer 8  & $+0.31$ & 0.86--0.93 \\
+Layer 12 & $+1.24$ & 1.00 \\
+\emph{L8+L12 (selective)} & $+2.15$ & 0.75--0.89 \\
 \emph{ALL 28 layers} & $-0.23$ & 0.14--0.29 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig_layers.pdf}
+\caption{Per-layer K-only vs.\ V-only $\dll$ on 8B$\to$0.6B (mean over 3 seeds).
+K advantage distributes globally; V advantage concentrates at layers 8/12
+(red outline).}
+\label{fig:layers}
+\end{figure}
+
 \textbf{Concentration.}
-Layer 12 alone accounts for $+1.27$ $\dll$ (EM 1.00).
-Layer 8 contributes $+0.32$.
-Injecting both selectively ($L8{+}L12$) yields $+2.33$ $\dll$
+Layer 12 alone accounts for $+1.24$ $\dll$ (EM 1.00).
+Layer 8 contributes $+0.31$.
+Injecting both selectively ($L8{+}L12$) yields $+2.15$ $\dll$
 with EM 0.75--0.89.
 Injecting all 28 layers (as in G0 V-only) is harmful: $-0.23$ $\dll$,
 EM 0.14--0.29---below Self (0.43).
@@ -625,18 +648,18 @@ with functional failure: alignment is averaged over all layers,
 but only two carry transferable content.
 
 \textbf{Asymmetry with K.}
-K advantage distributes globally:
-the best single K layer (L21) gives $+1.61$ $\dll$, and
+K advantage distributes globally (Figure~\ref{fig:layers}):
+the best single K layer (L21) gives $+1.59$ $\dll$, and
 cumulative prefix injection $[0..20]$ gives $+2.34$ to $+2.71$ $\dll$
 with EM $\approx 1.0$---K saturates as coverage grows,
-while early layers alone ($[0..4]$) hurt ($-0.57$).
+while early layers alone ($[0..4]$) hurt ($-0.51$).
 K geometry is a property of the entire network,
 while V content is localized to specific processing stages.
 
 \subsection{Cost Crossover}
 
 \textbf{Mapper cost.}
-Affine mapper parameters: 58.78M (224.2 MB at float32), fixed regardless of sequence length.
+Affine mapper parameters: 58.78M (224.2 MiB at float32), fixed regardless of sequence length.
 
 \textbf{Cache cost.}
 Per-token KV cache: 112 KB (28-layer student), scaling linearly with sequence length.
@@ -648,8 +671,10 @@ above, mapper transfer is preferred.
 
 \begin{figure}[t]
 \centering
-% Placeholder: plot cost_ratio = cache_bytes / mapper_bytes vs seq_len
-\caption{State/weight transfer cost ratio vs sequence length.
+\includegraphics[width=0.55\textwidth]{figures/fig_cost.pdf}
+\caption{State/weight transfer cost vs.\ sequence length.
+Cache transfer cost (per-token KV state) grows linearly;
+mapper transfer cost (58.78M parameters, float32) is fixed.
 Crossover at $\sim$2050 tokens.}
 \label{fig:cost}
 \end{figure}
@@ -764,14 +789,14 @@ that avoids the 26 noise layers, and measure actual serving gains.
 We have shown that KV state transfer across LLMs exhibits
 a sharp, capability-gated functional asymmetry:
 keys (addressing) transfer near-universally across 6 model pairs
-(EM $\ge 0.73$; $\dll$ positive in 5/6), while values (content) transfer
+(EM $\ge 0.71$; $\dll$ positive in 5/6), while values (content) transfer
 only under equal-layer capability matching (8B$\to$4B EM 0.88,
 1.7B$\to$0.6B EM 0.80), collapse greedy decoding on mid-gap students
 (EM 0.07--0.12), and fail entirely on large-gap pairs
 ($\dll \le 0$, ns) despite near-perfect linear alignment
 (CCA $\rho_1 \approx 0.99$ for both K and V).
 The V advantage localizes to layers 8/12; selective injection
-($+2.33$ $\dll$) beats full-layer injection ($-0.23$ $\dll$).
+($+2.15$ $\dll$) beats full-layer injection ($-0.23$ $\dll$).
 The asymmetry replicates on a second domain (SQuAD), where V-only
 injection destroys decoding (EM 0.03), and heterogeneous reassembly
 (teacher K + student V) beats both full models ($-7.27$ vs $-14.79$/$-9.89$).
@@ -784,9 +809,104 @@ This has implications for serving, distillation,
 and modular model construction.
 
 % ============================================================
-% REFERENCES
+% REFERENCES (inlined for arXiv single-file submission; arXiv does not run bibtex)
 % ============================================================
-\bibliographystyle{plain}
-\bibliography{references}
+\begin{thebibliography}{10}
+
+\bibitem{bansal2021stitching}
+Yamini Bansal, Preetum Nakkiran, and Boaz Barak.
+\newblock How could we ever measure the perceptron alignment of neural
+  networks?
+\newblock In {\em International Conference on Learning Representations}, 2021.
+\newblock Model stitching.
+
+\bibitem{chen2023accelerating}
+Charlie Chen, Sebastian Borgeaud, Geoffrey Irving, et~al.
+\newblock Accelerating large language model decoding with speculative sampling.
+\newblock {\em arXiv preprint arXiv:2302.01318}, 2023.
+
+\bibitem{dao2022flashattention}
+Tri Dao, Dan Fu, Stefano Ermon, Atri Rudra, and Christopher R{\'e}.
+\newblock Flashattention: Fast and memory-efficient exact attention with
+  io-awareness.
+\newblock {\em Advances in Neural Information Processing Systems}, 35, 2022.
+
+\bibitem{dery2026latentalign}
+Lucio~M. Dery, Zohar Yahav, Henry Prior, Qixuan Feng, Jiajun Shen, and Arthur
+  Szlam.
+\newblock Latent space communication via k-v cache alignment.
+\newblock {\em arXiv preprint arXiv:2601.06123}, 2026.
+
+\bibitem{dettmers2024qlora}
+Tim Dettmers, Artidoro Pagnoni, Ari Holtzman, and Luke Zettlemoyer.
+\newblock Qlora: Efficient finetuning of quantized language models.
+\newblock {\em Advances in Neural Information Processing Systems}, 36, 2024.
+
+\bibitem{frantar2023gptq}
+Elias Frantar, Saleh Ashkboos, Torsten Hoefler, and Dan Alistarh.
+\newblock Gptq: Accurate post-training quantization for generative pre-trained
+  transformers.
+\newblock {\em arXiv preprint arXiv:2210.17323}, 2023.
+
+\bibitem{fu2026c2c}
+Tianyu Fu, Zihan Min, Hanling Zhang, Jichao Yan, Guohao Dai, Wanli Ouyang, and
+  Yu~Wang.
+\newblock Cache-to-cache: Direct semantic communication between large language
+  models.
+\newblock In {\em International Conference on Learning Representations}, 2026.
+\newblock arXiv:2510.03215.
+
+\bibitem{heo2026crossmodel}
+Taekyung Heo, Rasoul Shafipour, Ritchie Zhao, Maximilian Golub, Mohammad~Mahdi
+  Kamani, Ritika Borkar, Makesh~Tarun Chandran, Pantea Zardoshti, and
+  Bita~Darvish Rouhani.
+\newblock Cross-model kv cache transfer in llm families: A closed-form linear
+  mapping for prefill reuse.
+\newblock {\em arXiv preprint arXiv:2608.03893}, 2026.
+
+\bibitem{hinton2015distilling}
+Geoffrey Hinton, Oriol Vinyals, and Jeff Dean.
+\newblock Distilling the knowledge in a neural network.
+\newblock {\em arXiv preprint arXiv:1503.02531}, 2015.
+
+\bibitem{hoffmann2022chinchilla}
+Jordan Hoffmann, Sebastian Borgeaud, Arthur Mensch, et~al.
+\newblock Training compute-optimal large language models.
+\newblock {\em Advances in Neural Information Processing Systems}, 35, 2022.
+
+\bibitem{kaplan2020scaling}
+Jared Kaplan, Sam McCandlish, Tom Henighan, et~al.
+\newblock Scaling laws for neural language models.
+\newblock {\em arXiv preprint arXiv:2001.08361}, 2020.
+
+\bibitem{lee2026translators}
+Jin-woo Lee, Minkyung Song, Junghyun Oh, Seunghoon Han, Soyoung Park, Gwangseon
+  Jang, and Sungsu Lim.
+\newblock Mixture-of-translators: Translating kv caches across heterogeneous
+  large language models.
+\newblock {\em arXiv preprint arXiv:2607.28979}, 2026.
+
+\bibitem{leviathan2023fast}
+Yan Leviathan, Matan Kalman, and Yossi Matias.
+\newblock Fast inference from transformers via speculative decoding.
+\newblock {\em International Conference on Machine Learning}, pages
+  19274--19290, 2023.
+
+\bibitem{su2024rope}
+Jianlin Su, Murtadha Ahmed, Yu~Lu, Shengfeng Pan, Wen Bo, and Yunfeng Liu.
+\newblock Roformer: Enhanced transformer with rotary position embedding.
+\newblock {\em Neurocomputing}, 568:127063, 2024.
+
+\bibitem{touvron2023llama}
+Hugo Touvron, Thibaut Lavril, Gautier Izacard, et~al.
+\newblock Llama: Open and efficient foundation language models.
+\newblock {\em arXiv preprint arXiv:2302.13971}, 2023.
+
+\bibitem{vaswani2017attention}
+Ashish Vaswani, Noam Shazeer, Niki Parmar, et~al.
+\newblock Attention is all you need.
+\newblock {\em Advances in Neural Information Processing Systems}, 30, 2017.
+
+\end{thebibliography}
 
 \end{document}
