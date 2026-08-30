@@ -323,6 +323,19 @@
 
 ## 7. 会话记录（按时间倒序）
 
+### 2026-08-30 Session（W5-W8 阶段：v2 重跑 + 第二域 + 跨对复制）
+- **W5 进行中**：`phase0_g0_v2.py` 用 v2 数据（train/test_v2_seed{0,1,2}，n_calib=70, n_eval=56）重跑 G0
+  - seed0/seed1 完成：K-only p≈1e-10, d≈+1.3；V-only p≈0.02-0.13（ns, d≈0）；Joint p≈7.5e-11, d≈+2.9
+  - EM：Self=0.43, K-only=0.73-0.82, V-only=0.29, Joint=0.84-0.86
+  - seed2 运行中（约 25 min/seed）
+- **W7 数据决策（重要）**：预注册为 NQ-with-context，但 nq_open 数据集**无 context 字段**（仅 question+answer），且 Wikipedia API 被网络阻断，无法构造 NQ context
+  - **替代方案**：4-way ablation 用 **SQuAD validation**（带 context，答案在文档内，1-5 token 事实型答案，与 NQ-with-context 结构等价）；novelty probe 用 **nq_open**（开放域事实问答，测学生先验）
+  - 数据产出：`data/squad_test_seed0.json`（30 样本，doc 平均 119 tokens）、`data/nq_open_probe_seed0.json`（30 样本）
+  - 构建脚本：`data/build_nq.py`（ModelScope 拉 nq_open + hf-mirror 拉 SQuAD parquet）
+- **W7 实验脚本**：`phase7_second_domain.py` — 跨域校准（OOD train_v2 拟合 mapper → SQuAD 评估 4-way ablation）+ bootstrap + Wilcoxon + novelty probe
+- **W8 实验脚本**：`phase4_scaling_law_v2.py` — 6 pairs × v2 数据 × bootstrap + Wilcoxon
+- **W6 实验脚本**：`phase1_causal_v2.py` — 逐层扫描带统计 + selective V injection（预注册 L8/L12）+ K prefix-cumulative
+
 ### 2026-08-30 Session（w4：Phase 2 逐头 CCA 修复）
 - **问题**：原版 `phase2_g_scalar.py` 塌缩 8 头（D=1024）+ subsample 500 → N<D 秩亏，正则化 CCA 平凡对齐 → g_K≈g_V≈1.0 饱和，P3 无法判定
 - **修复**：新建 `phase2_g_scalar_perhead.py`，逐头 CCA（D=128，N≈5400>>128 良态）
