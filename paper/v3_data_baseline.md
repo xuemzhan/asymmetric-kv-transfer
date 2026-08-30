@@ -90,7 +90,7 @@
 - Eval: n=56 (OOD), n=30 (SQuAD).
 - SQuAD: 30 samples, doc avg 119 tokens, answer 1–5 tokens, in-document facts.
 - Models: Qwen3 8B(L36)/4B(L36)/1.7B(L28)/0.6B(L28), H8 D128, proportional layer mapping for unequal layers.
-- Metrics: teacher-forced answer log-likelihood (primary), greedy EM (secondary). Bootstrap CI95 (1000 resamples) + paired Wilcoxon (p<0.05).
+- Metrics: teacher-forced answer log-likelihood (primary), greedy EM (secondary). Bootstrap CI95 (10000 resamples) + paired Wilcoxon (p<0.05).
 - Cost: Affine mapper 58.78M params (224.2 MB fp32); per-token KV 112 KB (28-layer student); crossover ≈2050 tokens.
 
 ## 7. Claims Allowed (narrative guardrails)

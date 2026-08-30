@@ -479,3 +479,18 @@
 
 ---
 *本文件为 V3 唯一迭代记录。新会话开始：先读本文件。*
+
+## W10 (2026-08-30): Independent review fix round
+
+- **触发**：独立评审（A/B/C 三路：oracle 深审 + 实验/统计审计 + 新颖性/定位评审）发现 6 MAJOR + 11 MODERATE + 5 MINOR 共 22 项（M1-M6 / Mo1-Mo11 / mi1-mi5），判定 Major Revision 可修。
+- **本轮修复（C1-C6）**：
+  - **C1 文本手术**：修 M1 映射器矛盾（"对映射器不变" vs "Procrustes/CCA 破坏性"）、M2 V-only 显著性误报（改为 4/6 对显著/2 对功能成功）、mi1 tab:reassembly 未引用、mi2 "selective joint"→selective V-only、mi3 74.6--82.3% heads、mi4 映射器舍入 +2.62/+2.47。
+  - **C2 统计修正**：Mo3 1000→10000 resamples、Mo4 pooled CI→per-seed CI 措辞、Mo5 多重比较 caveat、Mo6 teacher_full −14.79→−14.77（3-seed 均值）、Δ +7.52→+7.50。
+  - **C3 主张降级+讨论补充**：M3 "necessary but not sufficient"→"high alignment does not guarantee transfer"、M5 monolithic strawman→first-to-isolate-K-vs-V、M6 teacher<student LL 异常讨论、Mo2 by-construction→within-Qwen3 empirical、Mo8 L8+L12 superadditivity、Mo9 单对范围限定、Mo11 cost crossover→heuristic。
+  - **C4 CCA 证据补全**：GPU 补跑剩余 3 对（8B_1.7B / 1.7B_0.6B / 8B_4B），w4_cca_perhead.json 扩至 6 对，fig_cca.pdf 重生成，"across all six pairs" 有数据支撑。
+  - **C5 Related work 补充**：TIES-Merging / DARE（模型合并）+ KIVI / KVQuant（KV 量化）4 条引用（arXiv 元数据已验证）。
+  - **C6 验证+交付**：verify_paper_numbers.py 数字交叉验证（44 断言全 PASS）+ pdflatex 两遍编译 0 errors + 禁词 grep 0 命中 + BRIEF.md 同步 + 本条目。
+- **数字修正明细**：teacher_full −14.79（seed-0 单值）→ −14.77（3-seed 均值，seeds −14.792/−14.719/−14.785）；ΔLL（reassembly vs teacher_full）+7.52 → +7.50；student_full −9.89 不变。
+- **CCA 补跑结果**：新增 3 对 per-head 均值 ρK/ρV 与 fraction（K>V 头比例）：8B_1.7B ρK=0.9944/ρV=0.9884、79.9%；1.7B_0.6B ρK=0.9967/ρV=0.9937、79.9%；8B_4B ρK=0.9974/ρV=0.9940、82.3%。原 3 对不变（8B_0.6B 75.9%、4B_1.7B 79.0%、4B_0.6B 74.6%）。
+- **验证通过**：`python3 scripts/verify_paper_numbers.py` 退出码 0（44/44 PASS）；pdflatex 两遍编译 exit 0、main.log 无 "! "/undefined references/multiply defined/Emergency stop；禁词 grep 0 命中；main.pdf 生成。
+- **提交**：本条目对应 commit 由 T27 执行（fix(paper): address independent review findings）。

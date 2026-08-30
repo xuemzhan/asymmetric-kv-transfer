@@ -43,6 +43,8 @@ BLUE = "#377eb8"
 ORANGE = "#ff7f00"
 GREEN = "#4daf4a"
 RED = "#e41a1c"
+PURPLE = "#984ea3"
+BROWN = "#a65628"
 
 
 def load_causal_layers():
@@ -153,9 +155,11 @@ def fig_layers():
 # ---------------------------------------------------------------------------
 def fig_cca():
     cca = load_cca_heads()
-    pair_colors = {"8B_0.6B": BLUE, "4B_1.7B": GREEN, "4B_0.6B": ORANGE}
+    pair_colors = {"8B_0.6B": BLUE, "4B_1.7B": GREEN, "4B_0.6B": ORANGE,
+                   "8B_1.7B": RED, "1.7B_0.6B": PURPLE, "8B_4B": BROWN}
     pair_labels = {"8B_0.6B": "8B$\\to$0.6B", "4B_1.7B": "4B$\\to$1.7B",
-                   "4B_0.6B": "4B$\\to$0.6B"}
+                   "4B_0.6B": "4B$\\to$0.6B", "8B_1.7B": "8B$\\to$1.7B",
+                   "1.7B_0.6B": "1.7B$\\to$0.6B", "8B_4B": "8B$\\to$4B"}
 
     fig, ax = plt.subplots(figsize=(3.4, 2.6))
     for pair, (rK, rV) in cca.items():
@@ -169,7 +173,7 @@ def fig_cca():
     ax.set_ylabel("CCA $\\rho_1$ (V)")
     ax.set_xlim(0.975, 1.0005)
     ax.set_ylim(0.975, 1.0005)
-    ax.legend(loc="lower right", frameon=False)
+    ax.legend(loc="lower right", frameon=False, fontsize=6)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
