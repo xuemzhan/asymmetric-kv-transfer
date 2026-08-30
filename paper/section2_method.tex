@@ -1,0 +1,122 @@
+% Section 2: Method
+% Following Arpit's method structure (from editorial principles)
+
+\section{Method}
+\label{sec:method}
+
+% Overview paragraph (elevator pitch)
+We study what transfers when migrating key-value cache state across large language models.
+Our approach decomposes KV injection into four arms---Self, K-only, V-only, and Joint---to isolate the contribution of each component.
+We measure task performance via answer log-likelihood and exact match,
+and characterize transferability via CCA correlation and layer-wise analysis.
+
+% 2.1 Problem Setup
+\subsection{Problem Setup}
+
+Consider a teacher model $T$ and a student model $S$.
+Given a document $d$, the teacher produces KV states $(K_T, V_T)$
+and the student produces $(K_S, V_S)$.
+We ask: which components of $(K_T, V_T)$ can replace $(K_S, V_S)$
+while preserving or improving task performance?
+
+\textbf{Key insight.} Keys encode attention routing (addressing);
+values encode content representations (semantics).
+These may transfer differently across models.
+
+% 2.2 Task and Data
+\subsection{Task and Data}
+
+\textbf{Synthetic OOD task.}
+We construct a synthetic out-of-domain (OOD) task with novel entities
+that do not appear in model pretraining data.
+The task requires reasoning across 1--4 hops over a knowledge graph,
+with answers verifiable by exact match.
+
+\textbf{Data splits.}
+Training set: 42 samples; evaluation set: 14 samples.
+We split data by entity clusters to prevent information leakage:
+entities in the evaluation set do not appear in the training set.
+
+\textbf{Why synthetic?}
+Real-world tasks require ground-truth reasoning chains.
+Our synthetic task provides verifiable answers while controlling
+entity familiarity---critical for studying OOD transfer.
+
+% 2.3 Model Pairs
+\subsection{Model Pairs}
+
+We study 6 pairs from the Qwen3 family:
+(8B$\to$0.6B), (4B$\to$1.7B), (4B$\to$0.6B),
+(8B$\to$1.7B), (1.7B$\to$0.6B), (8B$\to$4B).
+
+This design covers three configurations:
+\begin{itemize}
+  \item \textbf{Equal-layer}: 28$\to$28 (4B$\to$1.7B, 1.7B$\to$0.6B)
+  \item \textbf{Unequal-layer}: 36$\to$28 (8B$\to$4B), 36$\to$28 (8B$\to$0.6B)
+  \item \textbf{Size ratio}: 2.4$\times$ (4B$\to$1.7B) to 13.3$\times$ (8B$\to$0.6B)
+\end{itemize}
+
+% 2.4 Injection Protocol
+\subsection{Injection Protocol}
+
+For each evaluation sample, we construct four KV configurations:
+
+\textbf{Self.}
+Student prefills document with its own KV states.
+This is the baseline (doc-only KV).
+
+\textbf{K-only.}
+Teacher K (mapped) + Student V.
+Tests whether addressing geometry transfers.
+
+\textbf{V-only.}
+Student K + Teacher V (mapped).
+Tests whether content representations transfer.
+
+\textbf{Joint.}
+Teacher K (mapped) + Teacher V (mapped).
+Tests full KV transfer (both components).
+
+% 2.5 Mapper
+\subsection{Mapper}
+
+We use Affine mappers fitted on calibration data.
+The mapper learns a linear transformation $W$ and bias $b$:
+\[
+K_S = W \cdot K_T + b
+\]
+For K, we apply de-RoPE before mapping and re-RoPE after.
+For V, no positional alignment is needed.
+
+We also tested Whitened and RidgePerHead mappers;
+results are invariant to mapper choice (§5).
+
+% 2.6 Metrics
+\subsection{Metrics}
+
+\textbf{Primary: Answer log-likelihood.}
+We compute teacher-forced log-likelihood of answer tokens.
+This is continuous, sensitive to small changes,
+and correlates with task performance.
+
+\textbf{Secondary: Exact match.}
+We compute greedy exact match on final answers.
+This is binary, interpretable, but less sensitive.
+
+\textbf{Baselines.}
+\begin{itemize}
+  \item \textbf{Self}: Doc-only KV (negative baseline).
+  \item \textbf{Student full}: Doc + query KV (upper bound for single model).
+  \item \textbf{Teacher full}: Doc + query KV (reference for teacher capability).
+\end{itemize}
+
+% 2.7 Statistical Analysis
+\subsection{Statistical Analysis}
+
+We report 95\% bootstrap confidence intervals (1000 resamples)
+and paired Wilcoxon signed-rank tests ($n = 14$ evaluation samples).
+We consider $p < 0.05$ statistically significant.
+
+\textbf{Warning.} With $n = 14$, statistical power is limited.
+Wide confidence intervals should be interpreted cautiously.
+Larger evaluation sets are needed for definitive conclusions.

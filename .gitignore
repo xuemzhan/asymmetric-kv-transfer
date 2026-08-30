@@ -1,0 +1,20 @@
+# Experiment data artifacts (regenerable)
+reports/*.json
+data/*.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Temp
+/tmp/
+
+# Agent session dumps / notebooks
+.omo/
+.ipynb_checkpoints/
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/main.pdf

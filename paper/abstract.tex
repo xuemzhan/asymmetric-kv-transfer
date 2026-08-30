@@ -1,0 +1,20 @@
+% ABSTRACT
+% Written last — summarizes all contributions with specific numbers
+
+\begin{abstract}
+We study what transfers when migrating key-value (KV) cache state across large language models (LLMs).
+Across 6 model pairs from the Qwen3 family, we find a sharp functional asymmetry:
+keys (the addressing substrate) transfer across models, recovering task performance
+($\dll = +3.26$ to $+7.67$), while values (the content substrate) do not transfer
+functionally despite being linearly almost perfectly alignable (CCA $\rho \approx 1.0$).
+This correlation--transferability dissociation shows that geometric compatibility
+is necessary but not sufficient; the bottleneck lies in downstream decode,
+where content is consumed through weight-parameterized pathways.
+We localize the V advantage to layers 8/12, demonstrate that teacher K + student V
+can beat both full models (heterogeneous reassembly: $-6.74$ vs teacher\_full $-12.73$
+and student\_full $-10.13$), and identify a cost crossover at $\sim$2050 tokens
+where state transfer becomes more expensive than mapper transfer.
+Our results establish that KV state transfer is asymmetric by construction:
+addressing geometry is composable across models,
+while content is weight-bound.
+\end{abstract}

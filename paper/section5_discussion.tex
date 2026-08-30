@@ -1,0 +1,98 @@
+% Section 5: Discussion
+% Implications, limitations, and future work
+
+\section{Discussion}
+\label{sec:discussion}
+
+% ============================================================
+% 5.1 Implications
+% ============================================================
+\subsection{Implications}
+
+Our findings have three practical implications:
+
+\textbf{For LLM serving.}
+When upgrading model versions, transfer K state but not V.
+The addressing geometry is reusable across versions;
+the content representations are not.
+This could reduce serving latency and memory costs
+during model rollout.
+
+\textbf{For distillation.}
+Prior work focuses on matching attention patterns (K geometry).
+Our results suggest this is misguided:
+K geometry is already generic.
+Focus instead on V/content pathways,
+which carry task-specific knowledge.
+
+\textbf{For model stitching.}
+Heterogeneous reassembly (teacher K + student V)
+beats both full models.
+This demonstrates that addressing geometry is a composable substrate,
+opening new directions in modular model construction.
+
+% ============================================================
+% 5.2 Limitations
+% ============================================================
+\subsection{Limitations}
+
+\textbf{Single domain.}
+All experiments use one synthetic OOD task.
+Second-domain validation (GSM8K/NQ subsets) is needed
+to confirm generalization.
+
+\textbf{Small eval set.}
+$n = 14$ evaluation samples limits statistical power.
+Bootstrap CI95 is wide; larger eval sets ($n \geq 50$)
+are needed for definitive conclusions.
+
+\textbf{No true replication.}
+The pipeline is deterministic; 3 seeds are identical.
+Variance comes from data, not initialization.
+This is a methodological limitation, not a bug.
+
+\textbf{Boundary failures.}
+1.7B$\to$0.6B shows negative $\dll$ (weak teacher K hurts).
+8B$\to$4B shows EM saturation (pure calibration gain).
+These boundary cases need further investigation.
+
+% ============================================================
+% 5.3 Future Work
+% ============================================================
+\subsection{Future Work}
+
+\textbf{Second-domain validation.}
+Test on GSM8K (math reasoning) and NQ (entity recognition)
+to confirm the K/V asymmetry generalizes beyond our synthetic task.
+
+\textbf{Larger eval sets.}
+Scale to $n \geq 50$ evaluation samples with per-hop breakdown
+(hop-1 through hop-4) to characterize difficulty effects.
+
+\textbf{Theoretical modeling.}
+Why does K geometry transfer but V content doesn't?
+A theoretical framework could predict transferability
+from model architecture and training data.
+
+\textbf{Real-world deployment.}
+Measure actual serving latency and memory savings
+from K transfer in production systems.
+
+% ============================================================
+% 5.4 Conclusion
+% ============================================================
+\subsection{Conclusion}
+
+We have shown that KV state transfer across LLMs exhibits
+a sharp functional asymmetry:
+keys (addressing) transfer, while values (content) do not.
+This asymmetry holds across 6 model pairs despite
+near-perfect linear alignment (CCA $\rho \approx 1$).
+The bottleneck is downstream decode,
+where content requires weight-parameterized consumption.
+
+Our results establish that KV state transfer is asymmetric by construction:
+addressing geometry is composable across models,
+while content is weight-bound.
+This has implications for serving, distillation,
+and modular model construction.

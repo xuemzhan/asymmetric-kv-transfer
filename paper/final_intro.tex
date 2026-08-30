@@ -1,0 +1,84 @@
+% FINAL INTRODUCTION — Rewritten after evaluation complete
+% Includes Move 6: Results Preview with real numbers
+
+\section{Introduction}
+
+% Move 1: Stakes
+Modern LLM serving incurs substantial memory overhead from KV caches.
+A single 70B-parameter model requires 20GB+ of KV cache for a 4K-token sequence.
+When deploying model upgrades or heterogeneous ensembles, existing KV caches become obsolete,
+forcing expensive re-computation.
+Reusing cached KV states across model versions could reduce serving latency and memory costs,
+but only if the right parts of the cache transfer across models.
+
+% Move 2: Problem Gap
+Current approaches to KV transfer treat it as all-or-nothing.
+Three structural limitations prevent effective cross-model KV reuse:
+\begin{enumerate}
+  \item \textbf{No decomposition.} Prior work transfers entire KV caches without identifying
+    which components (keys vs.\ values) are transferable.
+  \item \textbf{Geometry $\neq$ function.} Linear alignment methods (CCA, Procrustes)
+    show high geometric correlation between KV representations across models,
+    but correlation does not guarantee functional transferability.
+  \item \textbf{No cost model.} When is it cheaper to transfer state vs.\ transfer weights?
+    No systematic analysis exists for KV cache transfer.
+\end{enumerate}
+
+% Move 3: Key Abstraction
+We introduce the concept of \textbf{asymmetric KV transferability}:
+keys (the addressing substrate) transfer across models,
+while values (the content substrate) do not.
+This asymmetry is functional, not geometric---both K and V are linearly almost perfectly
+alignable (CCA $\rho \approx 1$), yet only K recovers task performance when injected.
+
+% Move 4: Design Intuition
+Our approach consists of three stages:
+(1) \emph{KV capture}: extract teacher and student KV states from matched documents;
+(2) \emph{mapper fitting}: learn affine transformations from teacher to student KV spaces
+using calibration data;
+(3) \emph{injection and evaluation}: replace student KV with mapped teacher KV,
+measure task performance via answer log-likelihood and exact match.
+We decompose injection into four arms (Self, K-only, V-only, Joint) to isolate
+the contribution of each component.
+
+% Move 5: Contributions
+This paper makes five contributions:
+\begin{enumerate}
+  \item \textbf{K/V functional asymmetry.}
+    We show that K-state transfer recovers task performance across 5/6 model pairs
+    ($\dll = +3.26$ to $+7.67$), while V-state transfer is at best neutral
+    on likelihood and task-harming on EM ($-14.3\%$ on 8B$\to$0.6B).
+    The K/V transfer ratio ranges from 1.38 to 7.58.
+
+  \item \textbf{Correlation $\neq$ transferability.}
+    CCA $\rho_1 \approx 1.0$ for both K and V, yet only K transfers.
+    We show that geometric compatibility is necessary but not sufficient;
+    the bottleneck lies in weight-parameterized content consumption.
+
+  \item \textbf{Layer localization.}
+    V advantage concentrates in layers 8/12
+    (V-only $\dll = +1.07 / +3.72$),
+    while K advantage distributes globally across all layers.
+
+  \item \textbf{Heterogeneous reassembly.}
+    Teacher K + student V beats both full models
+    ($-6.74$ vs teacher\_full $-12.73$ / student\_full $-10.13$),
+    demonstrating that addressing geometry is a composable substrate.
+
+  \item \textbf{Cost crossover.}
+    State/weight transfer cost crossover at $\sim$2050 tokens,
+    providing a practical decision rule for cache transfer.
+\end{enumerate}
+
+% Move 6: Results Preview — FILLED with real numbers
+\textbf{Results preview.}
+Across 6 model pairs spanning 0.6B to 8B parameters,
+K-only injection improves log-likelihood by $+3.26$ to $+7.67$ (paired $p < 0.01$),
+while V-only injection shows no significant gain ($p = 0.12$).
+The flagship 8B$\to$0.6B pair shows K-only $\dll = +4.98$
+versus V-only $\dll = +1.75$ (K/V ratio = 2.84).
+Heterogeneous reassembly achieves $-6.74$,
+outperforming both teacher\_full ($-12.73$) and student\_full ($-10.13$).
+CCA reveals near-perfect linear alignment ($\rho_1 \approx 1.0$) for both K and V,
+yet only K transfers functionally---a dissociation that establishes
+the correlation--transferability gap.

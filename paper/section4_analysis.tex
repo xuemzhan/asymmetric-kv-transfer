@@ -1,0 +1,169 @@
+% Section 4: Analysis
+% Mechanistic analysis and deeper investigation
+
+\section{Analysis}
+\label{sec:analysis}
+
+% ============================================================
+% 4.1 Correlation ≠ Transferability
+% ============================================================
+\subsection{Correlation $\neq$ Transferability}
+
+A striking finding emerges from comparing geometric alignment
+with functional transferability.
+
+\textbf{CCA results.}
+Canonical Correlation Analysis (CCA) reveals that
+first canonical correlation $\rho_1 \approx 1.0$ for both K and V
+across all model pairs (Table~\ref{tab:cca}).
+This indicates near-perfect linear alignability:
+teacher and student KV representations lie in essentially
+the same linear subspace.
+
+\begin{table}[t]
+\centering
+\caption{CCA $\rho_1$ vs functional transferability.
+High correlation does not predict transfer success.}
+\label{tab:cca}
+\begin{tabular}{lrrr}
+\toprule
+Pair & $\rho_K$ & $\rho_V$ & K-only $\dll$ \\
+\midrule
+8B$\to$0.6B & 1.000 & 0.9998 & $+4.98$ \\
+4B$\to$1.7B & 1.000 & 0.9999 & $+7.31$ \\
+4B$\to$0.6B & 1.000 & 0.9999 & $+3.26$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{The dissociation.}
+Despite near-perfect geometric alignment for both K and V,
+only K transfers functionally.
+V-only $\dll$ is weak or negative (Table~\ref{tab:main}).
+This dissociation is the paper's central finding.
+
+\textbf{Interpretation.}
+Linear-geometric compatibility (CCA $\rho \approx 1$)
+is necessary but not sufficient for functional transfer.
+The bottleneck lies in downstream decode,
+where content is consumed through weight-parameterized pathways.
+K geometry is model-agnostic; V content is weight-bound.
+
+% ============================================================
+% 4.2 Layer Localization
+% ============================================================
+\subsection{Layer Localization of V Advantage}
+
+Per-layer V-only replacement reveals concentrated hotspots
+at layers 8 and 12 (Table~\ref{tab:layers}).
+
+\begin{table}[t]
+\centering
+\caption{Per-layer V-only $\dll$ on 8B$\to$0.6B.
+V advantage concentrates at layers 8/12.}
+\label{tab:layers}
+\begin{tabular}{lr}
+\toprule
+Layer & V-only $\dll$ \\
+\midrule
+Layer 4 & $-0.23$ \\
+Layer 8 & $+1.07$ \\
+Layer 12 & $+3.72$ \\
+Layer 16 & $-0.45$ \\
+Layer 20 & $-0.89$ \\
+Layer 24 & $-1.23$ \\
+Layer 28 & $-1.56$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Concentration.}
+Layer 12 alone accounts for $+3.72$ $\dll$.
+Layer 8 contributes $+1.07$.
+All other layers show near-zero or negative effects.
+
+\textbf{Asymmetry with K.}
+K advantage distributes globally:
+no single layer dominates, but global K transfer yields large gains ($+4.98$).
+This suggests K geometry is a property of the entire network,
+while V content is localized to specific processing stages.
+
+% ============================================================
+% 4.3 Cost Analysis
+% ============================================================
+\subsection{Cost Crossover}
+
+We analyze the computational cost of state transfer vs.\ weight transfer.
+
+\textbf{Mapper cost.}
+Affine mapper parameters: 58.78M (224.2 MB at float32).
+This cost is fixed regardless of sequence length.
+
+\textbf{Cache cost.}
+Per-token KV cache: 112 KB (28-layer student).
+This cost scales linearly with sequence length.
+
+\textbf{Crossover point.}
+State/weight transfer cost crossover at $\sim$2050 tokens (Figure~\ref{fig:cost}).
+Below 2050 tokens, transferring KV cache is cheaper.
+Above 2050 tokens, transferring mapper parameters is cheaper.
+
+\begin{figure}[t]
+\centering
+% Placeholder for cost curve
+\caption{State/weight transfer cost ratio vs sequence length.
+Crossover at $\sim$2050 tokens.}
+\label{fig:cost}
+\end{figure}
+
+\textbf{Implication.}
+For short-context applications (chat, few-shot QA),
+KV state transfer is cost-effective.
+For long-context applications (document summarization),
+mapper transfer is preferred.
+
+% ============================================================
+% 4.4 Boundary Conditions
+% ============================================================
+\subsection{Boundary Conditions}
+
+Two pairs require special attention:
+
+\textbf{1.7B$\to$0.6B (failure).}
+K-only $\dll = -0.91$ (negative).
+Under ``K is shared geometry'' theory, this should be neutral.
+The negative value suggests weak teacher K can actively hurt.
+This establishes a lower bound on teacher capacity:
+teacher must exceed student for useful K transfer.
+
+\textbf{8B$\to$4B (saturation).}
+Self EM = 100\%, so $\dll = +7.67$ is pure calibration gain,
+not task improvement.
+The student already solves the task; K transfer only
+improves confidence calibration.
+
+% ============================================================
+% 4.5 Synthesis
+% ============================================================
+\subsection{Synthesis}
+
+The evidence converges on a clear picture:
+
+\textbf{K is addressing geometry.}
+K states encode attention routing patterns that are
+model-agnostic and composable across architectures.
+This explains why K transfers: the routing logic is generic.
+
+\textbf{V is weight-bound content.}
+V states encode content representations that are
+consumed through weight-parameterized pathways.
+This explains why V doesn't transfer: the content requires
+compatible weights to be useful.
+
+\textbf{Implication.}
+For KV cache transfer:
+transfer K, not V.
+For distillation:
+focus on V/content pathways, not addressing geometry.
+For model stitching:
+addressing geometry is composable; content is not.

@@ -1,0 +1,91 @@
+% Related Work
+% Organized by subfield, not chronologically
+
+\section{Related Work}
+\label{sec:related}
+
+% ============================================================
+% 2.1 KV Cache Optimization
+% ============================================================
+\subsection{KV Cache Optimization}
+
+LLM serving incurs substantial memory overhead from KV caches.
+FlashAttention~\cite{dao2022flashattention} addresses this via IO-aware kernel fusion,
+reducing memory footprint without changing the KV format.
+Speculative decoding~\cite{leviathan2023fast,chen2023accelerating}
+reduces latency by predicting multiple tokens ahead,
+but requires a draft model to generate candidates.
+
+Our work is orthogonal: we study what transfers across models,
+not how to optimize cache memory within a single model.
+
+% ============================================================
+% 2.2 Model Compression and Distillation
+% ============================================================
+\subsection{Model Compression and Distillation}
+
+Model compression reduces size via quantization~\cite{frantar2023gptq,dettmers2024qlora},
+pruning, or distillation~\cite{touvron2023llama}.
+These methods transform model weights,
+while we study transferring KV cache state across existing models.
+
+Knowledge distillation~\cite{hinton2015distilling}
+transfers knowledge from teacher to student via soft labels.
+Our work shows that KV state can transfer directly,
+without the full distillation pipeline.
+
+% ============================================================
+% 2.3 Attention Mechanisms
+% ============================================================
+\subsection{Attention Mechanisms}
+
+The Transformer architecture~\cite{vaswani2017attention}
+decomposes attention into keys (addressing) and values (content).
+This decomposition is fundamental to our work:
+we study whether K and V transfer differently across models.
+
+Prior work treats KV as monolithic.
+We show K and V serve different functional roles:
+K is model-agnostic routing; V is weight-bound content.
+
+% ============================================================
+% 2.4 Model Stitching
+% ============================================================
+\subsection{Model Stitching}
+
+Model stitching combines layers from different models
+to create hybrid architectures~\cite{bansal2020could}.
+Recent work shows that attention layers can be stitched
+across models with minimal performance loss.
+
+Our heterogeneous reassembly (teacher K + student V)
+extends this line:
+addressing geometry is composable,
+while content representations are not.
+This suggests a functional decomposition for model stitching.
+
+% ============================================================
+% 2.5 Scaling Laws
+% ============================================================
+\subsection{Scaling Laws}
+
+Scaling laws~\cite{kaplan2020scaling,hoffmann2022chinchilla}
+characterize how performance scales with compute, data, and parameters.
+Our cost crossover analysis complements this:
+when is it cheaper to transfer state vs.\ transfer weights?
+The crossover at $\sim$2050 tokens provides a practical decision rule.
+
+% ============================================================
+% 2.6 Summary
+% ============================================================
+\subsection{Summary}
+
+Our work is distinct from prior efforts in three ways:
+\begin{enumerate}
+  \item \textbf{Decomposition.} We decompose KV into K and V,
+    showing asymmetric transferability.
+  \item \textbf{Functional analysis.} We study what transfers functionally,
+    not just geometrically (CCA correlation).
+  \item \textbf{Cost model.} We provide a practical cost crossover
+    for state vs.\ weight transfer.
+\end{enumerate}
