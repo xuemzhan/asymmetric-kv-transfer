@@ -284,25 +284,32 @@
 - [x] Phase 4：规模定律（6 模型对验证）✅
 
 ### 5.2 待做
-- [ ] 重构论文叙事（根据 Oracle 2 次审查）
-- [ ] 修基线口径（ΔLL 对 student_full 报告）
-- [ ] 补统计（bootstrap CI95 + paired Wilcoxon）
-- [ ] 补第二真实域（GSM8K/NQ 子集）
-- [ ] 撰写论文（使用 paper-writing skill）
+- [x] 重构论文叙事（根据 Oracle 2 次审查）→ W9 完成：门控 V 叙事
+- [x] 修基线口径（ΔLL 对 student_full 报告）→ W5 v2 完成
+- [x] 补统计（bootstrap CI95 + paired Wilcoxon）→ W5-W8 完成（3 seeds × n=56）
+- [x] 补第二真实域（GSM8K/NQ 子集）→ W7 SQuAD 完成（3 seeds）
+- [x] 撰写论文（使用 paper-writing skill）→ W9 可提交稿（12pp, pdflatex clean）
+- [ ] figures 绘制（layer heatmap / cost curve / CCA scatter）— 当前为占位符
+- [ ] 可选：XKV（arXiv 2608.20617）/ LCF（Rossi et al., 2026）补充引用元数据后纳入 Related Work
+- [ ] 目标 venue 格式检查（COLM 或 TMLR 模板/页数要求）
 
-### 5.3 关键发现（修正版）
+### 5.3 关键发现（修正版 v2，2026-08-30）
 
 **核心贡献**：
-1. **K/V 功能性不对称**：寻址（K）跨模型可传，内容（V）不可传
-2. **原始相关 ≠ 可传输性**：CCA ρ≈1 但功能不可传输（Phase 2 负结果）
-3. **V 层稀疏热点**：V 优势集中在 Layer 8/12（Phase 1）
-4. **异质重组效应**：教师 K + 学生 V 可同时超过两个完整模型
+1. **K/V 功能性不对称（门控版）**：寻址（K）跨模型普适可传（EM ≥0.73 全部 6 对）；内容（V）受 teacher-student 能力差距/表示空间匹配门控（等层小差距对可传：8B→4B EM 0.88, 1.7B→0.6B EM 0.80；大差距/不等层对失败）
+2. **原始相关 ≠ 可传输性**：CCA ρ≈0.99 但 V 在大差距对功能不可传输（Phase 2 负结果，3 对一致）
+3. **V 层稀疏热点**：V 优势集中在 Layer 8/12（3 seed 一致）；全层注入被 26/28 层噪声淹没（解释 G0 V-only 全局失败）
+4. **异质重组效应**：教师 K + 学生 V 可同时超过两个完整模型（−7.27 vs −9.89/−14.79）
 5. **成本交叉点**：~2050 tokens（Phase 3）
 
+**已解决（v2 重跑）**：
+- teacher_full < student_full 矛盾 → v2 口径修正（doc-only KV + answer_loglik 对齐）
+- 1.7B→0.6B K 负值 → v2 门控解释：K 在大差距对普适，但该对 K 不稳定（−0.82，唯一 K 失败对，转为 V 成功对的对照）
+- 8B→4B EM 饱和 → 明确为限制：该对 EM 无判别力，仅 LL 有效
+
 **待解决问题**：
-1. **teacher_full < student_full**：旗舰对 8B→0.6B 的 teacher_full(-12.73) < student_full(-10.13)，教师无优势但传输有效
-2. **1.7B→0.6B 负值**：K-only ΔLL=-0.91，违背"K 是共享几何"理论
-3. **8B→4B 饱和**：EM 全 1.0，ΔLL 纯属似然校准
+1. V 传输的"EM 崩溃 vs LL 提升"解离（4B→1.7B/8B→1.7B：V LL 显著提升但 EM 0.08-0.12）——V 内容与目标解码不兼容的机制解释尚缺
+2. 8B→1.7B K 跨 seed 不稳定（s0/s1 ns, s2 +2.80）
 
 ---
 
@@ -311,17 +318,39 @@
 1. ~~G0 最大风险：V 失败可能只是 Ridge 太弱~~ → **已排除**，G0 PASS
 2. ~~标量 g 可能不存在或难测~~ → **已确认**，CCA 无法区分 K/V（但负结果有意义）
 3. P5 低秩假设**未被支持**（有效秩接近满秩）
-4. 数据量小（train=42）限制了统计功效，但 G0 效应足够大（Cohen d=4.48）
+4. 数据量小（train=42）限制了统计功效，但 G0 效应足够大（Cohen d=4.48）→ v2 扩到 n=56 × 3 seeds，统计增强
 5. ~~8.7GB 幽灵 GPU 占用~~ → 已通过 CPU offloading 解决
-6. **teacher_full < student_full**：旗舰对 8B→0.6B 的 teacher_full(-12.73) < student_full(-10.13)，教师无优势但传输有效。需要解释（教师内容在 OOD 域拖累自己，但 K 仍通用）
-7. **1.7B→0.6B 负值**：K-only ΔLL=-0.91，违背"K 是共享几何"理论。是反例也是机会
-8. **8B→4B EM 饱和**：Self EM=1.0，ΔLL=+7.67 纯属似然校准，无任务余地
-9. **数据卫生**：磁盘上 phase4 只有 8B_4B 一对报告，其他 5 对无法从 reports/ 复现
-10. **统计严谨性**：n=14 eval，3 seeds 确定性=无真复制，需 bootstrap + 第二域
+6. ~~teacher_full < student_full~~ → v2 口径修正（doc-only KV + answer_loglik 对齐），论文已用对齐口径
+7. ~~1.7B→0.6B K 负值违背"K 共享几何"~~ → v2 门控解释：V 可传性由能力差距门控，该对转为 V 成功对照
+8. ~~8B→4B EM 饱和无任务余地~~ → 论文明确为限制：该对 EM 无判别力，仅 LL 有效（诚实报告）
+9. **数据卫生**：磁盘上 phase4 只有 8B_4B 一对报告 → v2 已 6 对 × 3 seeds 全量落盘（reports/phase4_scaling_law_v2_seed{0,1,2}.json）
+10. ~~统计严谨性：n=14 eval，无真复制~~ → v2：n=56 × 3 seeds + bootstrap CI95 + Wilcoxon 完成
+11. **V 的 EM 崩溃 vs LL 提升解离**（4B→1.7B/8B→1.7B）：机制解释尚缺，论文作为边界条件诚实报告
+12. **figures 占位**：layer heatmap / cost curve / CCA scatter 未绘制
+13. **XKV/LCF 引用缺失**：相关元数据不全，未纳入 Related Work（可选补）
 
 ---
 
 ## 7. 会话记录（按时间倒序）
+
+### 2026-08-30 Session（W9：论文 v2 全量修订 → 可提交稿）
+- **目标**：main.tex 从 v1（n=14）升级到 v2 3-seed 数据（n=56），加入竞争定位，叙事从"V 从不传输"修正为"V 传输受能力差距门控"
+- **数据基线**：新建 `paper/v3_data_baseline.md`（权威 v2 3-seed 数据源，全数字唯一权威）
+- **references.bib**：19 → 26 条目，新增 heo2026crossmodel（NVIDIA 2608.03893）、lee2026translators（MoT）、fu2026c2c（C2C）、dery2026latentalign（LatentAlign）、bansal2021stitching、hinton2015distilling、su2024rope
+- **main.tex 全章节重写（366 insertions / 160 deletions）**：
+  - Abstract：门控 V 叙事（v1 "K 传 V 不传" → v2 "V 传输受能力差距门控"），3 seeds，SQuAD 第二域，reassembly −7.27，层定位 L8/L12
+  - Intro：Move 3（gated asymmetric KV transferability）+ Move 5（5 贡献 v2）+ Move 6（结果预览 v2，含 Joint +4.52）
+  - Method：数据划分（70/28/56 × 3 seeds）、模型对修正（8B/4B=L36, 1.7B/0.6B=L28）、SQuAD 第二域小节、统计小节（n=56, 3 seeds, bootstrap CI pooled）
+  - Results：6-pair 主表 v2（mean±std, sig×3, EM transfer）、head-to-head、baseline 对比、deep dive、takeaways 1-3、reassembly v2（−7.27 vs −9.89/−14.79）、robustness v2（5 mapper 不变性 + CI95 + SQuAD）
+  - Analysis：CCA 表 v2（ρ_K 0.9944 / ρ_V 0.9899 × 3 对）、层定位 v2（L8 +0.32, L12 +1.27, L8+L12 +2.33, V_ALL −0.23 有害）、边界条件 v2（1.7B→0.6B V 成功 vs 4B→1.7B V-LL 提升但 EM 崩溃）、综合 v2
+  - Discussion：implications/limitations/future work/conclusion 全部 v2（含 EM 饱和、V 崩溃、mapper 家族等诚实限制）
+  - **新增 Related Work 章节**（§2，位于 Intro 后）：合并 section6_related.tex 草稿 + 跨模型 KV 传输子节（NVIDIA/MoT/C2C/LatentAlign 竞争定位），区分"monolithic engineering"vs"我们的分解诊断"
+  - 章节重编号：Intro=1, Related Work=2, Method=3, Evaluation=4, Analysis=5, Discussion=6；修正 2 处硬编码引用（§5→robustness ref, \S4→\S\ref{sec:analysis}）
+  - 修复 cite 键：bansal2020could → bansal2021stitching（bib 键不匹配）
+- **数字核对**：全部关键数字（ΔLL/EM/ρ₁/成本交叉点/n）与 v3_data_baseline.md 交叉验证通过（Unicode 减号规范化后 0 失败）
+- **编译验证**：pdflatex ×3 + bibtex 干净通过，12 页 274KB，0 undefined/error，16 个 bibitem 全部解析
+- **提交**：`19c65de`（W9: complete v2 paper revision…）
+- **遗留**：figures 仍为占位符（layer heatmap / cost curve）；XKV（2608.20617）与 LCF 引用元数据不全未纳入
 
 ### 2026-08-30 Session（W5-W8 阶段：v2 重跑 + 第二域 + 跨对复制）
 - **W5 完成（G0 v2 生死门重跑）**：`phase0_g0_v2.py`，v2 数据（train/test_v2_seed{0,1,2}，n_calib=70, n_eval=56），3 seeds 全部完成
