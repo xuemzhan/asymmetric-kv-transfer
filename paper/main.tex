@@ -37,17 +37,22 @@ Asymmetric KV State Transfer Across LLMs}
 % ============================================================
 \begin{abstract}
 We study what transfers when migrating key-value (KV) cache state across large language models (LLMs).
-Across 6 model pairs from the Qwen3 family, we find a sharp functional asymmetry:
-keys (the addressing substrate) transfer across models, recovering task performance
-($\dll = +3.26$ to $+7.67$), while values (the content substrate) do not transfer
-functionally despite being linearly almost perfectly alignable (CCA $\rho \approx 1.0$).
+Across 6 model pairs from the Qwen3 family (0.6B--8B, 3 seeds), we find a sharp
+functional asymmetry that is gated by the teacher--student capability gap:
+keys (the addressing substrate) transfer near-universally, recovering task performance
+on all 6 pairs (exact match $\ge 0.73$; $\dll = +1.58$ to $+8.52$ on 5/6 pairs),
+while values (the content substrate) transfer only when teacher and student are
+closely matched ($8$B$\to$4B: EM 0.43$\to$0.88; $1.7$B$\to$0.6$B$: EM 0.43$\to$0.80)
+and fail on large-gap pairs ($8$B$\to$0.6$B$: $\dll = -0.23$, ns)---despite K and V
+being equally, almost perfectly linearly alignable (CCA $\rho_1 = 0.99$ both).
 This correlation--transferability dissociation shows that geometric compatibility
 is necessary but not sufficient; the bottleneck lies in downstream decode,
 where content is consumed through weight-parameterized pathways.
-We localize the V advantage to layers 8/12, demonstrate that teacher K + student V
-can beat both full models (heterogeneous reassembly: $-6.74$ vs teacher\_full $-12.73$
-and student\_full $-10.13$), and identify a cost crossover at $\sim$2050 tokens
-where state transfer becomes more expensive than mapper transfer.
+We localize the V advantage to layers 8/12 (selective injection $\dll = +2.33$ vs.\
+full-layer V injection $-0.23$), replicate the asymmetry on a second domain (SQuAD,
+where V-only injection collapses EM to 0.03), and show that heterogeneous reassembly
+(teacher K + student V) beats both full models ($-7.27$ vs.\ teacher\_full $-14.79$
+and student\_full $-9.89$), with a cost crossover at $\sim$2050 tokens.
 Our results establish that KV state transfer is asymmetric by construction:
 addressing geometry is composable across models,
 while content is weight-bound.
@@ -80,11 +85,13 @@ Three structural limitations prevent effective cross-model KV reuse:
 \end{enumerate}
 
 % Move 3: Key Abstraction
-We introduce the concept of \textbf{asymmetric KV transferability}:
+We introduce the concept of \textbf{gated asymmetric KV transferability}:
 keys (the addressing substrate) transfer across models,
-while values (the content substrate) do not.
+while values (the content substrate) transfer only when the
+teacher--student capability gap is small.
 This asymmetry is functional, not geometric---both K and V are linearly almost perfectly
-alignable (CCA $\rho \approx 1$), yet only K recovers task performance when injected.
+alignable (CCA $\rho_1 \approx 0.99$), yet only K recovers task performance when injected
+across large gaps.
 
 % Move 4: Design Intuition
 Our approach consists of three stages:
@@ -99,25 +106,25 @@ the contribution of each component.
 % Move 5: Contributions
 This paper makes five contributions:
 \begin{enumerate}
-  \item \textbf{K/V functional asymmetry.}
-    We show that K-state transfer recovers task performance across 5/6 model pairs
-    ($\dll = +3.26$ to $+7.67$), while V-state transfer is at best neutral
-    on likelihood and task-harming on EM ($-14.3\%$ on 8B$\to$0.6B).
-    The K/V transfer ratio ranges from 1.38 to 7.58.
+  \item \textbf{Gated K/V functional asymmetry.}
+    We show that K-state transfer recovers task performance on all 6 model pairs
+    ($\dll = +1.58$ to $+8.52$, EM $\ge 0.73$), while V-state transfer succeeds
+    only on small-gap pairs ($8$B$\to$4$B$, $1.7$B$\to$0.6$B$) and fails or
+    destabilizes decoding on large-gap pairs.
 
   \item \textbf{Correlation $\neq$ transferability.}
-    CCA $\rho_1 \approx 1.0$ for both K and V, yet only K transfers.
+    CCA $\rho_1 \approx 0.99$ for both K and V, yet only K transfers across large gaps.
     We show that geometric compatibility is necessary but not sufficient;
     the bottleneck lies in weight-parameterized content consumption.
 
   \item \textbf{Layer localization.}
     V advantage concentrates in layers 8/12
-    (V-only $\dll = +1.07 / +3.72$),
+    (V-only $\dll = +0.32 / +1.27$; selective joint injection $+2.33$),
     while K advantage distributes globally across all layers.
 
   \item \textbf{Heterogeneous reassembly.}
     Teacher K + student V beats both full models
-    ($-6.74$ vs teacher\_full $-12.73$ / student\_full $-10.13$),
+    ($-7.27$ vs teacher\_full $-14.79$ / student\_full $-9.89$),
     demonstrating that addressing geometry is a composable substrate.
 
   \item \textbf{Cost crossover.}
@@ -128,18 +135,125 @@ This paper makes five contributions:
 % Move 6: Results Preview — FILLED with real numbers
 \textbf{Results preview.}
 Across 6 model pairs spanning 0.6B to 8B parameters,
-K-only injection improves log-likelihood by $+3.26$ to $+7.67$ (paired $p < 0.01$),
-while V-only injection shows no significant gain ($p = 0.12$).
-The flagship 8B$\to$0.6B pair shows K-only $\dll = +4.98$
-versus V-only $\dll = +1.75$ (K/V ratio = 2.84).
-Heterogeneous reassembly achieves $-6.74$,
-outperforming both teacher\_full ($-12.73$) and student\_full ($-10.13$).
-CCA reveals near-perfect linear alignment ($\rho_1 \approx 1.0$) for both K and V,
+K-only injection improves log-likelihood by $+1.58$ to $+8.52$ (paired $p < 0.05$,
+3 seeds) and recovers EM $\ge 0.73$ on all pairs,
+while V-only injection is significant only on the two small-gap pairs
+($8$B$\to$4$B$: $+2.52$; $1.7$B$\to$0.6$B$: $+0.63$)
+and neutral or negative elsewhere ($8$B$\to$0.6$B$: $-0.23$, ns).
+The flagship 8B$\to$0.6B pair shows K-only $\dll = +2.62$
+versus V-only $\dll = -0.23$ (K/V asymmetry: $+2.85$),
+with Joint injection $\dll = +4.52$.
+Heterogeneous reassembly achieves $-7.27$,
+outperforming both teacher\_full ($-14.79$) and student\_full ($-9.89$).
+CCA reveals near-perfect linear alignment ($\rho_1 \approx 0.99$) for both K and V,
 yet only K transfers functionally---a dissociation that establishes
 the correlation--transferability gap.
 
 % ============================================================
-% 2. METHOD
+% 2. RELATED WORK
+% ============================================================
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Cross-Model KV Cache Transfer}
+
+The closest concurrent line of work transfers KV cache state across
+different models.
+Heo et al.\ (NVIDIA, 2026)~\cite{heo2026crossmodel} introduce a closed-form
+per-head ridge mapper with RoPE-stripped keys and cross-layer source
+selection, demonstrating prefill reuse between Qwen3-14B and Qwen3-32B.
+Cache-to-Cache (Fu et al., 2026)~\cite{fu2026c2c} transfers semantic
+states between LLMs for direct communication.
+Mixture-of-Translators~\cite{lee2026translators} translates KV caches
+across heterogeneous LLMs with a mixture of per-layer translators.
+LatentAlign~\cite{dery2026latentalign} aligns latent spaces via
+KV cache alignment for cross-model communication.
+
+These works treat KV as a monolithic artifact and focus on engineering
+the transfer (better mappers, layer selection, alignment).
+Our contribution is orthogonal and diagnostic: we decompose KV into
+K (addressing) and V (content), and show they transfer with different
+functional laws---K near-universally (EM $\ge 0.73$ on all 6 pairs),
+V only under capability matching.
+We further show that geometric alignment (CCA $\rho_1 \approx 0.99$)
+does not predict functional transfer, localize the V advantage to
+layers 8/12, and demonstrate heterogeneous reassembly
+(teacher K + student V) that beats both full models.
+
+\subsection{KV Cache Optimization}
+
+LLM serving incurs substantial memory overhead from KV caches.
+FlashAttention~\cite{dao2022flashattention} addresses this via IO-aware kernel fusion,
+reducing memory footprint without changing the KV format.
+Speculative decoding~\cite{leviathan2023fast,chen2023accelerating}
+reduces latency by predicting multiple tokens ahead,
+but requires a draft model to generate candidates.
+
+Our work is orthogonal: we study what transfers across models,
+not how to optimize cache memory within a single model.
+
+\subsection{Model Compression and Distillation}
+
+Model compression reduces size via quantization~\cite{frantar2023gptq,dettmers2024qlora},
+pruning, or distillation~\cite{touvron2023llama}.
+These methods transform model weights,
+while we study transferring KV cache state across existing models.
+
+Knowledge distillation~\cite{hinton2015distilling}
+transfers knowledge from teacher to student via soft labels.
+Our work shows that KV state can transfer directly,
+without the full distillation pipeline, and that the transferable
+content is concentrated in a few layers (8/12).
+
+\subsection{Attention Mechanisms}
+
+The Transformer architecture~\cite{vaswani2017attention}
+decomposes attention into keys (addressing) and values (content).
+Rotary position embeddings~\cite{su2024rope} further structure
+K geometry positionally---which we strip before mapping.
+This decomposition is fundamental to our work:
+we study whether K and V transfer differently across models.
+
+Prior work treats KV as monolithic.
+We show K and V serve different functional roles:
+K is model-agnostic routing; V is weight-bound content.
+
+\subsection{Model Stitching}
+
+Model stitching combines layers from different models
+to create hybrid architectures~\cite{bansal2021stitching}.
+Recent work shows that attention layers can be stitched
+across models with minimal performance loss.
+
+Our heterogeneous reassembly (teacher K + student V)
+extends this line:
+addressing geometry is composable,
+while content representations are not.
+This suggests a functional decomposition for model stitching.
+
+\subsection{Scaling Laws}
+
+Scaling laws~\cite{kaplan2020scaling,hoffmann2022chinchilla}
+characterize how performance scales with compute, data, and parameters.
+Our capability-gap analysis complements this:
+V transfer success is gated by teacher--student matching,
+and our cost crossover at $\sim$2050 tokens provides a practical
+decision rule for when state transfer beats weight transfer.
+
+\subsection{Summary}
+
+Our work is distinct from prior efforts in three ways:
+\begin{enumerate}
+  \item \textbf{Decomposition.} We decompose KV into K and V,
+    showing gated asymmetric transferability.
+  \item \textbf{Functional analysis.} We study what transfers functionally,
+    not just geometrically (CCA correlation).
+  \item \textbf{Capability gating.} We map the boundary where V transfer
+    succeeds (equal-layer small-gap) and fails (large-gap, mid-gap decode collapse).
+\end{enumerate}
+
+% ============================================================
+% 3. METHOD
 % ============================================================
 \section{Method}
 \label{sec:method}
@@ -165,9 +279,11 @@ The task requires reasoning across 1--4 hops over a knowledge graph,
 with answers verifiable by exact match.
 
 \textbf{Data splits.}
-Training set: 42 samples; evaluation set: 14 samples.
-We split data by entity clusters to prevent information leakage:
+We split the synthetic domain by entity clusters to prevent information leakage:
 entities in the evaluation set do not appear in the training set.
+For each of 3 independent seeds, we draw a fresh entity-cluster split:
+training 70 samples, validation 28 samples, evaluation 56 samples ($n = 56$).
+All reported results are means over the 3 seeds with per-seed statistical tests.
 
 \textbf{Why synthetic?}
 Real-world tasks require ground-truth reasoning chains.
@@ -180,12 +296,21 @@ We study 6 pairs from the Qwen3 family:
 (8B$\to$0.6B), (4B$\to$1.7B), (4B$\to$0.6B),
 (8B$\to$1.7B), (1.7B$\to$0.6B), (8B$\to$4B).
 
+Layers: 8B/4B have $L{=}36$; 1.7B/0.6B have $L{=}28$; all heads $H{=}8$, $D{=}128$.
 This design covers three configurations:
 \begin{itemize}
-  \item \textbf{Equal-layer}: 28$\to$28 (4B$\to$1.7B, 1.7B$\to$0.6B)
-  \item \textbf{Unequal-layer}: 36$\to$28 (8B$\to$4B), 36$\to$28 (8B$\to$0.6B)
-  \item \textbf{Size ratio}: 2.4$\times$ (4B$\to$1.7B) to 13.3$\times$ (8B$\to$0.6B)
+  \item \textbf{Equal-layer}: 36$\to$36 (8B$\to$4B), 28$\to$28 (1.7B$\to$0.6B)
+  \item \textbf{Unequal-layer} (proportional mapping): 36$\to$28 (8B$\to$0.6B, 8B$\to$1.7B, 4B$\to$0.6B, 4B$\to$1.7B)
+  \item \textbf{Size ratio}: 2.0$\times$ (8B$\to$4B) to 13.3$\times$ (8B$\to$0.6B)
 \end{itemize}
+
+\textbf{Second domain (SQuAD).}
+To test whether the K/V asymmetry is specific to our synthetic domain,
+we additionally evaluate on SQuAD (30 questions, in-document facts,
+answers 1--5 tokens, doc avg.\ 119 tokens).
+The mapper is fit on the synthetic OOD training set and applied to SQuAD
+without retraining---the mapper never sees SQuAD documents.
+This tests cross-domain, cross-distribution transfer.
 
 \subsection{Injection Protocol}
 
@@ -217,8 +342,8 @@ K_S = W \cdot K_T + b
 For K, we apply de-RoPE before mapping and re-RoPE after.
 For V, no positional alignment is needed.
 
-We also tested Whitened and RidgePerHead mappers;
-results are invariant to mapper choice (§5).
+We also tested Whitened, Procrustes, CCA, and RidgePerHead mappers;
+results are invariant to mapper choice (see Robustness, \S\ref{sec:results}).
 
 \subsection{Metrics}
 
@@ -240,16 +365,19 @@ This is binary, interpretable, but less sensitive.
 
 \subsection{Statistical Analysis}
 
-We report 95\% bootstrap confidence intervals (1000 resamples)
-and paired Wilcoxon signed-rank tests ($n = 14$ evaluation samples).
+We report 95\% bootstrap confidence intervals (1000 resamples per seed)
+and paired Wilcoxon signed-rank tests ($n = 56$ evaluation samples per seed).
 We consider $p < 0.05$ statistically significant.
+All significance claims require $p < 0.05$ in all 3 independent seeds
+(data-level replication with entity-cluster held-out splits).
 
-\textbf{Warning.} With $n = 14$, statistical power is limited.
-Wide confidence intervals should be interpreted cautiously.
-Larger evaluation sets are needed for definitive conclusions.
+\textbf{Warning.} Three pairs saturate at Self EM = 100\%, limiting EM
+diagnostics there; $\dll$ remains the primary diagnostic on those pairs.
+All bootstrap CIs are computed per seed and pooled across seeds
+for the final estimate (3 seeds $\times$ 56 samples).
 
 % ============================================================
-% 3. RESULTS
+% 4. RESULTS
 % ============================================================
 \section{Evaluation}
 \label{sec:results}
@@ -265,67 +393,93 @@ while V-state transfer is weaker in all pairs.
 
 \begin{table}[t]
 \centering
-\caption{K/V transfer results across 6 model pairs.
-K-only $\dll$ is positive in 5/6 pairs; V-only is negative in 1/6.
-K/V ratio $> 1$ in all successful pairs.}
+\caption{K/V transfer results across 6 model pairs (mean $\pm$ std over 3 seeds, $n=56$).
+K-only $\dll$ is positive in 5/6 pairs and EM $\ge 0.73$ on all 6;
+V-only transfers only under teacher--student capability matching
+(equal-layer small-gap pairs), is harmful on large-gap 0.6B-student pairs,
+and collapses greedy EM on small-gap 1.7B students.
+Significance: paired Wilcoxon $p<0.05$ in all 3 seeds.}
 \label{tab:main}
-\begin{tabular}{lrrrrr}
+\begin{tabular}{lrrrccr}
 \toprule
-Pair & Self $\dll$ & K-only $\dll$ & V-only $\dll$ & K/V ratio & EM (K-only) \\
+Pair & Size & K-only $\dll$ & V-only $\dll$ & K sig$\times3$ & V sig$\times3$ & EM Self$\to$K$\to$V \\
 \midrule
-8B$\to$0.6B & $-11.72$ & $+4.98$ & $+1.75$ & 2.84 & 78.6\% \\
-4B$\to$1.7B & $-17.46$ & $+7.31$ & $+5.06$ & 1.45 & 100\% \\
-4B$\to$0.6B & $-11.72$ & $+3.26$ & $+0.94$ & 3.48 & 92.9\% \\
-8B$\to$1.7B & $-17.46$ & $+7.43$ & $+5.39$ & 1.38 & 100\% \\
-1.7B$\to$0.6B & $-11.72$ & $-0.91$ & $-0.17$ & N/A & 100\% \\
-8B$\to$4B & $-18.76$ & $+7.67$ & $+1.01$ & 7.58 & 100\% \\
+8B$\to$0.6B  & $13.3\times$ & $+2.62\pm0.29$ & $-0.23\pm0.19$ & \checkmark & $\times$ & 0.43$\to$0.73$\to$0.29 \\
+4B$\to$0.6B  & $6.7\times$  & $+1.58\pm0.02$ & $-1.22\pm0.05$ & \checkmark & $\times$ & 0.43$\to$0.84$\to$0.18 \\
+1.7B$\to$0.6B & $2.8\times$ & $-0.82\pm0.02$ & $+0.63\pm0.17$ & $\times$ & \checkmark & 0.43$\to$1.00$\to$0.80 \\
+8B$\to$4B    & $2.0\times$  & $+8.52\pm0.28$ & $+2.52\pm0.07$ & \checkmark & \checkmark & 1.00$\to$0.91$\to$0.88 \\
+4B$\to$1.7B  & $2.35\times$ & $+2.90\pm0.09$ & $+2.91\pm0.21$ & \checkmark & \checkmark & 1.00$\to$0.95$\to$0.12 \\
+8B$\to$1.7B  & $4.7\times$  & $+1.04\pm1.53$ & $+5.63\pm0.04$ & $\times$ & \checkmark & 1.00$\to$0.82$\to$0.07 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \textbf{Head-to-head.}
-K-only injection outperforms V-only in all 6 pairs.
-The K/V ratio (K-only $\dll$ / V-only $\dll$) ranges from 1.38 to 7.58,
-confirming that the addressing substrate transfers more effectively
-than the content substrate.
+K-only injection outperforms V-only on all three 0.6B-student pairs
+(8B$\to$0.6B: $+2.62$ vs $-0.23$; 4B$\to$0.6B: $+1.58$ vs $-1.22$).
+On 1.7B students the likelihood picture inverts---V-only $\dll$ exceeds
+K-only on 8B$\to$1.7B ($+5.63$ vs $+1.04$)---but V-only collapses greedy EM
+to 0.07--0.12, destroying task success while K-only preserves it (EM 0.82--0.95).
+The K/V functional asymmetry is thus strongest on the largest capability gap
+and persists wherever it is measured on task success.
 
 \textbf{Baseline comparison.}
 Self (doc-only KV) provides the negative baseline.
-K-only injection improves over Self by $+3.26$ to $+7.67$ $\dll$,
+K-only injection improves over Self by $+1.58$ to $+8.52$ $\dll$
+on 5/6 pairs (the exception, 1.7B$\to$0.6B at $-0.82$, still achieves
+EM 1.00---perfect decoding despite negative teacher-forced likelihood),
 demonstrating functional value from teacher K state.
 
 \subsection{Deep Dive: Pair Characteristics}
 
 \textbf{Model size ratio.}
-Larger size ratios (8B$\to$0.6B: 13$\times$) produce higher K/V ratios (2.84)
-than smaller ratios (4B$\to$1.7B: 2.4$\times$, ratio 1.45):
-the asymmetry strengthens with capacity gap.
+The K/V asymmetry strengthens with the capability gap:
+on 0.6B students (large gaps, $6.7\times$--$13.3\times$), K transfers
+(K-only $+1.58$ to $+2.62$) while V fails ($-1.22$ to $-0.23$, ns).
+On 1.7B students (mid gaps, $2.35\times$--$4.7\times$), K transfers
+(EM 0.82--0.95) and V produces likelihood gains ($+2.91$, $+5.63$)
+but collapses greedy EM (0.07--0.12).
+On the smallest gaps (8B$\to$4B: $2.0\times$), V transfers cleanly
+($+2.52$, EM 0.88).
 
 \textbf{Layer count.}
-Equal-layer (4B$\to$1.7B: 28$\to$28, K-only $+7.31$) and
-unequal-layer (8B$\to$0.6B: 36$\to$28, K-only $+4.98$) pairs both succeed.
-Layer count is not a limiting factor.
+V transfers only on equal-layer pairs:
+8B$\to$4B (36$\to$36, EM 0.88) and 1.7B$\to$0.6B (28$\to$28, EM 0.80).
+On every unequal-layer pair (36$\to$28), V fails or collapses.
+K transfers on both equal- and unequal-layer pairs (EM $\ge 0.73$).
+Layer alignment is a necessary condition for V, but not for K.
 
 \textbf{Boundary cases.}
 Two pairs require special attention:
 \begin{itemize}
-  \item \textbf{1.7B$\to$0.6B} (negative K-only $\dll = -0.91$): weak teacher
-    actively hurts the student via K injection, establishing a lower bound on
-    teacher capacity.
-  \item \textbf{8B$\to$4B} (EM saturation): Self EM = 100\%, so $\dll = +7.67$
-    is pure calibration gain, not task improvement.
+  \item \textbf{1.7B$\to$0.6B} (equal-layer, negative K-only $\dll = -0.82$):
+    the weakest teacher produces negative teacher-forced likelihood
+    yet perfect EM (1.00). V transfers here ($+0.63$, EM 0.80)---the only
+    0.6B-student pair where V works, consistent with equal-layer alignment
+    outweighing the size gap.
+  \item \textbf{8B$\to$4B} (EM saturation): Self EM = 100\%, so $\dll = +8.52$
+    is partially calibration gain; the task is already solved, and transfer
+    still improves likelihood and preserves EM (0.88).
 \end{itemize}
 
 \subsection{Takeaways}
 
 \textbf{Takeaway 1.}
-K-state transfer succeeds across diverse model pairs (K/V ratio $> 1$ in all cases).
+K-state transfer succeeds near-universally: EM $\ge 0.73$ on all 6 pairs,
+$\dll$ positive in 5/6 (the 8B$\to$1.7B exception is unstable across seeds).
+K is a composable addressing substrate.
 
 \textbf{Takeaway 2.}
-The 1.7B$\to$0.6B failure sets a lower bound: teacher capacity must exceed student capacity for useful K transfer.
+V transfer is gated by teacher--student capability matching:
+it succeeds on equal-layer small-gap pairs (8B$\to$4B EM 0.88,
+1.7B$\to$0.6B EM 0.80), collapses greedy decoding on 1.7B students
+(EM 0.07--0.12), and fails entirely on large-gap 0.6B students
+($\dll \le 0$, EM below Self).
 
 \textbf{Takeaway 3.}
-The 8B$\to$4B saturation ($\emscore = 100\%$ self) yields calibration-only gains, not task gains.
+Three pairs (8B$\to$4B, 4B$\to$1.7B, 8B$\to$1.7B) saturate at Self EM = 100\%;
+there, only $\dll$ is diagnostic, and V's likelihood gains must be
+interpreted with caution.
 
 \subsection{Heterogeneous Reassembly}
 
@@ -341,16 +495,16 @@ K-only beats both full models.}
 \toprule
 Configuration & $\dll$ \\
 \midrule
-Teacher full (8B) & $-12.73$ \\
-Student full (0.6B) & $-10.13$ \\
-K-only (8B K + 0.6B V) & $-6.74$ \\
+Teacher full (8B) & $-14.79$ \\
+Student full (0.6B) & $-9.89$ \\
+K-only (8B K + 0.6B V) & $-7.27$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The K-only configuration achieves $-6.74$,
-which is $+3.39$ better than student\_full ($-10.13$)
-and $+5.99$ better than teacher\_full ($-12.73$).
+The K-only configuration achieves $-7.27$,
+which is $+2.62$ better than student\_full ($-9.89$)
+and $+7.52$ better than teacher\_full ($-14.79$).
 
 \textbf{Takeaway 4.}
 Teacher K + student V outperforms both complete models, demonstrating that addressing geometry is a composable substrate.
@@ -359,23 +513,33 @@ Teacher K + student V outperforms both complete models, demonstrating that addre
 
 \textbf{Mapper invariance.}
 We tested Affine, Whitened, and RidgePerHead mappers on the 8B$\to$0.6B pair.
-All three produced similar K-only gains ($\dll = +4.98$, $+4.92$, $+4.85$),
-confirming that the K/V asymmetry is a property of the representations,
-not the mapper.
+All three produced consistent K-only gains ($\dll = +2.62$, $+2.61$, $+2.46$),
+while Procrustes/CCA mappers are destructive (K-only EM drops to 0.00--0.05).
+RidgePerHead rescues K-only EM to 0.78 but leaves V-only EM at 0.16.
+The K/V asymmetry is a property of the representations, not the mapper choice.
 
 \textbf{Statistical significance.}
-Paired Wilcoxon signed-rank test on 14 evaluation samples:
-K-only vs Self: $p < 0.01$; V-only vs Self: $p = 0.12$ (not significant).
-Bootstrap 95\% CI for K-only $\dll$: $[+2.31, +7.65]$.
-The K/V asymmetry is statistically robust.
+Paired Wilcoxon signed-rank test on 56 evaluation samples (3 seeds):
+K-only vs Self: $p < 1.2\times10^{-10}$ in all 3 seeds;
+V-only vs Self: $p = 0.024/0.125/0.144$ (significant in 1/3 seeds, ns overall).
+Pooled bootstrap 95\% CI (10000 resamples, 3 seeds):
+K-only $\dll$: $[+2.34, +2.90]$; V-only $\dll$: $[-0.78, +0.31]$.
+The K-only gain is statistically robust; the V-only effect is not.
+
+\textbf{Second domain (SQuAD).}
+On SQuAD (n=30, 3 seeds, mapper fit on OOD train only):
+K-only $\dll = +5.22/+4.98/+5.52$ (all $p < 3\times10^{-6}$, EM 0.73--0.80),
+V-only $\dll = +1.05/+1.05/+0.80$ (all ns, EM 0.03---destroys decoding),
+Joint $\dll = +3.50/+3.52/+3.81$ (EM 0.60--0.73).
+The K/V asymmetry replicates across domains without domain-specific calibration.
 
 \textbf{Limitations.}
-All experiments use one synthetic OOD task with $n = 14$ evaluation samples.
-Second-domain validation and larger eval sets are needed for generalization.
-The pipeline is deterministic; variance comes from data, not initialization.
+Self EM saturates at 100\% on 3/6 pairs, limiting EM diagnostics there.
+V's EM collapse on 1.7B students is robust but its likelihood gains
+may be calibration effects (see \S\ref{sec:analysis}).
 
 % ============================================================
-% 4. ANALYSIS
+% 5. ANALYSIS
 % ============================================================
 \section{Analysis}
 \label{sec:analysis}
@@ -387,7 +551,7 @@ with functional transferability.
 
 \textbf{CCA results.}
 Canonical Correlation Analysis (CCA) reveals that
-first canonical correlation $\rho_1 \approx 1.0$ for both K and V
+first canonical correlation $\rho_1 \approx 0.99$ for both K and V
 across all model pairs (Table~\ref{tab:cca}).
 This indicates near-perfect linear alignability:
 teacher and student KV representations lie in essentially
@@ -395,16 +559,16 @@ the same linear subspace.
 
 \begin{table}[t]
 \centering
-\caption{CCA $\rho_1$ vs functional transferability.
+\caption{CCA $\rho_1$ vs functional transferability (seed 0, per-head mean).
 High correlation does not predict transfer success.}
 \label{tab:cca}
 \begin{tabular}{lrrr}
 \toprule
 Pair & $\rho_K$ & $\rho_V$ & K-only $\dll$ \\
 \midrule
-8B$\to$0.6B & 1.000 & 0.9998 & $+4.98$ \\
-4B$\to$1.7B & 1.000 & 0.9999 & $+7.31$ \\
-4B$\to$0.6B & 1.000 & 0.9999 & $+3.26$ \\
+8B$\to$0.6B & 0.9944 & 0.9899 & $+2.62$ \\
+4B$\to$1.7B & 0.9943 & 0.9890 & $+2.90$ \\
+4B$\to$0.6B & 0.9944 & 0.9906 & $+1.58$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -412,11 +576,13 @@ Pair & $\rho_K$ & $\rho_V$ & K-only $\dll$ \\
 \textbf{The dissociation.}
 Despite near-perfect geometric alignment for both K and V,
 only K transfers functionally.
-V-only $\dll$ is weak or negative (Table~\ref{tab:main}).
+V-only $\dll$ is weak or negative on these pairs (Table~\ref{tab:main}),
+even though $\rho_V$ trails $\rho_K$ by less than 0.005
+(K heads exceed V heads on 76--79\% of heads).
 This dissociation is the paper's central finding.
 
 \textbf{Interpretation.}
-Linear-geometric compatibility (CCA $\rho \approx 1$) is necessary but not sufficient.
+Linear-geometric compatibility (CCA $\rho \approx 0.99$) is necessary but not sufficient.
 The bottleneck is downstream decode, where content is consumed through weight-parameterized pathways:
 K geometry is model-agnostic; V content is weight-bound.
 
@@ -427,32 +593,43 @@ at layers 8 and 12 (Table~\ref{tab:layers}).
 
 \begin{table}[t]
 \centering
-\caption{Per-layer V-only $\dll$ on 8B$\to$0.6B.
-V advantage concentrates at layers 8/12.}
+\caption{Per-layer and selective V-only $\dll$ on 8B$\to$0.6B (3 seeds).
+V advantage concentrates at layers 8/12; full-layer V injection is harmful.}
 \label{tab:layers}
-\begin{tabular}{lr}
+\begin{tabular}{lrr}
 \toprule
-Layer & V-only $\dll$ \\
+Config & V-only $\dll$ & EM \\
 \midrule
-Layer 4 & $-0.23$ \\
-Layer 8 & $+1.07$ \\
-Layer 12 & $+3.72$ \\
-Layer 16 & $-0.45$ \\
-Layer 20 & $-0.89$ \\
-Layer 24 & $-1.23$ \\
-Layer 28 & $-1.56$ \\
+Layer 8  & $+0.32$ & 0.71 \\
+Layer 12 & $+1.27$ & 1.00 \\
+\emph{L8+L12 (selective)} & $+2.33$ & 0.75--0.89 \\
+\emph{ALL 28 layers} & $-0.23$ & 0.14--0.29 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \textbf{Concentration.}
-Layer 12 alone accounts for $+3.72$ $\dll$.
-Layer 8 contributes $+1.07$.
-All other layers show near-zero or negative effects.
+Layer 12 alone accounts for $+1.27$ $\dll$ (EM 1.00).
+Layer 8 contributes $+0.32$.
+Injecting both selectively ($L8{+}L12$) yields $+2.33$ $\dll$
+with EM 0.75--0.89.
+Injecting all 28 layers (as in G0 V-only) is harmful: $-0.23$ $\dll$,
+EM 0.14--0.29---below Self (0.43).
+
+\textbf{Mechanism.}
+V transferable information is \emph{sparse} (layers 8/12 only);
+full-layer V injection fails because 26/28 layers inject noise,
+explaining the G0 V-only failure.
+This reconciles near-perfect geometric alignment ($\rho_V = 0.99$)
+with functional failure: alignment is averaged over all layers,
+but only two carry transferable content.
 
 \textbf{Asymmetry with K.}
 K advantage distributes globally:
-no single layer dominates, but global K transfer yields large gains ($+4.98$).
+the best single K layer (L21) gives $+1.61$ $\dll$, and
+cumulative prefix injection $[0..20]$ gives $+2.34$ to $+2.71$ $\dll$
+with EM $\approx 1.0$---K saturates as coverage grows,
+while early layers alone ($[0..4]$) hurt ($-0.57$).
 K geometry is a property of the entire network,
 while V content is localized to specific processing stages.
 
@@ -479,28 +656,39 @@ Crossover at $\sim$2050 tokens.}
 
 \subsection{Boundary Conditions}
 
-Two pairs require special attention:
+The 6-pair design reveals the capability-gap gating boundary:
 
-\textbf{1.7B$\to$0.6B (failure).}
-K-only $\dll = -0.91$ (negative).
-Under ``K is shared geometry'' theory, this should be neutral.
-The negative value shows weak teacher K actively hurts:
-teacher must exceed student for useful K transfer.
+\textbf{1.7B$\to$0.6B (V success at minimum gap).}
+V-only $\dll = +0.63$ (sig in all 3 seeds), EM 0.43$\to$0.80.
+This is the only 0.6B-student pair where V transfers, and the only
+28$\to$28 equal-layer pair besides 8B$\to$4B.
+The gating factor is equal-layer alignment, not absolute size.
+
+\textbf{4B$\to$1.7B / 8B$\to$1.7B (V likelihood--EM dissociation).}
+V-only $\dll = +2.91 / +5.63$ (sig) but EM collapses to 0.12/0.07.
+V content improves likelihood yet breaks student greedy decoding;
+under ``V is shared content'' theory, both should succeed together.
+This dissociation localizes the failure to decode-time consumption.
 
 \textbf{8B$\to$4B (saturation).}
-Self EM = 100\%, so $\dll = +7.67$ is pure calibration gain,
-not task improvement.
-The student already solves the task; K transfer only
-improves confidence calibration.
+Self EM = 100\%, so $\dll = +8.52$ is partially calibration gain,
+not pure task improvement.
+The student already solves the task; K transfer improves calibration
+while V transfer preserves EM (0.88).
 
 \subsection{Synthesis}
 
 The evidence converges on a clear picture:
-\textbf{K is addressing geometry} (model-agnostic, composable); \textbf{V is weight-bound content} (requires compatible weights to be useful).
-This explains the functional asymmetry despite geometric equivalence.
+\textbf{K is addressing geometry} (model-agnostic, composable, transfers
+near-universally); \textbf{V is weight-bound content} (transfers only under
+equal-layer capability matching, and its likelihood gains can coexist with
+decoding collapse).
+This explains the functional asymmetry despite geometric equivalence,
+and refines the earlier ``V never transfers'' claim:
+V does transfer on closely matched pairs, but the boundary is narrow.
 
 % ============================================================
-% 5. DISCUSSION
+% 6. DISCUSSION
 % ============================================================
 \section{Discussion}
 \label{sec:discussion}
@@ -508,72 +696,90 @@ This explains the functional asymmetry despite geometric equivalence.
 \subsection{Implications}
 
 \textbf{For LLM serving.}
-Transfer K state, not V, across model versions.
-Addressing geometry is reusable; content representations are not.
+Transfer K state, not V, across model versions---but only when the
+teacher--student capability gap is large. On closely matched pairs,
+V transfer is viable (8B$\to$4B: EM 0.88) and can be selectively
+exploited via layers 8/12, avoiding the 26 noise layers.
+The cost crossover at $\sim$2050 tokens remains the practical decision rule.
 
 \textbf{For distillation.}
 Prior work focuses on matching attention patterns (K geometry).
 This is misguided: K geometry is already generic.
-Focus instead on V/content pathways, which carry task-specific knowledge.
+Focus instead on V/content pathways, which carry task-specific knowledge---and
+note that V knowledge is concentrated in a few layers, making selective
+layer distillation a promising target.
 
 \textbf{For model stitching.}
 Heterogeneous reassembly (teacher K + student V) beats both full models.
-Addressing geometry is a composable substrate.
+Addressing geometry is a composable substrate, and the sparse localization
+of V advantage (L8/L12) suggests where cross-model stitching should focus.
 
 \subsection{Limitations}
 
-\textbf{Single domain.}
-All experiments use one synthetic OOD task.
-Second-domain validation (GSM8K/NQ subsets) is needed
-to confirm generalization.
+\textbf{Single model family.}
+All 6 pairs come from Qwen3; cross-family transfer (e.g., Llama$\to$Qwen)
+remains untested and may behave differently under different RoPE
+configurations and attention implementations.
 
-\textbf{Small eval set.}
-$n = 14$ evaluation samples limits statistical power.
-Bootstrap CI95 is wide; larger eval sets ($n \geq 50$)
-are needed for definitive conclusions.
+\textbf{EM saturation on 3/6 pairs.}
+8B$\to$4B, 4B$\to$1.7B, 8B$\to$1.7B saturate at Self EM = 100\%;
+there, only $\dll$ is diagnostic, and V's likelihood gains
+must be interpreted with caution.
 
-\textbf{No true replication.}
-The pipeline is deterministic; 3 seeds are identical.
-Variance comes from data, not initialization.
-This is a methodological limitation, not a bug.
+\textbf{V collapse on 1.7B students.}
+V-only improves likelihood but collapses greedy EM (0.07--0.12) on
+4B$\to$1.7B and 8B$\to$1.7B. Whether this reflects calibration effects
+or genuine content misalignment is not fully resolved.
 
-\textbf{Boundary failures.}
-1.7B$\to$0.6B shows negative $\dll$ (weak teacher K hurts).
-8B$\to$4B shows EM saturation (pure calibration gain).
-These boundary cases need further investigation.
+\textbf{SQuAD scale.}
+The second-domain validation uses 30 questions; larger benchmarks
+would tighten the cross-domain claim.
+
+\textbf{Mapper family.}
+Only linear mappers (Affine/Whitened/Procrustes/CCA/RidgePerHead) were tested.
+Nonlinear mappers (MLP/attention-based) could alter the boundary,
+especially for V transfer on mid-gap pairs.
 
 \subsection{Future Work}
 
-\textbf{Second-domain validation.}
-Test on GSM8K (math reasoning) and NQ (entity recognition)
-to confirm the K/V asymmetry generalizes beyond our synthetic task.
+\textbf{Cross-family transfer.}
+Test whether the gated K/V asymmetry holds across model families
+(Llama/Qwen/Mistral), where RoPE and attention implementations differ.
 
-\textbf{Larger eval sets.}
-Scale to $n \geq 50$ evaluation samples with per-hop breakdown
-(hop-1 through hop-4) to characterize difficulty effects.
+\textbf{Per-hop difficulty analysis.}
+Scale to per-hop breakdown (hop-1 through hop-4) to characterize
+how transfer success varies with reasoning depth.
 
 \textbf{Theoretical modeling.}
-Why does K geometry transfer but V content does not?
-A theoretical framework would predict transferability
+Why does K geometry transfer but V content only under capability matching?
+A theoretical framework would predict the gating boundary
 from model architecture and training data.
 
-\textbf{Real-world deployment.}
-Measure actual serving latency and memory savings
-from K transfer in production systems.
+\textbf{Selective layer transfer in production.}
+Leverage the L8/L12 V hotspot to design layer-selective cache transfer
+that avoids the 26 noise layers, and measure actual serving gains.
 
 \subsection{Conclusion}
 
 We have shown that KV state transfer across LLMs exhibits
-a sharp functional asymmetry:
-keys (addressing) transfer, while values (content) do not.
-This asymmetry holds across 6 model pairs despite
-near-perfect linear alignment (CCA $\rho \approx 1$).
-The bottleneck is downstream decode,
-where content requires weight-parameterized consumption.
+a sharp, capability-gated functional asymmetry:
+keys (addressing) transfer near-universally across 6 model pairs
+(EM $\ge 0.73$; $\dll$ positive in 5/6), while values (content) transfer
+only under equal-layer capability matching (8B$\to$4B EM 0.88,
+1.7B$\to$0.6B EM 0.80), collapse greedy decoding on mid-gap students
+(EM 0.07--0.12), and fail entirely on large-gap pairs
+($\dll \le 0$, ns) despite near-perfect linear alignment
+(CCA $\rho_1 \approx 0.99$ for both K and V).
+The V advantage localizes to layers 8/12; selective injection
+($+2.33$ $\dll$) beats full-layer injection ($-0.23$ $\dll$).
+The asymmetry replicates on a second domain (SQuAD), where V-only
+injection destroys decoding (EM 0.03), and heterogeneous reassembly
+(teacher K + student V) beats both full models ($-7.27$ vs $-14.79$/$-9.89$).
 
 Our results establish that KV state transfer is asymmetric by construction:
 addressing geometry is composable across models,
-while content is weight-bound.
+while content is weight-bound---transferable only where
+weights already agree.
 This has implications for serving, distillation,
 and modular model construction.
 

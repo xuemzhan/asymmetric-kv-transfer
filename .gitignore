@@ -18,3 +18,10 @@ paper/*.aux
 paper/*.log
 paper/*.out
 paper/main.pdf
+paper/*.bbl
+paper/*.blg
+paper/main.bcf
+paper/main.run.xml
+
+# Run artifacts (regenerable)
+runs/
