@@ -330,20 +330,20 @@
   - EM：Self=0.43, K-only=0.71-0.82, **V-only=0.14-0.29（低于 Self）**, Joint=0.73-0.86
   - 全映射器阶梯无一能救 V（Procrustes/CCA 破坏性；RidgePerHead K EM=0.78 但 V EM=0.16）
   - **v2 更大规模（n=56）+ 3 独立 seed 下 V 不可传输为稳健结论**
-- **W6 完成（Phase 1 v2 因果基板）**：`phase1_causal_v2.py --seed 0`，n_eval=56
+- **W6 完成（Phase 1 v2 因果基板，3 seeds）**：`phase1_causal_v2.py`，n_eval=56
   - Self: LL=-9.89, EM=0.43
-  - **V 稀疏热点确认**：L12 V-only ΔLL=+1.27 (p=1.7e-09, EM=1.00)，L8 ΔLL=+0.32 (p=0.012)；次热点 L20(+0.52)/L16(+0.48)/L13(+0.31)
-  - **选择性 V 注入 L8+L12: ΔLL=+2.33 (p=9e-10, EM=0.75)** → V 信息确实存在但集中在少数层
-  - **V_ALL 全层注入: ΔLL=-0.05 (p=0.024 反而更差, EM=0.29)** → 26/28 层噪声淹没 L8/L12 信号，解释 G0 V-only 全局失败
-  - K 单层最佳 L21 ΔLL=+1.61 (p=1.5e-10)；**K prefix-cumulative [0..20] 饱和: ΔLL=+2.34, EM=1.00** → K 信息全局分布
+  - **V 稀疏热点确认（3 seed 一致）**：best V layer=12（ΔLL=+1.27/+1.19/+1.25, p<5e-09, EM=1.00 全 seed），L8 ΔLL=+0.32/+0.29/+0.33
+  - **选择性 V 注入 L8+L12（3 seed 一致）**：ΔLL=+2.33/+2.11/+2.00（均 p<1e-08），EM=0.75/0.75/0.89 → V 信息确实存在但集中在少数层
+  - **V_ALL 全层注入（3 seed 一致）**：ΔLL=-0.05/-0.22/-0.42，EM=0.29/0.29/0.14（全部低于 Self 0.43）→ 26/28 层噪声淹没 L8/L12 信号，解释 G0 V-only 全局失败
+  - K 单层最佳 L21（3 seed 一致）ΔLL=+1.61/+1.58/+1.59；**K prefix-cumulative [0..20] 饱和**：ΔLL=+2.34/+2.49/+2.71, EM≈1.0 → K 信息全局分布
   - 有效秩：逐层 V 子空间秩已存（详见报告）
-- **W7 完成（第二域验证）**：`phase7_second_domain.py --seed 0`，SQuAD 30 样本
+- **W7 完成（第二域验证，3 seeds）**：`phase7_second_domain.py`，SQuAD 30 样本
   - **跨域校准**（OOD train_v2 拟合 AffineMapper → SQuAD 评估）→ 强设计：mapper 从未见过 SQuAD 域
-  - **K-only: ΔLL=+5.22 (p=2.8e-06, d=+1.09, EM=0.73)** → 跨域显著传输 ✅
-  - **V-only: ΔLL=+1.05 (p=0.205, CI95=[-0.35,+2.43] 含 0) 不显著，EM=0.03（Self=0.77）→ V 注入摧毁解码** ❌
-  - Joint: ΔLL=+3.50 (p=1.9e-04) ✅
-  - Novelty probe（nq_open 30 题）：教师 EM=0.167 / 学生 EM=0.067，均近随机 → 数据不在权重里
-  - **K/V 不对称在第二域+跨域校准下完整复现 → 结论域无关**
+  - **K-only（3 seed 一致）**：ΔLL=+5.22/+4.98/+5.52（p=2.8e-06/4.7e-07/2.0e-07, d=+1.09），EM=0.73/0.80/0.80 → 跨域显著传输 ✅
+  - **V-only（3 seed 一致）**：ΔLL=+1.05/+1.05/+0.80（p=0.21/0.21/0.34 均不显著），**EM=0.03 全 seed（Self=0.77）→ V 注入摧毁解码** ❌
+  - Joint（3 seed 一致）：ΔLL=+3.50/+3.52/+3.81（p<3.4e-04），EM=0.70/0.73/0.60 ✅
+  - Novelty probe（nq_open 30 题，确定性数据）：教师 EM=0.167 / 学生 EM=0.067，均近随机 → 数据不在权重里
+  - **K/V 不对称在第二域+跨域校准下完整复现（3 seed）→ 结论域无关**
 - **W7 数据决策（重要）**：预注册为 NQ-with-context，但 nq_open 数据集**无 context 字段**（仅 question+answer），且 Wikipedia API 被网络阻断，无法构造 NQ context
   - **替代方案**：4-way ablation 用 **SQuAD validation**（带 context，答案在文档内，1-5 token 事实型答案，与 NQ-with-context 结构等价）；novelty probe 用 **nq_open**（开放域事实问答，测学生先验）
   - 数据产出：`data/squad_test_seed0.json`（30 样本，doc 平均 119 tokens）、`data/nq_open_probe_seed0.json`（30 样本）
