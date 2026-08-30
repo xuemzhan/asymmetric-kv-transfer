@@ -10,8 +10,10 @@
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
+import os
 import random
 from dataclasses import dataclass, field
 
@@ -254,25 +256,290 @@ def build_dataset(n_projects: int = 10, seed: int = 42) -> dict[str, list]:
     }
 
 
+# ---------------------------------------------------------------------------
+# V2: Expanded dataset with disjoint entity pools & per-seed generation
+# ---------------------------------------------------------------------------
+
+
+def _gen_names(prefix: str, n: int) -> list[str]:
+    """Generate n unique entity names: prefix-001, prefix-002, ..."""
+    return [f"{prefix}-{i:03d}" for i in range(1, n + 1)]
+
+
+def build_graph_v2(
+    n_train: int = 10,
+    n_val: int = 4,
+    n_test: int = 8,
+    seed: int = 42,
+) -> tuple[Graph, dict[str, list[str]], dict[str, set[str]]]:
+    """Build knowledge graph with DISJOINT entity pools per split.
+
+    Returns (graph, split_projects, entity_sets) where:
+      - split_projects: {"train": [...], "val": [...], "test": [...]}
+      - entity_sets: {"train": set(...), "val": set(...), "test": set(...)}
+    """
+    rng = random.Random(seed)
+    g = Graph()
+    n_total = n_train + n_val + n_test
+    c2 = 2  # components per project
+
+    # --- Project entities ---
+    all_projects = _gen_names("Proj-P", n_total)
+    train_projects = all_projects[:n_train]
+    val_projects = all_projects[n_train:n_train + n_val]
+    test_projects = all_projects[n_train + n_val:]
+
+    for p in all_projects:
+        g.add(Entity(p, {
+            "budget": str(rng.randint(80, 900)),
+            "timeline_months": str(rng.randint(6, 48)),
+            "weight_tonnes": str(round(rng.uniform(1, 30), 1)),
+            "range_km": str(rng.randint(200, 3000)),
+        }))
+
+    # --- Disjoint component pools per split ---
+    train_comps = _gen_names("Comp-T", n_train * c2)
+    val_comps = _gen_names("Comp-V", n_val * c2)
+    test_comps = _gen_names("Comp-S", n_test * c2)
+    for c in train_comps + val_comps + test_comps:
+        g.add(Entity(c, {"cost": str(rng.randint(5, 90))}))
+
+    # --- Disjoint material pools per split ---
+    train_mats = _gen_names("Mat-T", n_train * c2)
+    val_mats = _gen_names("Mat-V", n_val * c2)
+    test_mats = _gen_names("Mat-S", n_test * c2)
+    for m in train_mats + val_mats + test_mats:
+        g.add(Entity(m, {"density": str(round(rng.uniform(0.5, 5.0), 2))}))
+
+    # --- Disjoint plant pools per split ---
+    train_plants = _gen_names("Plant-T", n_train * c2)
+    val_plants = _gen_names("Plant-V", n_val * c2)
+    test_plants = _gen_names("Plant-S", n_test * c2)
+    for pl in train_plants + val_plants + test_plants:
+        g.add(Entity(pl, {"output_rate": str(rng.randint(100, 900))}))
+
+    # --- Disjoint tester pools per split ---
+    train_testers = _gen_names("Test-T", n_train * c2)
+    val_testers = _gen_names("Test-V", n_val * c2)
+    test_testers = _gen_names("Test-S", n_test * c2)
+    for t in train_testers + val_testers + test_testers:
+        g.add(Entity(t, {"capacity": str(rng.randint(10, 99))}))
+
+    # --- Wire edges: project→components→material+plant→tester ---
+    def _wire(projects, comps, mats, plants, testers):
+        ci = mi = pi = ti = 0
+        for p in projects:
+            for _ in range(c2):
+                c = comps[ci]
+                g.edge(p, "uses", c)
+                g.edge(c, "made_of", mats[mi])
+                g.edge(c, "built_at", plants[pi])
+                ci += 1; mi += 1; pi += 1
+        for pl in plants:
+            g.edge(pl, "certified_by", testers[ti])
+            ti += 1
+
+    _wire(train_projects, train_comps, train_mats, train_plants, train_testers)
+    _wire(val_projects, val_comps, val_mats, val_plants, val_testers)
+    _wire(test_projects, test_comps, test_mats, test_plants, test_testers)
+
+    split_projects = {
+        "train": train_projects,
+        "val": val_projects,
+        "test": test_projects,
+    }
+    entity_sets = {
+        "train": (set(train_projects) | set(train_comps) | set(train_mats)
+                  | set(train_plants) | set(train_testers)),
+        "val":   (set(val_projects) | set(val_comps) | set(val_mats)
+                  | set(val_plants) | set(val_testers)),
+        "test":  (set(test_projects) | set(test_comps) | set(test_mats)
+                  | set(test_plants) | set(test_testers)),
+    }
+
+    return g, split_projects, entity_sets
+
+
+def build_dataset_v2(
+    n_train: int = 10,
+    n_val: int = 4,
+    n_test: int = 8,
+    data_seed: int = 0,
+    graph_seed: int = 42,
+) -> dict:
+    """Build V2 dataset with disjoint entity pools and per-seed support.
+
+    data_seed controls document rendering and question generation randomness.
+    graph_seed controls entity attribute values.
+    """
+    g, split_projects, entity_sets = build_graph_v2(
+        n_train, n_val, n_test, seed=graph_seed,
+    )
+
+    def make_split(projects: list[str], split_name: str) -> list[dict]:
+        out = []
+        for i, p in enumerate(projects):
+            doc = render_doc(g, p, data_seed + i)
+            for q in generate_questions(g, p, data_seed + 100 + i):
+                q["project"] = p
+                q["split"] = split_name
+                q["doc"] = doc
+                q["id"] = hashlib.md5(
+                    f"{split_name}-{p}-{q['q']}-{data_seed}".encode()
+                ).hexdigest()[:12]
+                out.append(q)
+        return out
+
+    return {
+        "train": make_split(split_projects["train"], "train"),
+        "val": make_split(split_projects["val"], "val"),
+        "test": make_split(split_projects["test"], "test"),
+        "graph": graph_to_json(g),
+        "_entity_sets": entity_sets,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Verification helpers
+# ---------------------------------------------------------------------------
+
+
+def verify_entity_overlap(entity_sets: dict[str, set[str]]) -> dict:
+    """Check pairwise entity-set intersection between splits."""
+    pairs = [("train", "val"), ("train", "test"), ("val", "test")]
+    result: dict = {"pass": True, "details": {}}
+    for a, b in pairs:
+        overlap = entity_sets[a] & entity_sets[b]
+        result["details"][f"{a}-{b}"] = {
+            "overlap_count": len(overlap),
+            "overlap_entities": sorted(overlap)[:20],
+        }
+        if overlap:
+            result["pass"] = False
+    return result
+
+
+def count_hops(samples: list[dict]) -> dict:
+    """Count samples per hop level."""
+    hops: dict[int, int] = {}
+    for s in samples:
+        h = s["hop"]
+        hops[h] = hops.get(h, 0) + 1
+    return dict(sorted(hops.items()))
+
+
+# ---------------------------------------------------------------------------
+# CLI entry point
+# ---------------------------------------------------------------------------
+
+
 def main():
-    ds = build_dataset(n_projects=10, seed=42)
-    out_dir = "/workspace/v3/data"
-    import os
+    parser = argparse.ArgumentParser(description="V3 OOD data engine")
+    parser.add_argument("--legacy", action="store_true",
+                        help="Generate legacy dataset (backward compat)")
+    parser.add_argument("--n-train-projects", type=int, default=10)
+    parser.add_argument("--n-val-projects", type=int, default=4)
+    parser.add_argument("--n-test-projects", type=int, default=8)
+    parser.add_argument("--data-seed", type=int, default=0)
+    parser.add_argument("--graph-seed", type=int, default=42)
+    parser.add_argument("--seeds", type=str, default=None,
+                        help="Comma-separated data seeds for multi-seed generation")
+    parser.add_argument("--output-dir", type=str, default="/workspace/v3/data")
+    parser.add_argument("--report-dir", type=str, default="/workspace/v3/reports")
+    args = parser.parse_args()
 
-    os.makedirs(out_dir, exist_ok=True)
-    for split in ["train", "val", "test"]:
-        path = f"{out_dir}/{split}.json"
-        with open(path, "w") as f:
-            json.dump(ds[split], f, ensure_ascii=False, indent=1)
-        print(f"[{split}] {len(ds[split])} samples -> {path}")
-    with open(f"{out_dir}/graph.json", "w") as f:
-        json.dump(ds["graph"], f, ensure_ascii=False, indent=1)
-    print("graph saved")
+    os.makedirs(args.output_dir, exist_ok=True)
 
-    # 抽查
-    s = ds["train"][0]
-    print("\nSAMPLE doc:", s["doc"][:220], "...")
-    print("SAMPLE q:", s["q"], "| ans:", s["answer"], "| hop:", s["hop"])
+    if args.legacy:
+        ds = build_dataset(n_projects=10, seed=42)
+        for split in ["train", "val", "test"]:
+            path = f"{args.output_dir}/{split}.json"
+            with open(path, "w") as f:
+                json.dump(ds[split], f, ensure_ascii=False, indent=1)
+            print(f"[{split}] {len(ds[split])} samples -> {path}")
+        with open(f"{args.output_dir}/graph.json", "w") as f:
+            json.dump(ds["graph"], f, ensure_ascii=False, indent=1)
+        print("graph saved")
+        s = ds["train"][0]
+        print("\nSAMPLE doc:", s["doc"][:220], "...")
+        print("SAMPLE q:", s["q"], "| ans:", s["answer"], "| hop:", s["hop"])
+        return
+
+    # V2 mode
+    seeds = ([int(s) for s in args.seeds.split(",")]
+             if args.seeds else [args.data_seed])
+
+    all_verification: dict = {}
+    all_hop_counts: dict = {}
+
+    for seed in seeds:
+        print(f"\n{'='*50}")
+        print(f"Generating with data_seed={seed}  graph_seed={args.graph_seed}")
+        print(f"{'='*50}")
+
+        ds = build_dataset_v2(
+            n_train=args.n_train_projects,
+            n_val=args.n_val_projects,
+            n_test=args.n_test_projects,
+            data_seed=seed,
+            graph_seed=args.graph_seed,
+        )
+
+        # Save per-seed files
+        for split in ["train", "val", "test"]:
+            path = f"{args.output_dir}/{split}_v2_seed{seed}.json"
+            with open(path, "w") as f:
+                json.dump(ds[split], f, ensure_ascii=False, indent=1)
+            print(f"  [{split}] {len(ds[split])} samples -> {path}")
+
+        # Save graph for this seed
+        graph_path = f"{args.output_dir}/graph_v2_seed{seed}.json"
+        with open(graph_path, "w") as f:
+            json.dump(ds["graph"], f, ensure_ascii=False, indent=1)
+
+        # Verify entity overlap
+        entity_sets = ds["_entity_sets"]
+        overlap = verify_entity_overlap(entity_sets)
+        all_verification[f"seed{seed}"] = {
+            "overlap_check": overlap,
+            "entity_counts": {k: len(v) for k, v in entity_sets.items()},
+        }
+        status = "PASS" if overlap["pass"] else "FAIL"
+        print(f"  Entity overlap: {status}")
+        if not overlap["pass"]:
+            for pair, info in overlap["details"].items():
+                if info["overlap_count"] > 0:
+                    print(f"    {pair}: {info['overlap_count']} overlapping -> {info['overlap_entities']}")
+
+        # Hop decomposition
+        hop_info = {}
+        for split in ["train", "val", "test"]:
+            hop_info[split] = count_hops(ds[split])
+        all_hop_counts[f"seed{seed}"] = hop_info
+        print(f"  Hop decomposition:")
+        for split, hc in hop_info.items():
+            print(f"    {split}: {hc}")
+
+    # Save verification report
+    os.makedirs(args.report_dir, exist_ok=True)
+    report = {
+        "n_train_projects": args.n_train_projects,
+        "n_val_projects": args.n_val_projects,
+        "n_test_projects": args.n_test_projects,
+        "samples_per_project": 7,
+        "expected_counts": {
+            "train": args.n_train_projects * 7,
+            "val": args.n_val_projects * 7,
+            "test": args.n_test_projects * 7,
+        },
+        "seeds": seeds,
+        "verification": all_verification,
+        "hop_decomposition": all_hop_counts,
+    }
+    report_path = f"{args.report_dir}/w1_data_expansion.json"
+    with open(report_path, "w") as f:
+        json.dump(report, f, ensure_ascii=False, indent=2)
+    print(f"\nVerification report -> {report_path}")
 
 
 if __name__ == "__main__":
