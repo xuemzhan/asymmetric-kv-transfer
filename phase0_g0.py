@@ -80,8 +80,6 @@ def load_model(path: str):
     model = AutoModelForCausalLM.from_pretrained(
         path, torch_dtype=torch.bfloat16,
         device_map="auto",
-        max_memory={0: "14GiB", "cpu": "64GiB"},
-        offload_folder="/tmp/offload",
         attn_implementation="sdpa",
     )
     tok = AutoTokenizer.from_pretrained(path)
@@ -165,7 +163,22 @@ def exact_match(generated: str, answer: str) -> bool:
     return answer.strip().lower() in generated.lower()
 
 
-def run_g0(seed: int, n_calib: int, n_eval: int, output: str) -> dict:
+def novelty_probe(model, tok, samples, max_new=24):
+    """Novelty probe: no-context OOD entity questions should be near random."""
+    em_list, ll_list = [], []
+    for s in samples:
+        q = "Question: " + s["q"] + "\nAnswer:"
+        gen = greedy_answer(model, tok, None, q, max_new)
+        em_list.append(1.0 if exact_match(gen, s["answer"]) else 0.0)
+        ll_list.append(answer_loglik(model, tok, None, q, s["answer"]))
+    return {
+        "n": len(samples),
+        "em": float(np.mean(em_list)),
+        "mean_ll": float(np.mean(ll_list)),
+    }
+
+
+def run_g0(seed: int, n_calib: int, n_eval: int, output: str, eval_override=None, run_probe=False) -> dict:
     torch.manual_seed(seed)
     np.random.seed(seed)
 
@@ -173,6 +186,8 @@ def run_g0(seed: int, n_calib: int, n_eval: int, output: str) -> dict:
     test = json.load(open(f"{DATA_DIR}/test.json"))
     calib = train[:n_calib]
     eval_set = test[:n_eval]
+    if eval_override is not None:
+        eval_set = eval_override
 
     layer_map = layer_map_proportional()
     inv_freq = _rope_pairs(HEAD_DIM, ROPE_THETA)
@@ -187,11 +202,13 @@ def run_g0(seed: int, n_calib: int, n_eval: int, output: str) -> dict:
 
     # teacher_full：教师 prefill doc+query 后的 answer loglik（gap 上界）
     # 注意：KV 只捕获 doc+query，不含 "\nAnswer:" 前缀，避免双重计数
-    teacher_ll = []
-    for s in eval_set:
-        full = s["doc"] + "\n\nQuestion: " + s["q"]
-        cache = build_cache(capture_kv(teacher, tok_t, full))
-        teacher_ll.append(answer_loglik(teacher, tok_t, cache, "", s["answer"]))
+    teacher_ll, teacher_em = [], []
+    for i, s in enumerate(eval_set):
+        q = "\n\nQuestion: " + s["q"] + "\nAnswer:"
+        c = build_cache(eval_t_kv[i])
+        teacher_ll.append(answer_loglik(teacher, tok_t, c, q, s["answer"]))
+        teacher_em.append(float(exact_match(greedy_answer(teacher, tok_t, c, q), s["answer"])))
+    probe_t = novelty_probe(teacher, tok_t, eval_set) if run_probe else None
     del teacher
     torch.cuda.empty_cache()
 
@@ -200,11 +217,13 @@ def run_g0(seed: int, n_calib: int, n_eval: int, output: str) -> dict:
     student, tok_s = load_model(MODEL_PATHS["student"])
     calib_s_kv = [capture_kv(student, tok_s, s["doc"]) for s in calib]
     eval_s_kv = [capture_kv(student, tok_s, s["doc"]) for s in eval_set]
-    student_ll = []
-    for s in eval_set:
-        full = s["doc"] + "\n\nQuestion: " + s["q"]
-        cache = build_cache(capture_kv(student, tok_s, full))
-        student_ll.append(answer_loglik(student, tok_s, cache, "", s["answer"]))
+    student_ll, student_em = [], []
+    for i, s in enumerate(eval_set):
+        q = "\n\nQuestion: " + s["q"] + "\nAnswer:"
+        c = build_cache(eval_s_kv[i])
+        student_ll.append(answer_loglik(student, tok_s, c, q, s["answer"]))
+        student_em.append(float(exact_match(greedy_answer(student, tok_s, c, q), s["answer"])))
+    probe_s = novelty_probe(student, tok_s, eval_set) if run_probe else None
 
     # ---------- 校准堆叠 ----------
     def stack_kv(kvs):
@@ -253,7 +272,9 @@ def run_g0(seed: int, n_calib: int, n_eval: int, output: str) -> dict:
 
         # student_full / teacher_full
         row["student_full"] = student_ll[i]
+        row["student_full_em"] = student_em[i]
         row["teacher_full"] = teacher_ll[i]
+        row["teacher_full_em"] = teacher_em[i]
 
         for name in mappers:
             m = map_kv(name, eval_t_kv[i], pos_i)
@@ -273,6 +294,22 @@ def run_g0(seed: int, n_calib: int, n_eval: int, output: str) -> dict:
         if (i + 1) % 4 == 0:
             print(f"  [{i+1}/{len(eval_set)}] done")
 
+    # Hop decomposition
+    hops = sorted({r["hop"] for r in rows})
+    summary_hop = {}
+    for h in hops:
+        sub = [r for r in rows if r["hop"] == h]
+        entry = {}
+        for key in ["Self", "student_full", "teacher_full"]:
+            xs = np.array([r[key] for r in sub], dtype=float)
+            entry[key] = {"mean": float(xs.mean()), "n": len(xs)}
+        for name in mappers:
+            for arm in ["V-only", "K-only", "Joint"]:
+                k = f"{name}_{arm}"
+                xs = np.array([r[k] for r in sub], dtype=float)
+                entry[k] = {"mean": float(xs.mean()), "n": len(xs)}
+        summary_hop[str(h)] = entry
+
     # ---------- 汇总 ----------
     def agg(key):
         xs = np.array([r[key] for r in rows], dtype=float)
@@ -289,9 +326,11 @@ def run_g0(seed: int, n_calib: int, n_eval: int, output: str) -> dict:
         "student_full": agg("student_full"),
         "teacher_full": agg("teacher_full"),
     }
-    em = {"Self": float(np.mean([r["Self_em"] for r in rows])),
-          "student_full": float(np.mean([r["student_full"] >= 0 for r in rows]))}  # 占位
-    em = {"Self": float(np.mean([r["Self_em"] for r in rows]))}
+    em = {
+        "Self": float(np.mean([r["Self_em"] for r in rows])),
+        "student_full": float(np.mean([r["student_full_em"] for r in rows])),
+        "teacher_full": float(np.mean([r["teacher_full_em"] for r in rows])),
+    }
     for name in mappers:
         for arm in ["V-only", "K-only", "Joint"]:
             summary[f"{name}_{arm}"] = agg(f"{name}_{arm}")
@@ -306,8 +345,11 @@ def run_g0(seed: int, n_calib: int, n_eval: int, output: str) -> dict:
         "model_paths": MODEL_PATHS,
         "summary_ll": summary,
         "exact_match": em,
+        "summary_hop": summary_hop,
         "rows": rows,
     }
+    if run_probe:
+        report["novelty_probe"] = {"teacher": probe_t, "student": probe_s}
     os.makedirs(os.path.dirname(output) or ".", exist_ok=True)
     with open(output, "w") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
