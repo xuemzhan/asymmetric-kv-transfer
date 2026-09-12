@@ -68,8 +68,9 @@ does detect usable context. SQuAD replicates
 the negative result (Self $0.367$; K-only, V-only, and Joint $0.000$; K-only
 $\dll$ $+5.24$).
 
-The failure is consumer-side. Offsetting or randomly permuting the layer map
-does not reduce transfer, so layer alignment alone does not explain the failure;
+The failure lies in how the receiving model reads the state, not in the state's
+addressing geometry. Offsetting or randomly permuting the layer map does not
+reduce transfer, so layer alignment alone does not explain the failure;
 under mapped teacher keys the student's top-1 attention agreement with its own
 routing is $0.59$--$0.70$. Fitting the value mapper where the student reads
 value raises V-only EM from $0.113$ to $0.90$--$0.94$
@@ -126,15 +127,15 @@ Figure~\ref{fig:setting}). Our contributions are:
   broken. That metric is not a transfer signal: over three seeds, a wrong
   document ($+2.61$ vs $+2.62$), a moment-matched random Gaussian key ($+2.33$),
   and an all-zero cache ($+2.75$) reproduce $89$--$105\%$ of the K-only gain
-  while each yields EM $\approx 0$. A token-shuffled \emph{student} cache keeps
-  EM at $0.89\pm0.04$, so the evaluator does detect usable context when it is
-  present. The negative result replicates on SQuAD (Self $0.367$; K-only,
+  while each yields EM $\approx 0$, against $0.899\pm0.010$ for the student's own
+  cache; the evaluator therefore does detect usable context when it is present.
+  The negative result replicates on SQuAD (Self $0.367$; K-only,
   V-only, and joint $0.000$). Our own pre-registered gate for this project used
   the same EM metric; we withdraw its task-metric clause, while its likelihood
   clause stands (V-only $\dll \le 0$ across three seeds, not significant).
 
 \item \textbf{A consumer-side diagnosis.} We remove the state-side explanations.
-  Layer alignment is not the controlling variable: on the equal-depth pair,
+  Layer alignment alone does not explain the failure: on the equal-depth pair,
   offsetting the layer map or replacing it with a random permutation does not
   reduce transfer---the permutation raises the V $\dll$ ($+1.35$ vs $+0.83$)---and
   corrected value EM is $0$ in every case. What does change is the consumer's
@@ -148,8 +149,9 @@ Figure~\ref{fig:setting}). Our contributions are:
   targets stays at $0.077$ and $0.065$.
 
 \item \textbf{A consumption-side fix.} A rank-8 correction of the student's
-  output projections ($\approx0.7$M parameters), trained only on calibration
-  examples with injected teacher KV while the student and mapper stay frozen,
+  output projections ($\approx0.7$M parameters), trained by next-token
+  cross-entropy on calibration answers under injected teacher KV while the
+  student and mapper stay frozen,
   restores K/V/joint EM to $0.94/0.94/0.83$ for $1.7$B$\to0.6$B (joint arm
   spread $0.55$--$0.96$ across seeds) and $0.79/0.36/0.47$ for $8$B$\to0.6$B.
   The same adapter trained on the student's own states stays much lower
@@ -160,11 +162,16 @@ Figure~\ref{fig:setting}). Our contributions are:
   this split rather than claim content-specific adaptation alone.
 \end{enumerate}
 
-The practical message is that cross-model KV transfer is not blocked by a missing
-linear map between representation spaces; it is blocked by a mismatch between the
-transferred state and the consumer that reads it. That mismatch is diagnosable
-(routing divergence) and repairable (consumer-space mappers and a small consumer
-adapter), and evaluations of cross-model transfer should include content
+The practical message separates two levels of compatibility. At the level of
+\emph{state space}, matching raw KV representations is not sufficient: a mapper
+that minimises representation error can leave the state unusable. At the level of
+\emph{consumption space}, alignment is what matters, and it can be restored in two
+ways---by fitting the mapper where the student actually reads value, and, when that
+is not enough, by a small adaptation of the consumer itself. Our results are
+strong at the first level: the value mapper fit in consumption space recovers most
+of V-only transfer without changing a single consumer weight, and only the
+residual gap needs the second. The mismatch is diagnosable (routing divergence)
+and repairable, and evaluations of cross-model transfer should include content
 controls.
 
 \begin{figure}[t]
@@ -316,8 +323,11 @@ log-likelihood (LL), relative to the Self arm of the same sample, is reported as
 a secondary and explicitly non-task quantity. Content controls are a
 wrong-document cache (a different project's state), a random Gaussian key with
 matched per-layer moments, a random KV pair, an all-zero cache, an identity
-(unmapped) V-only injection, and a token-shuffled student cache. For the adapter
-we additionally train on student KV and on shuffled-document teacher KV.
+(unmapped) V-only injection. A simultaneous permutation of the student's own keys
+and values is not a content control---attention is invariant to a shared
+reordering of $K$ and $V$---so we do not include one; every control above destroys
+content. For the adapter we additionally train on student KV and on
+shuffled-document teacher KV.
 
 \subsection{Statistical protocol}
 Every comparison in this paper is run with three seeds (0, 1, 2), each with its
@@ -720,10 +730,14 @@ metric does not measure whether a transferred state is usable: the two evaluator
 defects are detectable in the released code, and the corrected metric removes the
 reported transfer on all six pairs. Second, teacher-forced likelihood is not a
 transfer metric in this setting, because content-free caches reproduce its gains.
-Third, the failure is consumer-side in the sense that changing \emph{how the
-consumer reads} the state---mapper objective, then a small consumer
-adapter---restores task performance, whereas changing the state's layer alignment
-does not.
+Third, the failure is a compatibility failure, and it is worth separating two
+levels. \emph{State-space} compatibility---how close the mapped representation is
+to the student's own---is not sufficient: the affine mapper minimises
+representation error and still leaves the state unusable. \emph{Consumption-space}
+compatibility is what tracks task performance, and it can be restored either by
+changing \emph{how the consumer reads} the state (a mapper fit in consumption
+space, which leaves every consumer weight untouched) or, for the residual gap, by
+adapting the consumer itself. Changing the state's layer alignment does neither.
 
 Our evidence does not establish that the recovered information is the teacher's
 document content in full. The shuffled-document adapter control is intermediate,

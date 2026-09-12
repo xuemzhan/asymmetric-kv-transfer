@@ -157,21 +157,32 @@ arms["Shuf_V"] = KV(k=sk, v=shuf.v)   # 保留 K，打乱 V
 
 ## II-A　已完成（不需要任何新数据，本轮已落地）
 
-| # | 位置 | 改动 | 依据 |
-|---|---|---|---|
-| A1 | Abstract | 删除 token-shuffled 证据，改为"$0.899\pm0.010$ for the student's own cache; the same evaluator therefore does detect usable context" | audit2 §4 + `phaseB_controls.py:85-89` |
-| A2 | Abstract | `trained only on calibration teacher states` → `trained by next-token cross-entropy on calibration answers under injected teacher KV` | audit2 §16 + `phaseB_adapter.py:103-114` |
-| A3 | Abstract | `layer alignment is not the controlling variable` → `layer alignment alone does not explain the failure` | audit2 §9 |
-| A4 | Results §5 | 删除以 token-shuffle 支撑的 evaluator 敏感性论证；改为 Self vs teacher 对照，并加一句置换不变性说明 | audit2 §4 |
-| A5 | `tab:controls` | 删除 `Token-shuffled student` 行 | audit2 §4 |
-| A6 | `fig:controls` 图注 + 子图 (b) | 删除 shuffled bar，子图标题改为"(b) Only the correct cache answers" | audit2 §4 |
-| A7 | Method §3.5 | 增加"每个训练条件各训练一个 adapter、该 adapter 在四个评测臂上共用、条件间不共享参数" | audit2 §8 + `phaseB_adapter.py:196-204` |
-| A8 | Analysis §6.1 标题 | 降调为 `Layer alignment alone does not explain the failure` | audit2 §9 |
-| A9 | Analysis §6.4 | 删除"v_proj 仍在运行"，改为"preliminary (seed 0, two of the three attention projections)" | audit2 §14 |
+### II-A1　一一对应表：审稿意见 → 方案条目 → 落地位置 → 验证
 
-同时已重新生成 6 张图、重编译论文、刷新 arXiv bundle，并复核：16 页、0 处占位符、0 处未解析引用、`token-shuffled` / `was still running` 等字符串已全部消失。
+每一行都可机械核验。`verify_all.py` 对全部 23 个断言逐条检查，当前 **0 失败**；实例侧另用 TeX 结构校验（引用/文献/交叉引用）与 PDF 含量比对。
 
-**A4 的实质理由（写进论文的那句话）：** 把 K 与 V 按同一置换重排不改变 attention 输出，因此那不是内容控制；要构成控制必须破坏 key--value 的对应关系。evaluator 的敏感性由"同一 evaluator 在自缓存上得 0.899、在所有注入臂上得 0.000"来承担，这个论证比原 control 更强且无需额外实验。
+| audit2 编号 | 审稿意见 | 方案条目 | 落地位置 | 验证断言 |
+|---|---|---|---|---|
+| §4 | token-shuffle 可能置换不变 | A1 / A4 / A5 / A6 + X1 / X3 | Abstract；Intro 贡献 1；Results §5；`tab:controls`；`fig:controls` 子图 (b) + 图注；Exp Setup §4.3 | `token-shuffled` 全文 0 次；`Token-shuffled` 0 次；`attention is invariant to a shared` 存在 |
+| §16 | adapter 被误读为 label-free | A2 + X2 | Abstract；Intro 贡献 3 | `trained only on` 全文 0 次；`cross-entropy on calibration answers under injected teacher KV` 出现 2 次 |
+| §9 | layer-alignment 结论有 floor effect | A3 + X4 + A8 | Abstract；Intro 贡献 2；Analysis §6.1 标题 | `is not the controlling` 全文 0 次；`Layer alignment alone does not explain the failure` 出现 2 处 |
+| §8 | adapter 是否 arm-specific 不明确 | A7 | Method §3.5 | `trains its own adapter from scratch` 存在 |
+| §14 | projection ablation 未完成 | A9 | Analysis §6.4 | `still running` 全文 0 次；`This ablation is preliminary (seed 0, two of` 存在 |
+| §5 | “failure is consumer-side” 过强 | X5 + X6 + X7 | Intro 结尾；Discussion §7.1；Abstract | `separates two levels of compatibility` 存在；state-space / consumption-space 分层句存在 |
+| §3 | evaluator 仅 6-case 验证 | — | 未改（等 I.1 / B1） | 现保留“六条目端到端探针”的如实表述 |
+| §10 | routing 措辞克制 | — | 保留原文 | 审稿人明确要求保留 |
+| §15 | 压缩旧 K/V asymmetry 叙事 | — | 未做（编辑性、可选） | 不影响审稿结论 |
+| §16 | 标题偏强 | — | **待你决定** | 见 II-B 末 |
+
+### II-A2　重要修正：本轮发现的漏改
+
+第一轮只改了 Abstract，漏掉了同一问题在 Introduction 与 Experimental Setup 中的另外三处：
+
+- Intro 贡献 1 仍写“A token-shuffled student cache keeps EM at 0.89±0.04”（X1）
+- Intro 贡献 3 仍写“trained only on calibration examples”（X2）
+- Exp Setup §4.3 仍把“a token-shuffled student cache”列为 control（X3）
+
+三处已一并修正。这正是“一一对应”检查的价值：同一个 claim 在全文出现多次时，只改一处会留下自相矛盾。现已可机械证明旧陈述在全文中归零。
 
 ## II-B　待 GPU 结果回来后改（按依赖排列）
 
