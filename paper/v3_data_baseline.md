@@ -2,6 +2,16 @@
 **Date:** 2026-08-30 | **Source:** reports/*.json (all regenerable)
 **Use ONLY these numbers in the paper. Do NOT invent or reuse v1 numbers (n=14).**
 
+> **⚠️ SUPERSEDED (2026-09-12).** Every EM number below was produced by a
+> greedy evaluator that reused a cache already advanced through the gold answer,
+> inflating exact match for all transfer arms. The corrected evaluator
+> (`phaseB_common.greedy_answer_fixed`) and the corrected/innovation results are
+> in `paper/audit/METRIC_CORRECTION.md` and the rewritten `main.tex`. The LL
+> columns below remain valid (they reproduce), but the EM columns must not be
+> cited. Corrected headline: standard-mapped teacher arms reach at most 0.44
+> corrected EM (Self 0.44–0.90); consumer-space mappers and a rank-8 consumption
+> adapter recover K/V/Joint to 0.94/0.94/0.83 (1.7B→0.6B, 3 seeds).
+
 ---
 
 ## 1. Flagship G0 (8B→0.6B, n=56, 3 seeds) — phase0_g0_v2
@@ -16,7 +26,7 @@
 | Student full (0.6B) | −9.89 (= Self, doc-only) | — | — | — |
 
 - Mapper ladder (all mappers, 8B→0.6B): **none rescues V** — Procrustes/CCA destructive; RidgePerHead K EM=0.78 but V EM=0.16.
-- Heterogeneous reassembly (v2): K-only (−7.27) **beats** student_full (−9.89) and teacher_full (−14.79). Δ = +2.62 vs student, +7.52 vs teacher.
+- Heterogeneous reassembly (v2): K-only (−7.27) **beats** student_full (−9.89) and teacher_full (−14.77). Δ = +2.62 vs student, +7.50 vs teacher.
 
 ## 2. W8 Scaling Law — 6 pairs × 3 seeds (n=56) — phase4_scaling_law_v2
 
@@ -38,7 +48,7 @@
 - 8B→1.7B: K +1.04±1.53 | V +5.63±0.04
 
 **KEY NARRATIVE (capability-gap gating):**
-- K (addressing): near-universally transferable — EM ≥0.73 on all 6 pairs; LL positive 5/6 (8B_1.7B unstable).
+- K (addressing): near-universally transferable — EM ≥0.71 on all 6 pairs; LL positive 5/6 (8B_1.7B unstable).
 - V (content): transfer **gated by teacher–student matching**:
   - Large-gap pairs (0.6B student + 8B/4B teacher): V FAILS (LL ≤0, EM < Self).
   - 1.7B→0.6B (equal-layer 28→28): V transfers (EM 0.43→0.80) — the ONLY 0.6B-student pair where V works.
@@ -95,7 +105,7 @@
 
 ## 7. Claims Allowed (narrative guardrails)
 
-✅ K transfers near-universally (EM ≥0.73 all pairs; LL positive 5/6)
+✅ K transfers near-universally (EM ≥0.71 all pairs; LL positive 5/6)
 ✅ V transfer gated by capability gap: fails on large-gap 0.6B pairs; EM-collapses on small-gap 1.7B students; works only on equal-layer small-gap (8B→4B EM 0.88, 1.7B→0.6B EM 0.80)
 ✅ CCA ρ₁≈0.99+ both K,V; only K transfers → correlation ≠ transferability
 ✅ V info sparse (L8/L12 hotspots); V_ALL harmful (26/28 noise layers)

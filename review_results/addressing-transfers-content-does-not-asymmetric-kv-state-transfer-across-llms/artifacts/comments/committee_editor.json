@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Abstract and conclusion claims need explicit evidence traceability",
+    "quote": "Across 6 model pairs spanning 0.6B to 8B parameters, K-only injection improves log-likelihood by to on 4/6 pairs (paired , 3 seeds) and recovers EM on all pairs, while V-only injection is significant only on the two small-gap pairs (B4: ; B0.6: ) and neutral or negative elsewhere (B0.6: , ns).",
+    "explanation": "At least one headline claim was detected. Deep review should check whether experiments and conclusion language trace back to the same bounded evidence base.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "medium",
+    "source_kind": "llm",
+    "source_section": "introduction",
+    "related_sections": [
+      "introduction",
+      "results",
+      "conclusion"
+    ],
+    "root_cause_key": "abstract-and-conclusion-claims-need-explicit-evidence-traceability",
+    "review_lane": "committee_editor",
+    "gate_blocker": false,
+    "quote_verified": false
+  },
+  {
+    "title": "Cross-section numeric consistency should be reconciled",
+    "quote": "Across 6 model pairs from the Qwen3 family (0.6B--8B, 3 seeds), we find a sharp functional asymmetry that is gated by the teacher--student capability gap: keys (the addressing substrate) transfer near-universally, recovering task performance on all 6 pairs (exact match ; positive on 5/6 pairs, to ), while values (the content substrate) transfer only when teacher and student are closely matched (B4B: EM 1.000.88; B0.6: EM 0.430.80) and fail on large-gap pairs (B0.6: , ns)---despite K and V being equally, almost perfectly linearly alignable (CCA both).",
+    "explanation": "Multiple sections contain numeric claims. Confirm that the same quantities reconcile across main text, tables, and appendix material.",
+    "comment_type": "presentation",
+    "severity": "moderate",
+    "confidence": "medium",
+    "source_kind": "llm",
+    "source_section": "abstract",
+    "related_sections": [
+      "abstract",
+      "introduction",
+      "related"
+    ],
+    "root_cause_key": "cross-section-numeric-consistency-should-be-reconciled",
+    "review_lane": "committee_editor",
+    "gate_blocker": false,
+    "quote_verified": false
+  },
+  {
+    "title": "Novelty claim should be grounded against the closest prior work",
+    "quote": "Prior work transfers entire KV caches without identifying which components (keys vs.\\ values) are transferable.",
+    "explanation": "The paper positions itself against prior work, but the current wording should make the closest comparator and the real novelty delta explicit instead of relying on broad superiority language.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "medium",
+    "source_kind": "llm",
+    "source_section": "introduction",
+    "related_sections": [
+      "introduction",
+      "results"
+    ],
+    "root_cause_key": "novelty-claim-should-be-grounded-against-the-closest-prior-work",
+    "review_lane": "committee_editor",
+    "gate_blocker": false,
+    "quote_verified": false
+  }
+]

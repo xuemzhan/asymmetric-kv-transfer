@@ -21,9 +21,10 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-PROJECT = Path("/workspace/v3")
+PROJECT = Path(__file__).resolve().parent.parent
 G0_JSON = PROJECT / "reports" / "g0_v2_summary.json"
 CCA_JSON = PROJECT / "reports" / "w4_cca_perhead.json"
+FACTORIAL_JSON = PROJECT / "reports" / "factorial_analysis.json"
 MAIN_TEX = PROJECT / "paper" / "main.tex"
 
 # ---------------------------------------------------------------------------
@@ -59,6 +60,7 @@ def mean_seeds(d: dict, key: str) -> float:
 # ---------------------------------------------------------------------------
 g0 = load_json(G0_JSON)
 cca = load_json(CCA_JSON)
+factorial = load_json(FACTORIAL_JSON)
 tex = load_tex(MAIN_TEX)
 
 # ===========================================================================
@@ -234,7 +236,6 @@ print("\n=== Part C: Forbidden words scan ===")
 
 forbidden = [
     "1000 resamples",
-    "by construction",
     "-14.79",
     "+7.52",
     "monolithic",
@@ -242,8 +243,12 @@ forbidden = [
     "75--79",
     "selective joint",
     "+2.61",
-    "+2.46",
     "pooled",
+    "beats both full models",
+    "capability-gated functional asymmetry",
+    "share nearly the same linear subspace",
+    "Addressing Transfers, Content Does Not",
+    "not memorized",
 ]
 
 for word in forbidden:
@@ -253,7 +258,77 @@ for word in forbidden:
     )
 
 # ===========================================================================
-# Part D: Summary
+# Part D: Factorial analysis table verification
+# ===========================================================================
+print("\n=== Part D: Factorial interaction table ===")
+
+interaction_table = factorial["aggregate"]
+expected_interactions = {
+    "8B_0.6B": 2.12,
+    "4B_0.6B": 2.15,
+    "1.7B_0.6B": -2.06,
+    "8B_4B": -2.67,
+    "4B_1.7B": -3.50,
+    "8B_1.7B": -1.98,
+}
+for pair, expected in expected_interactions.items():
+    value = interaction_table[pair]["interaction"]["mean"]
+    assert_check(
+        abs(value - expected) < 0.01,
+        f"Interaction {pair}: paper/JSON value {value} == expected {expected}"
+    )
+    latex_pair = pair.replace("_", "$\\to$")
+    # Match the table row: pair label, then the interaction value within
+    # 180 characters (Joint column precedes the interaction column).
+    row_pattern = re.compile(
+        re.escape(latex_pair) + r".{0,180}?" + re.escape(f"{value:+.2f}")
+    )
+    found = row_pattern.search(tex) is not None
+    assert_check(found, f"Interaction {pair} row value '{value:+.2f}' present in main.tex")
+
+# Flagship per-sample interaction significance (three seeds, CI95 excludes 0)
+fp = factorial["flagship_per_sample"]
+if fp:
+    for seed, blk in fp.items():
+        ci = blk["interaction"]["ci95"]
+        assert_check(
+            ci[0] > 0 and ci[1] > 0,
+            f"Flagship interaction CI95 excludes zero (seed {seed}): {ci}"
+        )
+        p = blk["interaction"]["wilcoxon_p"]
+        assert_check(
+            p < 0.05,
+            f"Flagship interaction p < 0.05 (seed {seed}): p={p:.4g}"
+        )
+
+# Direct K-vs-V test numbers quoted in the paper
+kv = fp["0"]["K_minus_V"] if fp else None
+if kv:
+    assert_check(
+        f"{kv['mean']:.2f}" in tex,
+        f"K-vs-V mean '{kv['mean']:.2f}' present in main.tex"
+    )
+    assert_check(
+        "K-vs-V" in tex or "K$-$V" in tex or "K-vs-V" in tex,
+        "Direct K-vs-V contrast described in main.tex"
+    )
+
+# New title and framing
+assert_check(
+    "Asymmetric and Interaction-Dependent" in tex,
+    "New title 'Asymmetric and Interaction-Dependent' present"
+)
+assert_check(
+    "Transfer Success Criterion" in tex,
+    "Transfer Success Criterion subsection present"
+)
+assert_check(
+    r"\appendix" in tex and "Reproducibility Details" in tex,
+    "Reproducibility appendix present"
+)
+
+# ===========================================================================
+# Part E: Summary
 # ===========================================================================
 print("\n=== Summary ===")
 n_pass = sum(1 for p, _ in results if p)

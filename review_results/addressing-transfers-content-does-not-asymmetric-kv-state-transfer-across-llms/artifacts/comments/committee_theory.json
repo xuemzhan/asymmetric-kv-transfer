@@ -1,0 +1,39 @@
+[
+  {
+    "title": "Abstract and conclusion claims need explicit evidence traceability",
+    "quote": "Across 6 model pairs spanning 0.6B to 8B parameters, K-only injection improves log-likelihood by to on 4/6 pairs (paired , 3 seeds) and recovers EM on all pairs, while V-only injection is significant only on the two small-gap pairs (B4: ; B0.6: ) and neutral or negative elsewhere (B0.6: , ns).",
+    "explanation": "At least one headline claim was detected. Deep review should check whether experiments and conclusion language trace back to the same bounded evidence base.",
+    "comment_type": "claim_accuracy",
+    "severity": "major",
+    "confidence": "medium",
+    "source_kind": "llm",
+    "source_section": "introduction",
+    "related_sections": [
+      "introduction",
+      "results",
+      "conclusion"
+    ],
+    "root_cause_key": "abstract-and-conclusion-claims-need-explicit-evidence-traceability",
+    "review_lane": "committee_theory",
+    "gate_blocker": false,
+    "quote_verified": false
+  },
+  {
+    "title": "Novelty claim should be grounded against the closest prior work",
+    "quote": "Prior work transfers entire KV caches without identifying which components (keys vs.\\ values) are transferable.",
+    "explanation": "The paper positions itself against prior work, but the current wording should make the closest comparator and the real novelty delta explicit instead of relying on broad superiority language.",
+    "comment_type": "claim_accuracy",
+    "severity": "moderate",
+    "confidence": "medium",
+    "source_kind": "llm",
+    "source_section": "introduction",
+    "related_sections": [
+      "introduction",
+      "results"
+    ],
+    "root_cause_key": "novelty-claim-should-be-grounded-against-the-closest-prior-work",
+    "review_lane": "committee_theory",
+    "gate_blocker": false,
+    "quote_verified": false
+  }
+]

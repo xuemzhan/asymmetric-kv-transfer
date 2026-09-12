@@ -115,7 +115,8 @@ def run_pair_v2(pair_name: str, pair: dict, calib: list, eval_set: list,
     for i, s in enumerate(eval_set):
         q = "\n\nQuestion: " + s["q"] + "\nAnswer:"
         pos_i = np.arange(eval_t_kv[i].k.shape[1], dtype=np.float64)
-        row = {"id": s["id"], "hop": s["hop"], "answer": s["answer"]}
+        row = {"id": s["id"], "hop": s["hop"], "answer": s["answer"],
+               "doc_id": s.get("project", s["doc"][:40])}
 
         c = build_cache(eval_s_kv[i])
         row["Self"] = answer_loglik(student, tok_s, c, q, s["answer"])
@@ -172,6 +173,7 @@ def run_pair_v2(pair_name: str, pair: dict, calib: list, eval_set: list,
             "efficiency": float(delta_k / delta_j) if abs(delta_j) > 1e-6 else float('inf'),
         },
         "n_eval": len(eval_set),
+        "rows": rows,
     }
 
 

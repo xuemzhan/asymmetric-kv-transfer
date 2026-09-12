@@ -25,3 +25,6 @@ paper/main.run.xml
 
 # Run artifacts (regenerable)
 runs/
+
+# Downloaded Tectonic binary (not source)
+tools/tectonic/
