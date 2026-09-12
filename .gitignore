@@ -28,3 +28,9 @@ runs/
 
 # Downloaded Tectonic binary (not source)
 tools/tectonic/
+
+# Figure rasters (regenerable from the tracked vector PDFs)
+paper/figures/*.png
+
+# arXiv bundle: source and figures are tracked, the compiled PDF is not
+paper/arxiv_submission/main.pdf

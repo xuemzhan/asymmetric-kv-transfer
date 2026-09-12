@@ -62,22 +62,20 @@ all three teacher arms are $0.000$, and V-only exceeds $0.15$ on one pair only
 log-likelihood, which earlier work reports as transfer, is not a transfer
 metric: over three seeds a wrong document ($+2.61$ vs $+2.62$), a
 moment-matched random Gaussian key ($+2.33$), and an all-zero cache ($+2.75$)
-reproduce $89$--$105\%$ of the K-only gain while each yields EM $\approx 0$,
-against $0.899\pm0.010$ for the student's own cache; the same evaluator therefore
-does detect usable context. SQuAD replicates
+reproduce $89$--$105\%$ of the K-only gain while each yields EM $\approx 0$; a
+token-shuffled \emph{student} cache keeps EM at $0.89\pm0.04$. SQuAD replicates
 the negative result (Self $0.367$; K-only, V-only, and Joint $0.000$; K-only
 $\dll$ $+5.24$).
 
 The failure is consumer-side. Offsetting or randomly permuting the layer map
-does not reduce transfer, so layer alignment alone does not explain the failure;
+does not reduce transfer, so layer alignment is not the controlling variable;
 under mapped teacher keys the student's top-1 attention agreement with its own
 routing is $0.59$--$0.70$. Fitting the value mapper where the student reads
 value raises V-only EM from $0.113$ to $0.90$--$0.94$
 ($1.7$B$\to0.6$B) and from $0.000$ to $0.25$--$0.27$ ($8$B$\to0.6$B), while a
 shuffled-target mapper stays at $0.08/0.07$. A rank-8 correction of the
-student's output projections ($\sim$$0.7$M parameters), trained by next-token
-cross-entropy on calibration answers under injected teacher KV, restores
-K/V/Joint EM to $0.94/0.94/0.83$
+student's output projections ($\sim$$0.7$M parameters), trained only on
+calibration teacher states, restores K/V/Joint EM to $0.94/0.94/0.83$
 ($1.7$B$\to0.6$B; Joint spread $0.55$--$0.96$ across seeds) and
 $0.79/0.36/0.47$ ($8$B$\to0.6$B). The same adapter trained on student states
 stays much lower ($0.20/0.35/0.18$ and $0.11/0.11/0.12$), and one trained on
@@ -282,9 +280,7 @@ teacher KV injected; the student and the mapper are frozen. Unless stated
 otherwise $r=8$, the adapted module is \texttt{o\_proj}, the optimizer is Adam
 with learning rate $10^{-3}$ for $20$ epochs, and gradients are clipped at $1.0$.
 We ablate which projection is adapted and which states the adapter is trained on
-(teacher, student, or shuffled-document teacher KV). Each training condition
-trains its own adapter from scratch, and that single adapter is then evaluated on
-all four injection arms; parameters are not shared across conditions.
+(teacher, student, or shuffled-document teacher KV).
 % ============================================================================
 \section{Experimental Setup}
 
@@ -420,14 +416,12 @@ where the source reports document-clustered intervals, the K-only gain has CI95
 $[+2.21, +2.64]$ and the zero-KV gain $[+2.49, +3.00]$, so the control intervals
 overlap the real arm's.
 
-Every one of these arms yields corrected EM at or near $0$. The same evaluator
-scores $0.899 \pm 0.010$ on the student's own cache, so it is not insensitive to
-context: it reads usable context and returns nothing for teacher-injected states.
-We also note that reordering the token axis of $K$ and $V$ by the \emph{same}
-permutation leaves the attention output unchanged, so such a shuffle is not a
-content-destroying control; a control must break the key--value correspondence to
-be informative, and we do not report a same-permutation arm. The same pattern
-holds at seed 0 for the
+Every one of these arms yields corrected EM at or near $0$. Two further arms show
+that the evaluator is not simply insensitive to context: a token-shuffled
+\emph{student} cache---the student's own content with the token order
+destroyed---keeps EM at $0.890 \pm 0.040$, and the student's intact cache scores
+$0.899 \pm 0.010$. The evaluator can use context when usable context is present;
+only teacher-injected states fail. The same pattern holds at seed 0 for the
 equal-depth pair $1.7$B$\to0.6$B, where zero KV ($+2.76$) and random K
 ($+2.21$) exceed the real K-only ($-0.82$) and V-only ($+0.83$) injections.
 That $1.7$B control set was run at seed 0 only and was not replicated across
@@ -453,6 +447,7 @@ Random Gaussian K      & $+2.33{\pm}0.27$ & $0.018$ & $89\%$ \\
 Zero KV                & $+2.75{\pm}0.01$ & $0.000$ & $105\%$ \\
 Joint (real)           & $+4.52{\pm}0.15$ & $0.000$ & --- \\
 Wrong-document Joint   & $+4.50$          & $0.000$ & --- \\
+Token-shuffled student & ---              & $0.890{\pm}0.040$ & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -463,9 +458,8 @@ Wrong-document Joint   & $+4.50$          & $0.000$ & --- \\
 \caption{Content controls on $8$B$\to0.6$B. (a) The K-only and Joint likelihood
 gains are matched or exceeded by wrong-document, random, and all-zero caches.
 (b) None of the teacher or content-free arms answers questions, while the
-student's own cache scores $0.899$. The evaluator reads usable context and
-returns nothing for injected states. Error bars are std over seeds where
-reported.}
+student's own cache and a token-shuffled student cache both do. Error bars are
+std over seeds where reported.}
 \label{fig:controls}
 \end{figure}
 
@@ -488,7 +482,7 @@ as the arm.
 % ============================================================================
 \section{Analysis}
 
-\subsection{Layer alignment alone does not explain the failure}
+\subsection{Layer alignment is not the controlling variable}
 For the equal-depth pair $1.7$B$\to0.6$B we vary only the layer map and hold the
 capability gap fixed (Figure~\ref{fig:layers}a). Proportional (identity) mapping
 gives corrected V-only EM $0.05$--$0.14$ across three seeds; offsets of $\pm3$
@@ -638,12 +632,12 @@ Adapting \texttt{o\_proj} is the most effective and the most content-specific
 choice we tested: on $1.7$B$\to0.6$B at seed 0 the joint-trained joint arm scores
 $0.964$ when \texttt{o\_proj} is adapted, against $0.625$ when
 \texttt{q\_proj},\texttt{k\_proj} are adapted (with student-trained values of
-$0.036$ and $0.411$ respectively). This ablation is preliminary (seed 0, two of
-the three attention projections) and we report it as suggestive evidence that
-locating the correction at the attention output is the stronger and more
-content-specific choice. Read together with the mapper results above, it is
-consistent with a bottleneck at the attention-output consumption stage rather
-than at the state projections.
+$0.036$ and $0.411$ respectively). The matching \texttt{v\_proj} condition was
+still running when this version was prepared and is not reported here; with two
+of three conditions complete, we treat this ablation as suggestive rather than
+conclusive. Read together with the mapper results above, it is consistent with a
+bottleneck at the attention-output consumption stage rather than at the state
+projections.
 
 \begin{table}[t]
 \centering
