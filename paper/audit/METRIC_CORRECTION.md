@@ -453,12 +453,15 @@ was a floor effect. The paper now reports both regimes in Section 6.1, retitled
 claim is asserted absent across the whole manuscript by
 `paper/audit/verify_audit2_edits.py`.
 
-**Contaminated artifact.** `reports/phaseB_controls_8B_0.6B_seed0.json` is a
-stale legacy-evaluator run (Self 0.429, `Zero_KV` EM 1.000) that predates the
-controls fix. No paper number has ever used it; it is renamed
-`phaseB_controls_8B_0.6B_seed0_LEGACY_DO_NOT_USE.json` so that it cannot be
+**Contaminated artifact (removed).** `reports/phaseB_controls_8B_0.6B_seed0.json`
+was a stale legacy-evaluator run (Self 0.429, `Zero_KV` EM 1.000) that predated
+the controls fix. No paper number ever used it; it was renamed
+`phaseB_controls_8B_0.6B_seed0_LEGACY_DO_NOT_USE.json` so that it could not be
 mistaken for the corrected seed-0 run (`..._seed0_fixed.json`, Self 0.911,
-`Zero_KV` EM 0.000).
+`Zero_KV` EM 0.000), and the W23 repository cleanup deleted it outright (it
+remains in git history only). The remaining `phaseB_controls_*` reports are all
+corrected-evaluator runs; `scripts/cluster_stats_audit3.py` still skips any file
+whose name contains `LEGACY` in case an old copy resurfaces.
 
 **Traceability.** `paper/audit/verify_audit2_edits.py` asserts, per audit2
 finding, that the superseded strings are absent and the replacements present,

@@ -278,7 +278,7 @@ first-token top-1 agreement；并在 SQuAD Self 上重复 full-prefill validator
 
 ### 代码改动
 
-**I-1a（扩指标）** `phaseB_evalcheck.py` 每条样本新增：
+**I-1a（扩指标）** `experiments/phaseB_evalcheck.py` 每条样本新增：
 
 | 字段 | 定义（$d_v=|\ell^{\text{inj}}_v-\ell^{\text{full}}_v|$，float32 计算） |
 |---|---|
@@ -311,11 +311,11 @@ reference 与 injected 两条路径都改为 8B teacher 无关的 Self 路径（
 ### 命令
 
 ```bash
-python3 phaseB_evalcheck.py --seed 0 --n-eval 56 --students 0.6B 1.7B 4B \
+python3 experiments/phaseB_evalcheck.py --seed 0 --n-eval 56 --students 0.6B 1.7B 4B \
   --output reports/phaseB_evalcheck_residual_seed0.json
-python3 phaseB_evalcheck.py --domain squad --n-eval 30 --students 0.6B \
+python3 experiments/phaseB_evalcheck.py --domain squad --n-eval 30 --students 0.6B \
   --output reports/phaseB_evalcheck_squad.json
-python3 phaseB_evalcheck.py --attrib --students 0.6B --n-eval 8 \
+python3 experiments/phaseB_evalcheck.py --attrib --students 0.6B --n-eval 8 \
   --output reports/phaseB_evalcheck_attrib.json
 ```
 
@@ -339,7 +339,7 @@ python3 phaseB_evalcheck.py --attrib --students 0.6B --n-eval 8 \
 
 ### 代码改动
 
-- **I-2a**：无需新逻辑——`phaseB_adapter.py` 的 `--causal` 已经把 correct / WrongJoint /
+- **I-2a**：无需新逻辑——`experiments/phaseB_adapter.py` 的 `--causal` 已经把 correct / WrongJoint /
   RandKV / ZeroKV 四臂挂在**同一个冻结 adapter** 上，只需把 `--epochs 20` 与
   `--conditions joint` 组合（只训 1 个 adapter，省 2/3 训练时间）。
 - **I-2b（必须）**：新增 `--dump-rows`，把逐样本 `id / 各臂 LL / 各臂 EM` 写进报告。
@@ -349,10 +349,10 @@ python3 phaseB_evalcheck.py --attrib --students 0.6B --n-eval 8 \
 
 ```bash
 for S in 0 1 2; do
-  python3 phaseB_adapter.py --pair 1.7B_0.6B --seed $S --rank 8 --epochs 20 \
+  python3 experiments/phaseB_adapter.py --pair 1.7B_0.6B --seed $S --rank 8 --epochs 20 \
     --conditions joint --causal --n-calib 70 --n-eval 56 --dump-rows \
     --output reports/phaseB_adapter_causal20_1.7B_0.6B_seed$S.json
-  python3 phaseB_adapter.py --pair 8B_0.6B --seed $S --rank 8 --epochs 20 \
+  python3 experiments/phaseB_adapter.py --pair 8B_0.6B --seed $S --rank 8 --epochs 20 \
     --conditions joint --causal --n-calib 70 --n-eval 56 --dump-rows \
     --output reports/phaseB_adapter_causal20_8B_0.6B_seed$S.json
 done
@@ -381,18 +381,19 @@ audit3 指出还需回答"repair mechanism 能否在第二 domain **内部**复�
 `data/nq_test_seed0.json` 的 `doc` 为空字符串（NQ 是 open 任务，**没有 document state**），
 所以第二域**只有 SQuAD 可用**，且天然无 clustering 问题。
 
-### 新脚本 `phaseB_squad_within.py`
+### 新脚本 `experiments/phaseB_squad_within.py`
 
 - 文档级划分：`perm = RandomState(split_seed).permutation(30)`，前 15 为 calibration、后 15 为 held-out；
   `split_seed ∈ {0,1,2}` 充当 3 个"seed"（数据只有一个 seed，用划分重采样代替）；
 - 复用：`load_teacher/load_student/capture_all/fit_mapper`、`phaseB_mechanism.fit_output_aware_mapper`、
-  `phaseB_outaware.fit_wo_aware_mapper`、`phaseB_adapter.train_adapter`（rank 8, 20 epochs）；
+  `phaseB_outaware.fit_wo_aware_mapper`、`phaseB_adapter.train_adapter`（rank 8, 20 epochs；三者在
+  `experiments/` 下）；
 - 报告内容：held-out Self 天花板、K-only / V-only / Joint × {affine, outaware, W_O-aware}、
   `adapter(joint, SQuAD-calib)`、`shuffled-target` 对照、逐样本 rows（便于 clustered/document bootstrap）。
 
 ```bash
 for D in 0 1 2; do
-  python3 phaseB_squad_within.py --split-seed $D --n-calib 15 --n-eval 15 \
+  python3 experiments/phaseB_squad_within.py --split-seed $D --n-calib 15 --n-eval 15 \
     --v-mappers affine,outaware,wo --adapter --epochs 20 --rank 8 \
     --output reports/phaseB_squadwithin_split$D.json
 done
@@ -417,7 +418,7 @@ done
 **动机：** 论文核心命题是 "where you align matters"，但 `tab:mappers` 只有 EM。
 审稿人明确要求一张把 **raw V 误差 / $A_SV$ 误差 / $A_SVW_O$ 误差 / EM** 放在一起的小表。
 
-### 新脚本 `phaseB_errorbudget.py`
+### 新脚本 `experiments/phaseB_errorbudget.py`
 
 对 5 个 mapper 变体（`raw`(无仿射、仅层选择平均)、`affine`、`outaware`、`woaware`、`outaware-shuffled`）
 在同一个 pair/seed 上计算三列误差（每样本先在 (layer, head, token) 上求 Frobenius 比，再跨样本取均值±std）：
@@ -433,9 +434,9 @@ $W_O$ 用 `student.model.layers[l].self_attn.o_proj.weight` 的 query-head 切�
 
 ```bash
 for S in 0 1 2; do
-  python3 phaseB_errorbudget.py --pair 1.7B_0.6B --seed $S --n-calib 70 --n-eval 56 \
+  python3 experiments/phaseB_errorbudget.py --pair 1.7B_0.6B --seed $S --n-calib 70 --n-eval 56 \
     --output reports/phaseB_errorbudget_1.7B_0.6B_seed$S.json
-  python3 phaseB_errorbudget.py --pair 8B_0.6B --seed $S --n-calib 70 --n-eval 56 \
+  python3 experiments/phaseB_errorbudget.py --pair 8B_0.6B --seed $S --n-calib 70 --n-eval 56 \
     --output reports/phaseB_errorbudget_8B_0.6B_seed$S.json
 done
 ```
@@ -518,9 +519,9 @@ document-level 统计，也不要用半成品替换主表。
 
 | audit3 | 意见要点 | 证据位置 | 本轮核实结论 |
 |---|---|---|---|
-| §3 | evaluator 仅"EM 一致"不够，需 KL/top-1/logit 分布；SQuAD 也要 validator | `phaseB_evalcheck.py`（只有 max/mean abs err）、`paper/main.tex:294-302` | **成立**：需 I-1a/1b/1c |
+| §3 | evaluator 仅"EM 一致"不够，需 KL/top-1/logit 分布；SQuAD 也要 validator | `experiments/phaseB_evalcheck.py`（当时只有 max/mean abs err）、`paper/main.tex:294-302` | **成立**：需 I-1a/1b/1c |
 | §4 | V-only 没有 teacher K，不能用 mapped-K routing 解释 | `paper/main.tex:279-283`（四臂定义）vs `:702-706`（解释） | **成立，必须改** |
-| §5 | 应拆成 K-side routing / V-side consumption 两个问题 | `phaseB_mechanism.py`（routing 诊断）、`phaseB_outaware.py`（W_O-aware） | 证据已足够，纯写作 |
+| §5 | 应拆成 K-side routing / V-side consumption 两个问题 | `experiments/phaseB_mechanism.py`（routing 诊断）、`experiments/phaseB_outaware.py`（W_O-aware） | 证据已足够，纯写作 |
 | §6 | causality 用 10-epoch adapter，headline 用 20-epoch | `reports/phaseB_adapter_causal_*.json`（`epochs=10`）、`paper/main.tex:798-800` | **成立**：I-2b + A2 |
 | §7 | 8B causality 单 seed、margin 小 | `reports/phaseB_adapter_causal_8B_0.6B_seed0.json` 仅此一份 | 成立；门禁已要求 pooled 3-seed |
 | §8 | 缺第二域 **within-domain** repair | `reports/phaseB_squad_{outaware,adapter}_seed0.json`（calib 域=OOD） | 成立；NQ 无 doc，只能 SQuAD 内部划分 |
@@ -551,11 +552,11 @@ document-level 统计，也不要用半成品替换主表。
 | `paper/audit/REVISION_PLAN3.md` | 新增（本文件） | 本机 |
 | `paper/audit/verify_audit3_edits.py` | 新增（T6，先写断言） | 本机 |
 | `scripts/cluster_stats_audit3.py` | 新增（A6） | 本机 |
-| `phaseB_evalcheck.py` | 扩指标 + `--domain squad` + `--attrib`（I-1a/b/c） | GPU |
-| `phaseB_adapter.py` | 新增 `--dump-rows`（I-2b） | GPU |
-| `phaseB_squad_within.py` | 新增（A3） | GPU |
-| `phaseB_errorbudget.py` | 新增（A4） | GPU |
-| `phaseB_common.py` | `load_data` 支持 `--data-dir`/环境变量（仅 A5 需要） | GPU |
+| `experiments/phaseB_evalcheck.py` | 扩指标 + `--domain squad` + `--attrib`（I-1a/b/c） | GPU |
+| `experiments/phaseB_adapter.py` | 新增 `--dump-rows`（I-2b） | GPU |
+| `experiments/phaseB_squad_within.py` | 新增（A3） | GPU |
+| `experiments/phaseB_errorbudget.py` | 新增（A4） | GPU |
+| `experiments/phaseB_common.py` | `load_data` 支持 `V3_DATA_DIR`（仅 A5 需要） | GPU |
 | `paper/main.tex`、`paper/arxiv_submission/main.tex`、`paper/arxiv_metadata.md` | T1–T5 + W1–W8 | 本机 |
 | `paper/audit/METRIC_CORRECTION.md` | 新增 §9 登记 | 本机 |
 | `ITERATION_LOG.md` | 本轮条目 | 本机 |

@@ -1,5 +1,11 @@
 # Revision Plan for audit2 — split by machine
 
+> **Path note (added after W23):** this plan was written while the experiment
+> scripts lived at the repository root. They now live in `experiments/`, so every
+> `python3 phaseB_*.py` command below is `python3 experiments/phaseB_*.py` today.
+> The plan is kept as the record of what was run in the audit2 round; the live
+> commands are in `REVISION_PLAN3.md` and `scripts/run_audit3_gpu_queue.sh`.
+
 **Date:** 2026-09-12
 **Source:** `paper/audit/audit2.md` (independent re-review; verdict 5.5--6/10 borderline, "补齐前四个关键问题 → 7/10")
 **Working rule:** 所有新数字必须先落 `reports/*.json`，再进正文；不得先写数字后补实验。
