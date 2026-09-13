@@ -250,6 +250,17 @@ JSON 进仓库，`METRIC_CORRECTION.md §9` 登记。
 
 # PART II — GPU 机器
 
+**一次跑完（推荐）：** 代码已随本方案提交，GPU 机器 `git pull` 后执行
+
+```bash
+bash scripts/run_audit3_gpu_queue.sh 2>&1 | tee reports/audit3_gpu_queue.log
+```
+
+队列按 A1 → A2 → A3 → A4 依赖顺序执行，已存在的产物自动跳过（可断点续跑），
+A1 失败即停止（它是停止线）。跑完把 `reports/*.json` 提交回来，本机再跑
+`scripts/cluster_stats_audit3.py` 与 `paper/audit/verify_audit3_edits.py`。
+下面的章节是每一步的规格与预登记门禁，队列脚本只是它们的命令行载体。
+
 ## II.A1 — evaluator residual 追查 + SQuAD validator（audit3 §3）
 
 **审稿人要求的三件事：** 解释 $7$–$21\%$ token 分歧与最大 $1.344$ logit 误差；

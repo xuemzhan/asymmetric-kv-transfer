@@ -168,7 +168,8 @@ def summarize(rows, tag):
 
 
 def run(pair, seed, rank, epochs, lr, n_calib, n_eval, output, targets,
-        causal=False, conditions=("joint", "self", "shuffled")):
+        causal=False, conditions=("joint", "self", "shuffled"),
+        dump_rows=False):
     torch.manual_seed(seed)
     np.random.seed(seed)
     train = load_data(seed, "train")[:n_calib]
@@ -207,9 +208,12 @@ def run(pair, seed, rank, epochs, lr, n_calib, n_eval, output, targets,
         raise ValueError(kind)
 
     results = {}
+    rows_by_condition = {}
     # baseline (no adapter)
     base_rows = eval_arms(student, tok_s, eval_s, mapped_eval, test)
     results["no_adapter"] = summarize(base_rows, "no-adapter")
+    if dump_rows:
+        rows_by_condition["no_adapter"] = base_rows
 
     causal_extra = None
     if causal:
@@ -231,11 +235,19 @@ def run(pair, seed, rank, epochs, lr, n_calib, n_eval, output, targets,
         results[tag] = summarize(rows, tag)
         if extra is not None:
             results["causal"] = summarize(rows, "causal(joint)")
+        if dump_rows:
+            rows_by_condition[tag] = rows
         remove_adapters(student, targets)
 
     report = {"task": "phaseB_adapter", "pair": pair, "seed": seed,
               "rank": rank, "epochs": epochs, "lr": lr, "targets": list(targets),
               "n_calib": n_calib, "n_eval": n_eval, "results": results}
+    if dump_rows:
+        # A2/A6: per-sample rows (ids, LL and EM per arm) so document-clustered
+        # inference can be computed for adapter and causality results, which the
+        # archived summaries alone do not allow.
+        report["rows_by_condition"] = rows_by_condition
+        report["row_ids"] = [s["id"] for s in test]
     with open(output, "w") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
     print(f"[adapter] saved: {output}")
@@ -256,6 +268,8 @@ def main():
                     help="also evaluate the fixed adapter on wrong/random/zero KV")
     ap.add_argument("--conditions", default="joint,self,shuffled",
                     help="which adapter training conditions to run")
+    ap.add_argument("--dump-rows", action="store_true",
+                    help="also store per-sample rows per condition (A2/A6)")
     ap.add_argument("--output", default="")
     a = ap.parse_args()
     targets = tuple(t.strip() for t in a.targets.split(",") if t.strip())
@@ -263,7 +277,7 @@ def main():
     out = a.output or f"/workspace/v3/reports/phaseB_adapter_{a.pair}_{tag}_seed{a.seed}.json"
     conds = tuple(c.strip() for c in a.conditions.split(",") if c.strip())
     run(a.pair, a.seed, a.rank, a.epochs, a.lr, a.n_calib, a.n_eval, out, targets,
-        causal=a.causal, conditions=conds)
+        causal=a.causal, conditions=conds, dump_rows=a.dump_rows)
 
 
 if __name__ == "__main__":

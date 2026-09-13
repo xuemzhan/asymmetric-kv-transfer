@@ -14,6 +14,7 @@ Design notes:
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 
@@ -67,7 +68,14 @@ def de_rope_k(k, pos):
 
 
 def load_data(seed: int, split: str):
-    return json.load(open(f"{DATA_DIR}/{split}_v2_seed{seed}.json"))
+    """Load a per-seed v2 split.
+
+    `V3_DATA_DIR` overrides the default data directory so the optional
+    wide-document split (REVISION_PLAN3 II.A5) can be evaluated without
+    overwriting the published split.
+    """
+    data_dir = os.environ.get("V3_DATA_DIR", DATA_DIR)
+    return json.load(open(f"{data_dir}/{split}_v2_seed{seed}.json"))
 
 
 def load_pair(pair: str):
@@ -93,18 +101,23 @@ def load_student(pair: str):
     return model, tok, s_layers
 
 
-def load_model_gpu(path: str):
+def load_model_gpu(path: str, attn_implementation: str | None = None):
     """Deterministic full-GPU load (CPU load then .to('cuda:0')).
 
     device_map='auto' sometimes CPU-offloads the 8B teacher depending on
     transient accelerator memory state, which makes runs ~10x slower and is
     not reproducible. Loading to CPU first and moving to the GPU avoids that.
+
+    `attn_implementation` is only passed when given, so every existing caller
+    keeps the library default; the evaluator attribution probe passes
+    "eager" to separate SDPA cache-path numerics from an implementation bug.
     """
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    model = AutoModelForCausalLM.from_pretrained(
-        path, torch_dtype=torch.bfloat16
-    )
+    kwargs = {"torch_dtype": torch.bfloat16}
+    if attn_implementation is not None:
+        kwargs["attn_implementation"] = attn_implementation
+    model = AutoModelForCausalLM.from_pretrained(path, **kwargs)
     model = model.to("cuda:0")
     tok = AutoTokenizer.from_pretrained(path)
     model.eval()
