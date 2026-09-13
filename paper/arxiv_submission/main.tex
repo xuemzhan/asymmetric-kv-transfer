@@ -57,7 +57,7 @@ answer, and it re-feeds the final query token as the first generation input; we
 confirm both defects in the published evaluation code, and we validate the
 corrected evaluator against a full-prefill reference on the whole Self test set
 (normalized-EM agreement $0.929$--$0.982$; first-token logit error at most
-$1.35$). Under that evaluator, no pair averages more than $0.149$ EM for keys or
+$1.344$). Under that evaluator, no pair averages more than $0.149$ EM for keys or
 $0.065$ for the joint arm over three seeds (largest single seed $0.161$),
 against
 $0.44$--$0.90$ for the student's own cache; on the flagship $8$B$\to0.6$B pair
@@ -132,7 +132,7 @@ Figure~\ref{fig:setting}). Our contributions are:
   fresh cache, and verify the corrected evaluator against a full-prefill
   reference on the complete $56$-item Self test set of every student size under
   study ($0.6$B, $1.7$B, $4$B; normalized-EM agreement $0.929$--$0.982$,
-  first-token logit error at most $1.35$). Under it, no pair's three-seed mean
+  first-token logit error at most $1.344$). Under it, no pair's three-seed mean
   exceeds $0.149$ EM for keys and $0.065$ for the joint arm, against
   $0.44$--$0.90$ for the student's own cache; on the flagship $8$B$\to0.6$B pair
   all three teacher arms are $0.000$. Values exceed $0.15$ on one pair only:
@@ -165,8 +165,9 @@ Figure~\ref{fig:setting}). Our contributions are:
   floor effect of the mapper. What does change is the consumer's
   routing: under mapped teacher keys, the student's top-1 attention agreement
   with its own routing is $0.70$ ($1.7$B$\to0.6$B) and $0.59$
-  ($8$B$\to0.6$B), with routing total-variation $0.165$ and $0.245$. Fitting the
-  value mapper where the student reads value recovers most of V-only transfer:
+  ($8$B$\to0.6$B), with routing total-variation $0.167$ and $0.251$ (seed
+  means). Fitting the value mapper where the student reads value recovers most
+  of V-only transfer:
   an attention-output-aware mapper raises EM from $0.113$ to $0.935$
   ($1.7$B$\to0.6$B) and from $0.000$ to $0.250$ ($8$B$\to0.6$B), a
   $W_O$-aware mapper reaches $0.899$ and $0.268$, and a mapper with shuffled
@@ -295,7 +296,7 @@ implementation on the complete $56$-item Self test set of three student sizes
 (Figure~\ref{fig:evalcheck}). Normalized exact-match agreement is $0.964$
 ($0.6$B), $0.929$ ($1.7$B), and $0.982$ ($4$B); token-level greedy agreement is
 $0.786$, $0.804$, and $0.929$; and the largest absolute error on the first
-generated token's logits is $1.34$, $0.88$, and $0.97$. Greedy tokenization
+generated token's logits is $1.344$, $0.875$, and $0.969$. Greedy tokenization
 therefore diverges on a minority of items without changing the extracted answer,
 and the two paths agree to within two items on Self exact match for every
 student: the corrected path is end-to-end equivalent to full prefill on the
@@ -309,7 +310,7 @@ full-prefill reference on the complete $56$-item Self test set of each student
 size, seed 0. (a) Agreement between the two paths. Token-level greedy agreement
 is lower than normalized exact-match agreement because greedy tokenization drifts
 without changing the extracted answer. (b) First generated token's logits agree
-to within $1.34$ in absolute value, and Self exact match under the two paths
+to within $1.344$ in absolute value, and Self exact match under the two paths
 differs by at most two items.}
 \label{fig:evalcheck}
 \end{figure}
@@ -417,9 +418,16 @@ mapper is fixed (Section~6.1), and the flagship pair's adapter behaviour is
 weaker than the equal-depth pair's.
 
 \emph{Withdrawn.} Our pre-registered G0 gate was defined on the defective EM
-metric. Its task-metric clause is therefore withdrawn; its likelihood clause
-(V-only $\dll$ not significantly above Self; $\dll \le 0$ in all three seeds)
-stands, but it can no longer be read as a statement about task performance.
+metric, on the earlier calibration/evaluation split ($42$/$14$), where V-only
+sat $+1.75$ above Self in answer likelihood ($-9.97 \pm 2.60$ against
+$-11.72 \pm 2.07$, 95\% intervals overlapping). Its task-metric clause is
+therefore withdrawn. We re-ran its likelihood clause after fixing a baseline
+double-counting bug, on the current split ($70$/$56$), where V-only is at or
+below Self in every seed ($\dll = -0.045$, $-0.219$, $-0.415$; $p = 0.024$,
+$0.125$, $0.144$, none significant). The clause's verdict---V-only does not
+transfer---is unchanged, and it rests on a re-run of the pre-registered test
+rather than on the original run; it can no longer be read as a statement about
+task performance.
 % ============================================================================
 \section{Results}
 
@@ -468,7 +476,7 @@ Pair & Self & K & V & J & K & V & J \\
 \midrule
 $8$B$\to0.6$B   & $0.899{\pm}0.010$ & $0.000$ & $0.000$ & $0.000$ & $+2.62{\pm}0.29$ & $-0.23{\pm}0.19$ & $+4.52{\pm}0.15$ \\
 $4$B$\to1.7$B   & $0.440{\pm}0.010$ & $0.054{\pm}0.018$ & $0.000$ & $0.024{\pm}0.010$ & $+2.90{\pm}0.09$ & $+2.91{\pm}0.21$ & $+2.31{\pm}0.25$ \\
-$4$B$\to0.6$B   & $0.899{\pm}0.010$ & $0.000$ & $0.000$ & $0.006{\pm}0.010$ & $+1.58{\pm}0.02$ & $-1.22{\pm}0.06$ & $+2.50{\pm}0.52$ \\
+$4$B$\to0.6$B   & $0.899{\pm}0.010$ & $0.000$ & $0.000$ & $0.006{\pm}0.010$ & $+1.58{\pm}0.02$ & $-1.22{\pm}0.05$ & $+2.50{\pm}0.52$ \\
 $8$B$\to1.7$B   & $0.440{\pm}0.010$ & $0.000$ & $0.000$ & $0.012{\pm}0.021$ & $+1.04{\pm}1.53$ & $+5.63{\pm}0.04$ & $+4.69{\pm}0.27$ \\
 $1.7$B$\to0.6$B & $0.899{\pm}0.010$ & $0.030{\pm}0.010$ & $0.113{\pm}0.052$ & $0.000$ & $-0.82{\pm}0.02$ & $+0.63{\pm}0.17$ & $-2.25{\pm}0.14$ \\
 $8$B$\to4$B     & $0.815{\pm}0.021$ & $0.149{\pm}0.010$ & $0.440{\pm}0.010$ & $0.065{\pm}0.055$ & $+8.52{\pm}0.28$ & $+2.52{\pm}0.07$ & $+8.37{\pm}0.28$ \\
@@ -610,8 +618,9 @@ it, and it becomes the dominant factor once the mapper does.
 For the unequal-depth pair $8$B$\to0.6$B, proportional mapping gives the best and
 most stable joint likelihood ($+4.41$--$+4.68$ over seeds), while offsets,
 permutations, and a calibration-learned top-1 source-layer selection reduce it and
-are unstable; corrected V-only EM is $0.000$ for every map and seed, and K-only
-never exceeds $0.107$. Improving the layer map does not create transfer on this
+are unstable. Under those alternative maps corrected V-only EM is $0.000$ in
+every cell except one learned-selection cell ($0.107$), and K-only never
+exceeds $0.179$. Improving the layer map does not create transfer on this
 pair. We do not read that as alignment being unimportant here, because the
 consumption-side mapper recovers only a quarter of Self on this pair
 (Table~\ref{tab:mappers}): the same floor effect plausibly still applies. The
@@ -672,7 +681,7 @@ We compare the student's attention maps under its own keys and under mapped
 teacher keys (Figure~\ref{fig:mappers}b). Mean top-1 document-token agreement is
 $0.70$ for $1.7$B$\to0.6$B and $0.59$ for $8$B$\to0.6$B, and the values are
 stable across seeds ($0.698$--$0.701$ and $0.577$--$0.590$); routing
-total-variation is $0.165$ and $0.245$ respectively, while the attention
+total-variation averages $0.167$ and $0.251$ over seeds, while the attention
 \emph{distribution} stays close (cosine $0.97$ and $0.93$). Mapped teacher keys
 thus preserve the overall shape of the attention distribution but change which
 document token each query attends to most, and the change is larger on the
@@ -742,16 +751,18 @@ appropriate ceiling is the \emph{adapted} Self arm, which the archived summaries
 now retain: $0.940 \pm 0.041$ on both pairs. Read against it, the equal-depth
 recovery is essentially complete on the K and V arms ($0.940$) and short on the
 joint arm ($0.827$), while the flagship recovery is partial on all three
-($0.792$, $0.357$, $0.470$). The adapter also alters the student's own
-readout---by $+0.041$ on $1.7$B$\to0.6$B and $+0.041$ on $8$B$\to0.6$B relative
-to the unadapted $0.899$---so an unadapted Self baseline would have understated
-the gap on the flagship pair and overstated it on no pair.
+($0.792$, $0.357$, $0.470$). The adapter also raises the student's own readout:
+the adapted Self is $0.940 \pm 0.041$ on both pairs, $+0.041$ above the
+unadapted $0.899$. Using the unadapted value as the ceiling would therefore
+understate the remaining gap on the flagship pair, and on the equal-depth pair
+it would credit the recovered K and V arms with a $0.041$ gain over Self that
+belongs to the adapter rather than to the transfer.
 
 Both controls fall short of the teacher-KV adapter, which is the evidence that
 matters for interpretation. Training the same adapter on the student's own states
-yields $0.203/0.345/0.179$ ($1.7$B) and $0.113/0.107/0.119$ ($8$B): the adapter
+yields $0.202/0.345/0.179$ ($1.7$B) and $0.113/0.107/0.119$ ($8$B): the adapter
 must see the teacher-state distribution. Training on shuffled-document teacher
-states is intermediate, at $0.559/0.345/0.458$ ($1.7$B) and
+states is intermediate, at $0.560/0.345/0.458$ ($1.7$B) and
 $0.369/0.113/0.131$ ($8$B). We therefore read the recovery as partly
 content-specific and partly an adaptation to teacher-like state distributions in
 general; on the $1.7$B joint arm the shuffled control reaches $0.458$ against
@@ -792,11 +803,12 @@ The repair is also tied to the task distribution. Applying the synthetic-trained
 mapper and the synthetic-trained adapter to SQuAD without retraining leaves
 K-only, V-only, and joint EM at $0.000$ and $0.033$ respectively
 (Table~\ref{tab:squadrepair}). The consumption-space mapper makes the SQuAD value
-arm's likelihood \emph{worse} ($\dll$ $+4.62$ against $+1.05$ under the default
-protocol) while EM stays at $0.000$, so on this set it moves the state further
-from usable rather than closer. The adapter is not inert: it raises the student's
-own SQuAD score from $0.367$ to $0.600$ without seeing SQuAD data, so it does
-transfer some generic benefit to the student's reading. It simply does not make
+arm's likelihood \emph{worse} ($\dll$ $+4.62$ at seed 0, against $+1.05$ for
+the default protocol at the same seed) while EM stays at $0.000$, so on this
+set it moves the state further from usable rather than closer. The adapter is
+not inert: it raises the student's own SQuAD score from $0.367$ to $0.600$
+without seeing SQuAD data, so it does transfer some generic benefit to the
+student's reading. It simply does not make
 the transferred state answer questions there. We therefore claim repairability of
 consumption under our task distribution, not task generalization.
 
@@ -880,10 +892,10 @@ adapted, not the unadapted, student.}
 Pair & Adapter trained on & Self & K-only & V-only & Joint \\
 \midrule
 \multirow{4}{*}{$1.7$B$\to0.6$B}
- & none            & $0.899{\pm}0.010$ & $0.030{\pm}0.010$ & $0.113{\pm}0.051$ & $0.000$ \\
+ & none            & $0.899{\pm}0.010$ & $0.030{\pm}0.010$ & $0.113{\pm}0.052$ & $0.000$ \\
  & teacher KV      & $0.940{\pm}0.041$ & $\mathbf{0.940{\pm}0.041}$ & $\mathbf{0.940{\pm}0.041}$ & $\mathbf{0.827{\pm}0.237}$ \\
- & student KV      & $0.899{\pm}0.045$ & $0.203{\pm}0.203$ & $0.345{\pm}0.536$ & $0.179{\pm}0.247$ \\
- & shuffled teacher KV & $0.482{\pm}0.064$ & $0.559{\pm}0.020$ & $0.345{\pm}0.054$ & $0.458{\pm}0.152$ \\
+ & student KV      & $0.899{\pm}0.045$ & $0.202{\pm}0.203$ & $0.345{\pm}0.536$ & $0.179{\pm}0.247$ \\
+ & shuffled teacher KV & $0.482{\pm}0.064$ & $0.560{\pm}0.021$ & $0.345{\pm}0.055$ & $0.458{\pm}0.152$ \\
 \midrule
 \multirow{4}{*}{$8$B$\to0.6$B}
  & none            & $0.899{\pm}0.010$ & $0.000$ & $0.000$ & $0.000$ \\
@@ -1015,7 +1027,7 @@ pair and part of them on the flagship pair.
   Self test set of three student sizes (Figure~\ref{fig:evalcheck}). Greedy
   tokenization still diverges from the reference on $7$--$21\%$ of items
   depending on student size, so the agreement is on the extracted answer and on
-  the first-token logits (error $\le1.34$), not token-for-token. Legacy numbers
+  the first-token logits (error $\le1.344$), not token-for-token. Legacy numbers
   are reported for comparison in the supplementary material rather than in the
   main text.
 \item \textbf{Unexplained baseline spread.} Self EM differs by student
@@ -1027,12 +1039,13 @@ pair and part of them on the flagship pair.
   formatting artifact we can see. We still cannot explain it. It does not affect
   within-pair arm comparisons, which is what our claims rest on, but it means
   absolute EM levels are not comparable across pairs.
-\item \textbf{Partial seed coverage.} Two results are seed 0 only: the
-  repaired-regime layer scrambling (Section~6.1) and the projection ablation of
-  Table~\ref{tab:ablation}. The $1.7$B$\to0.6$B control suite, the identity
-  V-only control, the random-KV control, and both causality runs are seed 0 only
-  as well, whereas the $8$B controls and all four-arm scans have three seeds.
-  Where a comparison matters for a headline claim we used a three-seed run.
+\item \textbf{Partial seed coverage.} Four results are seed 0 only: the
+  repaired-regime layer scrambling (Section~6.1), the projection ablation of
+  Table~\ref{tab:ablation}, and the two adapter causality runs. The
+  $1.7$B$\to0.6$B control suite---including its identity and random-KV
+  controls---and the $8$B control suite were both run for all three seeds, as
+  were all four-arm scans. Where a comparison matters for a headline claim we
+  used a three-seed run.
 \item \textbf{Flagship causality.} Destroying the injected content separates the
   correct arm from the controls clearly on $1.7$B$\to0.6$B but only weakly on
   $8$B$\to0.6$B ($0.304$ against $0.143$--$0.161$, one seed). We cannot rule out
