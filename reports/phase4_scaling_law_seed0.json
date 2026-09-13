@@ -1,0 +1,63 @@
+{
+  "task": "phase4_scaling_law",
+  "seed": 0,
+  "n_calib": 42,
+  "n_eval": 14,
+  "pairs": [
+    "8B_4B"
+  ],
+  "results": {
+    "8B_4B": {
+      "pair": "8B_4B",
+      "summary_ll": {
+        "Self": {
+          "mean": -18.76094282241095,
+          "ci95": 2.648903697048519,
+          "n": 14
+        },
+        "K-only": {
+          "mean": -11.095111605666931,
+          "ci95": 3.180960483072506,
+          "n": 14
+        },
+        "V-only": {
+          "mean": -17.74978576387678,
+          "ci95": 2.9980014331280427,
+          "n": 14
+        },
+        "Joint": {
+          "mean": -10.400056978066761,
+          "ci95": 3.156430872519096,
+          "n": 14
+        }
+      },
+      "exact_match": {
+        "Self": 1.0,
+        "K-only": 1.0,
+        "V-only": 1.0,
+        "Joint": 1.0
+      },
+      "deltas": {
+        "K-only": 7.665831216744019,
+        "V-only": 1.0111570585341703,
+        "Joint": 8.360885844344189
+      },
+      "ratio": {
+        "K_V_ratio": 7.581246802407566,
+        "efficiency": 0.9168683031271924
+      },
+      "n_eval": 14
+    }
+  },
+  "cross_pair_analysis": {
+    "mean_K_delta": 7.665831216744019,
+    "std_K_delta": 0.0,
+    "mean_V_delta": 1.0111570585341703,
+    "std_V_delta": 0.0,
+    "mean_K_V_ratio": 7.581246802407566,
+    "std_K_V_ratio": 0.0,
+    "K_always_positive": true,
+    "V_always_negative": false,
+    "pattern_consistent": false
+  }
+}

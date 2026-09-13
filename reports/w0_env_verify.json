@@ -1,0 +1,8 @@
+{
+  "gpu_name": "NVIDIA GeForce RTX 4090",
+  "gpu_memory_total": 24564,
+  "gpu_memory_free": 24077,
+  "model_loaded_ok": true,
+  "model_device": "cuda:0",
+  "model_memory_gb": 16.38
+}

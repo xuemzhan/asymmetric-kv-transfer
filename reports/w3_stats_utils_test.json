@@ -1,0 +1,54 @@
+{
+  "module": "stats_utils.py",
+  "total": 6,
+  "passed": 6,
+  "failed": 0,
+  "all_pass": true,
+  "results": [
+    {
+      "test": "bootstrap_ci95_normal",
+      "mean": 5.019332055822326,
+      "ci_low": 4.959551439128668,
+      "ci_high": 5.081211258990616,
+      "status": "PASS"
+    },
+    {
+      "test": "bootstrap_ci95_small_sample",
+      "mean": 0.8006699102765614,
+      "ci_low": 0.7797234251644517,
+      "ci_high": 0.8223296225156177,
+      "width": 0.042606197351166,
+      "status": "PASS"
+    },
+    {
+      "test": "paired_wilcoxon_detects_difference",
+      "statistic": 32.0,
+      "p_value": 0.00485992431640625,
+      "cohens_d": 0.7463698442123599,
+      "status": "PASS"
+    },
+    {
+      "test": "paired_wilcoxon_no_difference",
+      "statistic": 0.0,
+      "p_value": 1.0,
+      "cohens_d": 0.0,
+      "status": "PASS"
+    },
+    {
+      "test": "paired_bootstrap_detects_difference",
+      "mean_delta": 0.13040130653873286,
+      "ci_low": 0.09826258230130167,
+      "ci_high": 0.15887069392843012,
+      "p_value": 0.0,
+      "status": "PASS"
+    },
+    {
+      "test": "paired_bootstrap_no_difference",
+      "mean_delta": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "p_value": 2.0,
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,499 @@
+{
+  "task": "phase1_causal_substrate",
+  "seed": 0,
+  "pair": "Qwen3-8B -> Qwen3-0.6B",
+  "n_calib": 42,
+  "n_eval": 14,
+  "self_LL": -11.719628203482856,
+  "self_EM": 0.42857142857142855,
+  "layer_results": [
+    {
+      "student_layer": 0,
+      "teacher_layer": 0,
+      "K_only_LL": -11.930504253932408,
+      "K_only_LL_delta": -0.21087605044955282,
+      "K_only_EM": 0.6428571428571429,
+      "V_only_LL": -11.724978322074525,
+      "V_only_LL_delta": -0.0053501185916697835,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 1,
+      "teacher_layer": 1,
+      "K_only_LL": -11.656434019406637,
+      "K_only_LL_delta": 0.06319418407621846,
+      "K_only_EM": 0.42857142857142855,
+      "V_only_LL": -11.717939297358194,
+      "V_only_LL_delta": 0.0016889061246612158,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 2,
+      "teacher_layer": 3,
+      "K_only_LL": -11.71937226681482,
+      "K_only_LL_delta": 0.0002559366680348063,
+      "K_only_EM": 0.42857142857142855,
+      "V_only_LL": -11.681904287565322,
+      "V_only_LL_delta": 0.037723915917533546,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 3,
+      "teacher_layer": 4,
+      "K_only_LL": -11.943968443643481,
+      "K_only_LL_delta": -0.22434024016062537,
+      "K_only_EM": 0.8571428571428571,
+      "V_only_LL": -11.905368963877361,
+      "V_only_LL_delta": -0.1857407603945056,
+      "V_only_EM": 0.6428571428571429
+    },
+    {
+      "student_layer": 4,
+      "teacher_layer": 5,
+      "K_only_LL": -12.857732795533678,
+      "K_only_LL_delta": -1.1381045920508228,
+      "K_only_EM": 0.9285714285714286,
+      "V_only_LL": -11.972750578607831,
+      "V_only_LL_delta": -0.2531223751249758,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 5,
+      "teacher_layer": 6,
+      "K_only_LL": -12.459546202705019,
+      "K_only_LL_delta": -0.739917999222163,
+      "K_only_EM": 0.7142857142857143,
+      "V_only_LL": -11.39039034502847,
+      "V_only_LL_delta": 0.3292378584543858,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 6,
+      "teacher_layer": 8,
+      "K_only_LL": -11.813715401149931,
+      "K_only_LL_delta": -0.09408719766707563,
+      "K_only_EM": 0.5714285714285714,
+      "V_only_LL": -11.59325879528409,
+      "V_only_LL_delta": 0.12636940819876585,
+      "V_only_EM": 0.5
+    },
+    {
+      "student_layer": 7,
+      "teacher_layer": 9,
+      "K_only_LL": -11.615463120596749,
+      "K_only_LL_delta": 0.10416508288610693,
+      "K_only_EM": 0.42857142857142855,
+      "V_only_LL": -12.024391929308575,
+      "V_only_LL_delta": -0.304763725825719,
+      "V_only_EM": 0.5
+    },
+    {
+      "student_layer": 8,
+      "teacher_layer": 10,
+      "K_only_LL": -11.573562633423577,
+      "K_only_LL_delta": 0.14606557005927812,
+      "K_only_EM": 0.2857142857142857,
+      "V_only_LL": -10.6530765522094,
+      "V_only_LL_delta": 1.0665516512734552,
+      "V_only_EM": 0.7857142857142857
+    },
+    {
+      "student_layer": 9,
+      "teacher_layer": 12,
+      "K_only_LL": -11.595839210918971,
+      "K_only_LL_delta": 0.12378899256388465,
+      "K_only_EM": 0.8571428571428571,
+      "V_only_LL": -11.750719717570714,
+      "V_only_LL_delta": -0.031091514087858485,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 10,
+      "teacher_layer": 13,
+      "K_only_LL": -11.891092641013007,
+      "K_only_LL_delta": -0.17146443753015106,
+      "K_only_EM": 0.35714285714285715,
+      "V_only_LL": -11.556290331340971,
+      "V_only_LL_delta": 0.16333787214188433,
+      "V_only_EM": 0.5
+    },
+    {
+      "student_layer": 11,
+      "teacher_layer": 14,
+      "K_only_LL": -11.577653964360554,
+      "K_only_LL_delta": 0.14197423912230178,
+      "K_only_EM": 0.5,
+      "V_only_LL": -12.0220384370713,
+      "V_only_LL_delta": -0.30241023358844465,
+      "V_only_EM": 0.5
+    },
+    {
+      "student_layer": 12,
+      "teacher_layer": 15,
+      "K_only_LL": -11.723010267530167,
+      "K_only_LL_delta": -0.0033820640473116725,
+      "K_only_EM": 0.7857142857142857,
+      "V_only_LL": -8.001892515591212,
+      "V_only_LL_delta": 3.7177356878916434,
+      "V_only_EM": 0.7857142857142857
+    },
+    {
+      "student_layer": 13,
+      "teacher_layer": 17,
+      "K_only_LL": -11.472966006823949,
+      "K_only_LL_delta": 0.24666219665890665,
+      "K_only_EM": 0.5,
+      "V_only_LL": -11.777341274988085,
+      "V_only_LL_delta": -0.05771307150522986,
+      "V_only_EM": 0.7142857142857143
+    },
+    {
+      "student_layer": 14,
+      "teacher_layer": 18,
+      "K_only_LL": -11.626295123781476,
+      "K_only_LL_delta": 0.09333307970137916,
+      "K_only_EM": 0.35714285714285715,
+      "V_only_LL": -13.167976731345764,
+      "V_only_LL_delta": -1.4483485278629082,
+      "V_only_EM": 1.0
+    },
+    {
+      "student_layer": 15,
+      "teacher_layer": 19,
+      "K_only_LL": -11.790243994622001,
+      "K_only_LL_delta": -0.0706157911391454,
+      "K_only_EM": 0.35714285714285715,
+      "V_only_LL": -11.72044917515346,
+      "V_only_LL_delta": -0.0008209716706044645,
+      "V_only_EM": 0.2857142857142857
+    },
+    {
+      "student_layer": 16,
+      "teacher_layer": 21,
+      "K_only_LL": -10.125727574030558,
+      "K_only_LL_delta": 1.593900629452298,
+      "K_only_EM": 0.5,
+      "V_only_LL": -10.942382767086938,
+      "V_only_LL_delta": 0.7772454363959174,
+      "V_only_EM": 0.5
+    },
+    {
+      "student_layer": 17,
+      "teacher_layer": 22,
+      "K_only_LL": -11.658784872009642,
+      "K_only_LL_delta": 0.060843331473213524,
+      "K_only_EM": 0.7142857142857143,
+      "V_only_LL": -11.72279667286646,
+      "V_only_LL_delta": -0.0031684693836044886,
+      "V_only_EM": 0.35714285714285715
+    },
+    {
+      "student_layer": 18,
+      "teacher_layer": 23,
+      "K_only_LL": -11.609541370755151,
+      "K_only_LL_delta": 0.11008683272770448,
+      "K_only_EM": 0.35714285714285715,
+      "V_only_LL": -11.740959315072923,
+      "V_only_LL_delta": -0.021331111590066953,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 19,
+      "teacher_layer": 24,
+      "K_only_LL": -11.716287028221856,
+      "K_only_LL_delta": 0.0033411752609993073,
+      "K_only_EM": 0.42857142857142855,
+      "V_only_LL": -12.020105407351538,
+      "V_only_LL_delta": -0.3004772038686827,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 20,
+      "teacher_layer": 26,
+      "K_only_LL": -11.0336470972924,
+      "K_only_LL_delta": 0.6859811061904555,
+      "K_only_EM": 0.42857142857142855,
+      "V_only_LL": -11.453502422287352,
+      "V_only_LL_delta": 0.26612578119550356,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 21,
+      "teacher_layer": 27,
+      "K_only_LL": -9.996444673765271,
+      "K_only_LL_delta": 1.7231835297175842,
+      "K_only_EM": 0.6428571428571429,
+      "V_only_LL": -12.158388796306792,
+      "V_only_LL_delta": -0.438760592823936,
+      "V_only_EM": 0.35714285714285715
+    },
+    {
+      "student_layer": 22,
+      "teacher_layer": 28,
+      "K_only_LL": -12.190838121232533,
+      "K_only_LL_delta": -0.47120991774967713,
+      "K_only_EM": 0.35714285714285715,
+      "V_only_LL": -11.869968414306639,
+      "V_only_LL_delta": -0.15034021082378324,
+      "V_only_EM": 0.35714285714285715
+    },
+    {
+      "student_layer": 23,
+      "teacher_layer": 30,
+      "K_only_LL": -11.508020117169336,
+      "K_only_LL_delta": 0.2116080863135199,
+      "K_only_EM": 0.42857142857142855,
+      "V_only_LL": -12.260658468518939,
+      "V_only_LL_delta": -0.541030265036083,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 24,
+      "teacher_layer": 31,
+      "K_only_LL": -11.650835576511565,
+      "K_only_LL_delta": 0.06879262697129107,
+      "K_only_EM": 0.5,
+      "V_only_LL": -11.751647075017294,
+      "V_only_LL_delta": -0.032018871534438276,
+      "V_only_EM": 0.42857142857142855
+    },
+    {
+      "student_layer": 25,
+      "teacher_layer": 32,
+      "K_only_LL": -11.572270631790163,
+      "K_only_LL_delta": 0.1473575716926927,
+      "K_only_EM": 0.42857142857142855,
+      "V_only_LL": -11.361285493487403,
+      "V_only_LL_delta": 0.35834270999545303,
+      "V_only_EM": 0.35714285714285715
+    },
+    {
+      "student_layer": 26,
+      "teacher_layer": 33,
+      "K_only_LL": -12.794028026717053,
+      "K_only_LL_delta": -1.074399823234197,
+      "K_only_EM": 0.42857142857142855,
+      "V_only_LL": -12.125457099505834,
+      "V_only_LL_delta": -0.4058288960229781,
+      "V_only_EM": 0.35714285714285715
+    },
+    {
+      "student_layer": 27,
+      "teacher_layer": 35,
+      "K_only_LL": -11.634903283346267,
+      "K_only_LL_delta": 0.08472492013658872,
+      "K_only_EM": 0.35714285714285715,
+      "V_only_LL": -11.649634792691186,
+      "V_only_LL_delta": 0.06999341079166932,
+      "V_only_EM": 0.35714285714285715
+    }
+  ],
+  "effective_ranks": [
+    {
+      "student_layer": 0,
+      "teacher_layer": 0,
+      "rank_student_V": 20626.380859375,
+      "rank_teacher_V_mapped": 20407.669921875,
+      "rank_diff": 689.0587768554688
+    },
+    {
+      "student_layer": 1,
+      "teacher_layer": 1,
+      "rank_student_V": 21655.052734375,
+      "rank_teacher_V_mapped": 21601.712890625,
+      "rank_diff": 18951.130859375
+    },
+    {
+      "student_layer": 2,
+      "teacher_layer": 3,
+      "rank_student_V": 21318.9765625,
+      "rank_teacher_V_mapped": 21333.763671875,
+      "rank_diff": 19846.1875
+    },
+    {
+      "student_layer": 3,
+      "teacher_layer": 4,
+      "rank_student_V": 21613.2734375,
+      "rank_teacher_V_mapped": 21560.09765625,
+      "rank_diff": 20202.119140625
+    },
+    {
+      "student_layer": 4,
+      "teacher_layer": 5,
+      "rank_student_V": 21682.703125,
+      "rank_teacher_V_mapped": 21658.73046875,
+      "rank_diff": 20531.314453125
+    },
+    {
+      "student_layer": 5,
+      "teacher_layer": 6,
+      "rank_student_V": 21518.97265625,
+      "rank_teacher_V_mapped": 21382.60546875,
+      "rank_diff": 20453.455078125
+    },
+    {
+      "student_layer": 6,
+      "teacher_layer": 8,
+      "rank_student_V": 21590.796875,
+      "rank_teacher_V_mapped": 21593.123046875,
+      "rank_diff": 20922.646484375
+    },
+    {
+      "student_layer": 7,
+      "teacher_layer": 9,
+      "rank_student_V": 21719.025390625,
+      "rank_teacher_V_mapped": 21757.189453125,
+      "rank_diff": 21149.44140625
+    },
+    {
+      "student_layer": 8,
+      "teacher_layer": 10,
+      "rank_student_V": 19254.048828125,
+      "rank_teacher_V_mapped": 20491.64453125,
+      "rank_diff": 18486.4765625
+    },
+    {
+      "student_layer": 9,
+      "teacher_layer": 12,
+      "rank_student_V": 21538.828125,
+      "rank_teacher_V_mapped": 21602.619140625,
+      "rank_diff": 21187.6171875
+    },
+    {
+      "student_layer": 10,
+      "teacher_layer": 13,
+      "rank_student_V": 21528.29296875,
+      "rank_teacher_V_mapped": 21716.55859375,
+      "rank_diff": 21019.00390625
+    },
+    {
+      "student_layer": 11,
+      "teacher_layer": 14,
+      "rank_student_V": 20635.21484375,
+      "rank_teacher_V_mapped": 21225.3125,
+      "rank_diff": 19580.52734375
+    },
+    {
+      "student_layer": 12,
+      "teacher_layer": 15,
+      "rank_student_V": 16742.443359375,
+      "rank_teacher_V_mapped": 18853.515625,
+      "rank_diff": 16534.89453125
+    },
+    {
+      "student_layer": 13,
+      "teacher_layer": 17,
+      "rank_student_V": 17232.935546875,
+      "rank_teacher_V_mapped": 18902.68359375,
+      "rank_diff": 16822.05078125
+    },
+    {
+      "student_layer": 14,
+      "teacher_layer": 18,
+      "rank_student_V": 17660.572265625,
+      "rank_teacher_V_mapped": 19141.396484375,
+      "rank_diff": 17475.857421875
+    },
+    {
+      "student_layer": 15,
+      "teacher_layer": 19,
+      "rank_student_V": 21780.7734375,
+      "rank_teacher_V_mapped": 21745.240234375,
+      "rank_diff": 21421.58984375
+    },
+    {
+      "student_layer": 16,
+      "teacher_layer": 21,
+      "rank_student_V": 21789.7265625,
+      "rank_teacher_V_mapped": 21771.63671875,
+      "rank_diff": 21295.263671875
+    },
+    {
+      "student_layer": 17,
+      "teacher_layer": 22,
+      "rank_student_V": 21765.98828125,
+      "rank_teacher_V_mapped": 21767.794921875,
+      "rank_diff": 21362.224609375
+    },
+    {
+      "student_layer": 18,
+      "teacher_layer": 23,
+      "rank_student_V": 21614.921875,
+      "rank_teacher_V_mapped": 21526.0546875,
+      "rank_diff": 21352.69140625
+    },
+    {
+      "student_layer": 19,
+      "teacher_layer": 24,
+      "rank_student_V": 21727.806640625,
+      "rank_teacher_V_mapped": 21714.279296875,
+      "rank_diff": 21159.66796875
+    },
+    {
+      "student_layer": 20,
+      "teacher_layer": 26,
+      "rank_student_V": 21430.767578125,
+      "rank_teacher_V_mapped": 21498.31640625,
+      "rank_diff": 20830.705078125
+    },
+    {
+      "student_layer": 21,
+      "teacher_layer": 27,
+      "rank_student_V": 21106.623046875,
+      "rank_teacher_V_mapped": 21207.83203125,
+      "rank_diff": 20545.06640625
+    },
+    {
+      "student_layer": 22,
+      "teacher_layer": 28,
+      "rank_student_V": 21383.13671875,
+      "rank_teacher_V_mapped": 21538.560546875,
+      "rank_diff": 20955.85546875
+    },
+    {
+      "student_layer": 23,
+      "teacher_layer": 30,
+      "rank_student_V": 20998.66796875,
+      "rank_teacher_V_mapped": 21285.2734375,
+      "rank_diff": 20433.568359375
+    },
+    {
+      "student_layer": 24,
+      "teacher_layer": 31,
+      "rank_student_V": 20875.947265625,
+      "rank_teacher_V_mapped": 21040.783203125,
+      "rank_diff": 20525.59765625
+    },
+    {
+      "student_layer": 25,
+      "teacher_layer": 32,
+      "rank_student_V": 20342.650390625,
+      "rank_teacher_V_mapped": 20638.6796875,
+      "rank_diff": 20224.9609375
+    },
+    {
+      "student_layer": 26,
+      "teacher_layer": 33,
+      "rank_student_V": 20852.509765625,
+      "rank_teacher_V_mapped": 20925.33984375,
+      "rank_diff": 20582.69921875
+    },
+    {
+      "student_layer": 27,
+      "teacher_layer": 35,
+      "rank_student_V": 21625.99609375,
+      "rank_teacher_V_mapped": 21636.142578125,
+      "rank_diff": 21276.7890625
+    }
+  ],
+  "summary": {
+    "best_V_only_layer": 12,
+    "best_V_only_delta_LL": 3.7177356878916434,
+    "best_V_only_EM": 0.7857142857142857,
+    "best_K_only_layer": 21,
+    "best_K_only_delta_LL": 1.7231835297175842,
+    "best_K_only_EM": 0.6428571428571429,
+    "mean_V_only_delta": 0.08685841852304943,
+    "mean_K_only_delta": 0.050387892086490575
+  }
+}

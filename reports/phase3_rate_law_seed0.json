@@ -1,0 +1,95 @@
+{
+  "task": "phase3_rate_law",
+  "seed": 0,
+  "pair": "Qwen3-8B -> Qwen3-0.6B",
+  "n_calib": 42,
+  "n_eval": 14,
+  "baselines": {
+    "self_LL": -11.719628203482856,
+    "k_only_LL": -6.744172668616686,
+    "v_only_LL": -9.969570680743173,
+    "joint_LL": -7.148333670981672,
+    "delta_k_only": 4.975455534866169,
+    "delta_v_only": 1.7500575227396826,
+    "delta_joint": 4.571294532501184
+  },
+  "cost_curve": [
+    {
+      "seq_len": 100,
+      "cache_mb": 10.9375,
+      "mapper_mb": 224.21875,
+      "cost_ratio": 0.04878048780487805,
+      "cache_gb": 0.01068115234375
+    },
+    {
+      "seq_len": 500,
+      "cache_mb": 54.6875,
+      "mapper_mb": 224.21875,
+      "cost_ratio": 0.24390243902439024,
+      "cache_gb": 0.05340576171875
+    },
+    {
+      "seq_len": 1000,
+      "cache_mb": 109.375,
+      "mapper_mb": 224.21875,
+      "cost_ratio": 0.4878048780487805,
+      "cache_gb": 0.1068115234375
+    },
+    {
+      "seq_len": 2000,
+      "cache_mb": 218.75,
+      "mapper_mb": 224.21875,
+      "cost_ratio": 0.975609756097561,
+      "cache_gb": 0.213623046875
+    },
+    {
+      "seq_len": 5000,
+      "cache_mb": 546.875,
+      "mapper_mb": 224.21875,
+      "cost_ratio": 2.4390243902439024,
+      "cache_gb": 0.5340576171875
+    },
+    {
+      "seq_len": 10000,
+      "cache_mb": 1093.75,
+      "mapper_mb": 224.21875,
+      "cost_ratio": 4.878048780487805,
+      "cache_gb": 1.068115234375
+    },
+    {
+      "seq_len": 20000,
+      "cache_mb": 2187.5,
+      "mapper_mb": 224.21875,
+      "cost_ratio": 9.75609756097561,
+      "cache_gb": 2.13623046875
+    },
+    {
+      "seq_len": 50000,
+      "cache_mb": 5468.75,
+      "mapper_mb": 224.21875,
+      "cost_ratio": 24.390243902439025,
+      "cache_gb": 5.340576171875
+    }
+  ],
+  "cross_point_seq_len": 2050.0,
+  "mapper_params_mb": 224.21875,
+  "mapper_total_params": 58777600,
+  "efficiency": {
+    "K_only_per_mb": 0.022190184963863054,
+    "V_only_per_mb": 0.007805134596190919,
+    "Joint_per_mb": 0.020387655057845,
+    "K_only_per_token": 0.0048588432957677435,
+    "V_only_per_token": 0.0017090405495504713
+  },
+  "g_values": {
+    "g_K": 1.0,
+    "g_V": 0.999832757438521
+  },
+  "predicted_cost_ratio": 0.9998327574385211,
+  "p4_verdict": {
+    "cross_point_exists": true,
+    "cross_point_seq_len": 2050.0,
+    "predicted_ratio": 0.9998327574385211,
+    "actual_ratio_at_cross": 0.04878048780487805
+  }
+}

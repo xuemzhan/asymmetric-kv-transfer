@@ -1,0 +1,647 @@
+{
+  "task": "phase2_g_scalar",
+  "seed": 0,
+  "n_calib": 42,
+  "pairs": [
+    "8B_0.6B",
+    "4B_1.7B",
+    "4B_0.6B"
+  ],
+  "results": {
+    "8B_0.6B": {
+      "layers": [
+        {
+          "student_layer": 0,
+          "teacher_layer": 0,
+          "g_K": 1.0,
+          "g_V": 0.9953172082785834,
+          "g_ratio": 1.0047048234296236
+        },
+        {
+          "student_layer": 1,
+          "teacher_layer": 1,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 2,
+          "teacher_layer": 3,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 3,
+          "teacher_layer": 4,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 4,
+          "teacher_layer": 5,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 5,
+          "teacher_layer": 6,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 6,
+          "teacher_layer": 8,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 7,
+          "teacher_layer": 9,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 8,
+          "teacher_layer": 10,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 9,
+          "teacher_layer": 12,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 10,
+          "teacher_layer": 13,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 11,
+          "teacher_layer": 14,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 12,
+          "teacher_layer": 15,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 13,
+          "teacher_layer": 17,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 14,
+          "teacher_layer": 18,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 15,
+          "teacher_layer": 19,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 16,
+          "teacher_layer": 21,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 17,
+          "teacher_layer": 22,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 18,
+          "teacher_layer": 23,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 19,
+          "teacher_layer": 24,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 20,
+          "teacher_layer": 26,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 21,
+          "teacher_layer": 27,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 22,
+          "teacher_layer": 28,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 23,
+          "teacher_layer": 30,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 24,
+          "teacher_layer": 31,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 25,
+          "teacher_layer": 32,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 26,
+          "teacher_layer": 33,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 27,
+          "teacher_layer": 35,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        }
+      ],
+      "mean_g_K": 1.0,
+      "mean_g_V": 0.999832757438521,
+      "std_g_K": 0.0,
+      "std_g_V": 0.0008690178410096246,
+      "mean_g_ratio": 1.000168029408201
+    },
+    "4B_1.7B": {
+      "layers": [
+        {
+          "student_layer": 0,
+          "teacher_layer": 0,
+          "g_K": 1.0,
+          "g_V": 0.9967711864564482,
+          "g_ratio": 1.0032392725506345
+        },
+        {
+          "student_layer": 1,
+          "teacher_layer": 1,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 2,
+          "teacher_layer": 3,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 3,
+          "teacher_layer": 4,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 4,
+          "teacher_layer": 5,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 5,
+          "teacher_layer": 6,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 6,
+          "teacher_layer": 8,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 7,
+          "teacher_layer": 9,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 8,
+          "teacher_layer": 10,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 9,
+          "teacher_layer": 12,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 10,
+          "teacher_layer": 13,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 11,
+          "teacher_layer": 14,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 12,
+          "teacher_layer": 15,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 13,
+          "teacher_layer": 17,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 14,
+          "teacher_layer": 18,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 15,
+          "teacher_layer": 19,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 16,
+          "teacher_layer": 21,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 17,
+          "teacher_layer": 22,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 18,
+          "teacher_layer": 23,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 19,
+          "teacher_layer": 24,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 20,
+          "teacher_layer": 26,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 21,
+          "teacher_layer": 27,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 22,
+          "teacher_layer": 28,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 23,
+          "teacher_layer": 30,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 24,
+          "teacher_layer": 31,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 25,
+          "teacher_layer": 32,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 26,
+          "teacher_layer": 33,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 27,
+          "teacher_layer": 35,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        }
+      ],
+      "mean_g_K": 1.0,
+      "mean_g_V": 0.9998846852305875,
+      "std_g_K": 0.0,
+      "std_g_V": 0.0005991931184569446,
+      "mean_g_ratio": 1.0001156883053797
+    },
+    "4B_0.6B": {
+      "layers": [
+        {
+          "student_layer": 0,
+          "teacher_layer": 0,
+          "g_K": 1.0,
+          "g_V": 0.9967548234328488,
+          "g_ratio": 1.003255742024879
+        },
+        {
+          "student_layer": 1,
+          "teacher_layer": 1,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 2,
+          "teacher_layer": 3,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 3,
+          "teacher_layer": 4,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 4,
+          "teacher_layer": 5,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 5,
+          "teacher_layer": 6,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 6,
+          "teacher_layer": 8,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 7,
+          "teacher_layer": 9,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 8,
+          "teacher_layer": 10,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 9,
+          "teacher_layer": 12,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 10,
+          "teacher_layer": 13,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 11,
+          "teacher_layer": 14,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 12,
+          "teacher_layer": 15,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 13,
+          "teacher_layer": 17,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 14,
+          "teacher_layer": 18,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 15,
+          "teacher_layer": 19,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 16,
+          "teacher_layer": 21,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 17,
+          "teacher_layer": 22,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 18,
+          "teacher_layer": 23,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 19,
+          "teacher_layer": 24,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 20,
+          "teacher_layer": 26,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 21,
+          "teacher_layer": 27,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 22,
+          "teacher_layer": 28,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 23,
+          "teacher_layer": 30,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 24,
+          "teacher_layer": 31,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 25,
+          "teacher_layer": 32,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 26,
+          "teacher_layer": 33,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        },
+        {
+          "student_layer": 27,
+          "teacher_layer": 35,
+          "g_K": 1.0,
+          "g_V": 1.0,
+          "g_ratio": 1.0
+        }
+      ],
+      "mean_g_K": 1.0,
+      "mean_g_V": 0.9998841008368874,
+      "std_g_K": 0.0,
+      "std_g_V": 0.0006022297171969061,
+      "mean_g_ratio": 1.0001162765008886
+    }
+  },
+  "p3_verdict": {
+    "8B_0.6B": {
+      "K_high": true,
+      "V_low_relative_to_K": false,
+      "cross_layer_stable": true,
+      "P3_supported": false
+    },
+    "4B_1.7B": {
+      "K_high": true,
+      "V_low_relative_to_K": false,
+      "cross_layer_stable": true,
+      "P3_supported": false
+    },
+    "4B_0.6B": {
+      "K_high": true,
+      "V_low_relative_to_K": false,
+      "cross_layer_stable": true,
+      "P3_supported": false
+    }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "n_train_projects": 10,
+  "n_val_projects": 4,
+  "n_test_projects": 8,
+  "samples_per_project": 7,
+  "expected_counts": {
+    "train": 70,
+    "val": 28,
+    "test": 56
+  },
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "verification": {
+    "seed0": {
+      "overlap_check": {
+        "pass": true,
+        "details": {
+          "train-val": {
+            "overlap_count": 0,
+            "overlap_entities": []
+          },
+          "train-test": {
+            "overlap_count": 0,
+            "overlap_entities": []
+          },
+          "val-test": {
+            "overlap_count": 0,
+            "overlap_entities": []
+          }
+        }
+      },
+      "entity_counts": {
+        "train": 90,
+        "val": 36,
+        "test": 72
+      }
+    },
+    "seed1": {
+      "overlap_check": {
+        "pass": true,
+        "details": {
+          "train-val": {
+            "overlap_count": 0,
+            "overlap_entities": []
+          },
+          "train-test": {
+            "overlap_count": 0,
+            "overlap_entities": []
+          },
+          "val-test": {
+            "overlap_count": 0,
+            "overlap_entities": []
+          }
+        }
+      },
+      "entity_counts": {
+        "train": 90,
+        "val": 36,
+        "test": 72
+      }
+    },
+    "seed2": {
+      "overlap_check": {
+        "pass": true,
+        "details": {
+          "train-val": {
+            "overlap_count": 0,
+            "overlap_entities": []
+          },
+          "train-test": {
+            "overlap_count": 0,
+            "overlap_entities": []
+          },
+          "val-test": {
+            "overlap_count": 0,
+            "overlap_entities": []
+          }
+        }
+      },
+      "entity_counts": {
+        "train": 90,
+        "val": 36,
+        "test": 72
+      }
+    }
+  },
+  "hop_decomposition": {
+    "seed0": {
+      "train": {
+        "1": 30,
+        "2": 20,
+        "3": 10,
+        "4": 10
+      },
+      "val": {
+        "1": 12,
+        "2": 8,
+        "3": 4,
+        "4": 4
+      },
+      "test": {
+        "1": 24,
+        "2": 16,
+        "3": 8,
+        "4": 8
+      }
+    },
+    "seed1": {
+      "train": {
+        "1": 30,
+        "2": 20,
+        "3": 10,
+        "4": 10
+      },
+      "val": {
+        "1": 12,
+        "2": 8,
+        "3": 4,
+        "4": 4
+      },
+      "test": {
+        "1": 24,
+        "2": 16,
+        "3": 8,
+        "4": 8
+      }
+    },
+    "seed2": {
+      "train": {
+        "1": 30,
+        "2": 20,
+        "3": 10,
+        "4": 10
+      },
+      "val": {
+        "1": 12,
+        "2": 8,
+        "3": 4,
+        "4": 4
+      },
+      "test": {
+        "1": 24,
+        "2": 16,
+        "3": 8,
+        "4": 8
+      }
+    }
+  }
+}

@@ -1,0 +1,599 @@
+{
+  "task": "G0_linchpin",
+  "seed": 0,
+  "pair": "Qwen3-8B -> Qwen3-0.6B",
+  "n_calib": 6,
+  "n_eval": 4,
+  "model_paths": {
+    "teacher": "/root/.cache/modelscope/models/Qwen--Qwen3-8B/snapshots/master",
+    "student": "/root/.cache/modelscope/models/Qwen--Qwen3-0.6B/snapshots/master"
+  },
+  "summary_ll": {
+    "Self": {
+      "mean": -11.331708868344624,
+      "ci95": 5.708214801349267,
+      "n": 4
+    },
+    "student_full": {
+      "mean": -11.331708868344624,
+      "ci95": 5.708214801349267,
+      "n": 4
+    },
+    "teacher_full": {
+      "mean": -16.91570274035136,
+      "ci95": 5.738256293373965,
+      "n": 4
+    },
+    "Affine_V-only": {
+      "mean": -8.015523533026379,
+      "ci95": 6.285481325834306,
+      "n": 4
+    },
+    "Affine_K-only": {
+      "mean": -7.675265589728951,
+      "ci95": 4.426859483214853,
+      "n": 4
+    },
+    "Affine_Joint": {
+      "mean": -6.71040198703607,
+      "ci95": 3.4512395842973986,
+      "n": 4
+    },
+    "Whitened_V-only": {
+      "mean": -8.021982709566752,
+      "ci95": 6.288066471502445,
+      "n": 4
+    },
+    "Whitened_K-only": {
+      "mean": -7.698980005457997,
+      "ci95": 4.503196502438208,
+      "n": 4
+    },
+    "Whitened_Joint": {
+      "mean": -6.676683361331622,
+      "ci95": 3.4027168532691006,
+      "n": 4
+    },
+    "Procrustes_V-only": {
+      "mean": -8.166461745897928,
+      "ci95": 6.154208511584587,
+      "n": 4
+    },
+    "Procrustes_K-only": {
+      "mean": -10.289353644242508,
+      "ci95": 6.26038284544054,
+      "n": 4
+    },
+    "Procrustes_Joint": {
+      "mean": -10.00715160369873,
+      "ci95": 5.224198623087966,
+      "n": 4
+    },
+    "CCA-r128_V-only": {
+      "mean": -13.594436566034952,
+      "ci95": 2.681422005200649,
+      "n": 4
+    },
+    "CCA-r128_K-only": {
+      "mean": -11.92001919945081,
+      "ci95": 1.9589998051799051,
+      "n": 4
+    },
+    "CCA-r128_Joint": {
+      "mean": -15.99583101272583,
+      "ci95": 2.514642150516888,
+      "n": 4
+    },
+    "RidgePerHead_V-only": {
+      "mean": -10.166300116106868,
+      "ci95": 6.391976609754497,
+      "n": 4
+    },
+    "RidgePerHead_K-only": {
+      "mean": -8.426897287368774,
+      "ci95": 5.05571107657657,
+      "n": 4
+    },
+    "RidgePerHead_Joint": {
+      "mean": -7.916417326157291,
+      "ci95": 2.658443660020859,
+      "n": 4
+    }
+  },
+  "exact_match": {
+    "Self": 0.5,
+    "student_full": 0.5,
+    "teacher_full": 1.0,
+    "Affine_V-only": 0.0,
+    "Affine_K-only": 0.75,
+    "Affine_Joint": 0.5,
+    "Whitened_V-only": 0.0,
+    "Whitened_K-only": 0.75,
+    "Whitened_Joint": 0.5,
+    "Procrustes_V-only": 0.5,
+    "Procrustes_K-only": 0.0,
+    "Procrustes_Joint": 0.0,
+    "CCA-r128_V-only": 0.0,
+    "CCA-r128_K-only": 0.0,
+    "CCA-r128_Joint": 0.0,
+    "RidgePerHead_V-only": 0.25,
+    "RidgePerHead_K-only": 0.25,
+    "RidgePerHead_Joint": 0.0
+  },
+  "summary_hop": {
+    "1": {
+      "Self": {
+        "mean": -7.891779740651448,
+        "n": 1
+      },
+      "student_full": {
+        "mean": -7.891779740651448,
+        "n": 1
+      },
+      "teacher_full": {
+        "mean": -12.882965087890625,
+        "n": 1
+      },
+      "Affine_V-only": {
+        "mean": -3.2514376640319824,
+        "n": 1
+      },
+      "Affine_K-only": {
+        "mean": -3.8990294535954795,
+        "n": 1
+      },
+      "Affine_Joint": {
+        "mean": -1.9467989206314087,
+        "n": 1
+      },
+      "Whitened_V-only": {
+        "mean": -3.24546750386556,
+        "n": 1
+      },
+      "Whitened_K-only": {
+        "mean": -3.8938254515329995,
+        "n": 1
+      },
+      "Whitened_Joint": {
+        "mean": -1.992321749528249,
+        "n": 1
+      },
+      "Procrustes_V-only": {
+        "mean": -3.8998186588287354,
+        "n": 1
+      },
+      "Procrustes_K-only": {
+        "mean": -5.614899696471791,
+        "n": 1
+      },
+      "Procrustes_Joint": {
+        "mean": -6.898663441340129,
+        "n": 1
+      },
+      "CCA-r128_V-only": {
+        "mean": -12.275239944458008,
+        "n": 1
+      },
+      "CCA-r128_K-only": {
+        "mean": -10.755566596984863,
+        "n": 1
+      },
+      "CCA-r128_Joint": {
+        "mean": -16.03070608774821,
+        "n": 1
+      },
+      "RidgePerHead_V-only": {
+        "mean": -4.421664396921794,
+        "n": 1
+      },
+      "RidgePerHead_K-only": {
+        "mean": -3.981253226598104,
+        "n": 1
+      },
+      "RidgePerHead_Joint": {
+        "mean": -6.487318833669026,
+        "n": 1
+      }
+    },
+    "2": {
+      "Self": {
+        "mean": -18.071468035380047,
+        "n": 1
+      },
+      "student_full": {
+        "mean": -18.071468035380047,
+        "n": 1
+      },
+      "teacher_full": {
+        "mean": -24.058008829752605,
+        "n": 1
+      },
+      "Affine_V-only": {
+        "mean": -16.32454776763916,
+        "n": 1
+      },
+      "Affine_K-only": {
+        "mean": -14.20830249786377,
+        "n": 1
+      },
+      "Affine_Joint": {
+        "mean": -10.194135983784994,
+        "n": 1
+      },
+      "Whitened_V-only": {
+        "mean": -16.311689058939617,
+        "n": 1
+      },
+      "Whitened_K-only": {
+        "mean": -14.34984048207601,
+        "n": 1
+      },
+      "Whitened_Joint": {
+        "mean": -10.148979187011719,
+        "n": 1
+      },
+      "Procrustes_V-only": {
+        "mean": -16.198636372884113,
+        "n": 1
+      },
+      "Procrustes_K-only": {
+        "mean": -13.783448855082193,
+        "n": 1
+      },
+      "Procrustes_Joint": {
+        "mean": -14.781294186909994,
+        "n": 1
+      },
+      "CCA-r128_V-only": {
+        "mean": -12.673653920491537,
+        "n": 1
+      },
+      "CCA-r128_K-only": {
+        "mean": -10.56362775961558,
+        "n": 1
+      },
+      "CCA-r128_Joint": {
+        "mean": -15.490126609802246,
+        "n": 1
+      },
+      "RidgePerHead_V-only": {
+        "mean": -14.504287719726562,
+        "n": 1
+      },
+      "RidgePerHead_K-only": {
+        "mean": -15.36603577931722,
+        "n": 1
+      },
+      "RidgePerHead_Joint": {
+        "mean": -11.693008425335089,
+        "n": 1
+      }
+    },
+    "3": {
+      "Self": {
+        "mean": -14.102189699808756,
+        "n": 1
+      },
+      "student_full": {
+        "mean": -14.102189699808756,
+        "n": 1
+      },
+      "teacher_full": {
+        "mean": -19.281736691792805,
+        "n": 1
+      },
+      "Affine_V-only": {
+        "mean": -9.805997212727865,
+        "n": 1
+      },
+      "Affine_K-only": {
+        "mean": -6.7841423352559405,
+        "n": 1
+      },
+      "Affine_Joint": {
+        "mean": -8.233284413814545,
+        "n": 1
+      },
+      "Whitened_V-only": {
+        "mean": -9.857375780741373,
+        "n": 1
+      },
+      "Whitened_K-only": {
+        "mean": -6.8158596356709795,
+        "n": 1
+      },
+      "Whitened_Joint": {
+        "mean": -8.129195014635721,
+        "n": 1
+      },
+      "Procrustes_V-only": {
+        "mean": -10.058490753173828,
+        "n": 1
+      },
+      "Procrustes_K-only": {
+        "mean": -17.500309944152832,
+        "n": 1
+      },
+      "Procrustes_Joint": {
+        "mean": -14.244355201721191,
+        "n": 1
+      },
+      "CCA-r128_V-only": {
+        "mean": -17.66083017985026,
+        "n": 1
+      },
+      "CCA-r128_K-only": {
+        "mean": -14.855953216552734,
+        "n": 1
+      },
+      "CCA-r128_Joint": {
+        "mean": -19.3444979985555,
+        "n": 1
+      },
+      "RidgePerHead_V-only": {
+        "mean": -16.985905011494953,
+        "n": 1
+      },
+      "RidgePerHead_K-only": {
+        "mean": -5.080358266830444,
+        "n": 1
+      },
+      "RidgePerHead_Joint": {
+        "mean": -7.9706493218739825,
+        "n": 1
+      }
+    },
+    "4": {
+      "Self": {
+        "mean": -5.261397997538249,
+        "n": 1
+      },
+      "student_full": {
+        "mean": -5.261397997538249,
+        "n": 1
+      },
+      "teacher_full": {
+        "mean": -11.4401003519694,
+        "n": 1
+      },
+      "Affine_V-only": {
+        "mean": -2.6801114877065024,
+        "n": 1
+      },
+      "Affine_K-only": {
+        "mean": -5.809588072200616,
+        "n": 1
+      },
+      "Affine_Joint": {
+        "mean": -6.46738862991333,
+        "n": 1
+      },
+      "Whitened_V-only": {
+        "mean": -2.673398494720459,
+        "n": 1
+      },
+      "Whitened_K-only": {
+        "mean": -5.736394452552001,
+        "n": 1
+      },
+      "Whitened_Joint": {
+        "mean": -6.436237494150798,
+        "n": 1
+      },
+      "Procrustes_V-only": {
+        "mean": -2.5089011987050376,
+        "n": 1
+      },
+      "Procrustes_K-only": {
+        "mean": -4.258756081263225,
+        "n": 1
+      },
+      "Procrustes_Joint": {
+        "mean": -4.104293584823608,
+        "n": 1
+      },
+      "CCA-r128_V-only": {
+        "mean": -11.768022219340006,
+        "n": 1
+      },
+      "CCA-r128_K-only": {
+        "mean": -11.504929224650065,
+        "n": 1
+      },
+      "CCA-r128_Joint": {
+        "mean": -13.117993354797363,
+        "n": 1
+      },
+      "RidgePerHead_V-only": {
+        "mean": -4.753343336284161,
+        "n": 1
+      },
+      "RidgePerHead_K-only": {
+        "mean": -9.27994187672933,
+        "n": 1
+      },
+      "RidgePerHead_Joint": {
+        "mean": -5.514692723751068,
+        "n": 1
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "eff669a85386",
+      "hop": 1,
+      "answer": "364",
+      "Self": -7.891779740651448,
+      "Self_em": true,
+      "student_full": -7.891779740651448,
+      "student_full_em": 1.0,
+      "teacher_full": -12.882965087890625,
+      "teacher_full_em": 1.0,
+      "Affine_V-only": -3.2514376640319824,
+      "Affine_V-only_em": false,
+      "Affine_K-only": -3.8990294535954795,
+      "Affine_K-only_em": true,
+      "Affine_Joint": -1.9467989206314087,
+      "Affine_Joint_em": true,
+      "Whitened_V-only": -3.24546750386556,
+      "Whitened_V-only_em": false,
+      "Whitened_K-only": -3.8938254515329995,
+      "Whitened_K-only_em": true,
+      "Whitened_Joint": -1.992321749528249,
+      "Whitened_Joint_em": true,
+      "Procrustes_V-only": -3.8998186588287354,
+      "Procrustes_V-only_em": true,
+      "Procrustes_K-only": -5.614899696471791,
+      "Procrustes_K-only_em": false,
+      "Procrustes_Joint": -6.898663441340129,
+      "Procrustes_Joint_em": false,
+      "CCA-r128_V-only": -12.275239944458008,
+      "CCA-r128_V-only_em": false,
+      "CCA-r128_K-only": -10.755566596984863,
+      "CCA-r128_K-only_em": false,
+      "CCA-r128_Joint": -16.03070608774821,
+      "CCA-r128_Joint_em": false,
+      "RidgePerHead_V-only": -4.421664396921794,
+      "RidgePerHead_V-only_em": true,
+      "RidgePerHead_K-only": -3.981253226598104,
+      "RidgePerHead_K-only_em": true,
+      "RidgePerHead_Joint": -6.487318833669026,
+      "RidgePerHead_Joint_em": false
+    },
+    {
+      "id": "b688d945d050",
+      "hop": 2,
+      "answer": "Plant-Alpha",
+      "Self": -18.071468035380047,
+      "Self_em": false,
+      "student_full": -18.071468035380047,
+      "student_full_em": 0.0,
+      "teacher_full": -24.058008829752605,
+      "teacher_full_em": 1.0,
+      "Affine_V-only": -16.32454776763916,
+      "Affine_V-only_em": false,
+      "Affine_K-only": -14.20830249786377,
+      "Affine_K-only_em": true,
+      "Affine_Joint": -10.194135983784994,
+      "Affine_Joint_em": true,
+      "Whitened_V-only": -16.311689058939617,
+      "Whitened_V-only_em": false,
+      "Whitened_K-only": -14.34984048207601,
+      "Whitened_K-only_em": true,
+      "Whitened_Joint": -10.148979187011719,
+      "Whitened_Joint_em": true,
+      "Procrustes_V-only": -16.198636372884113,
+      "Procrustes_V-only_em": false,
+      "Procrustes_K-only": -13.783448855082193,
+      "Procrustes_K-only_em": false,
+      "Procrustes_Joint": -14.781294186909994,
+      "Procrustes_Joint_em": false,
+      "CCA-r128_V-only": -12.673653920491537,
+      "CCA-r128_V-only_em": false,
+      "CCA-r128_K-only": -10.56362775961558,
+      "CCA-r128_K-only_em": false,
+      "CCA-r128_Joint": -15.490126609802246,
+      "CCA-r128_Joint_em": false,
+      "RidgePerHead_V-only": -14.504287719726562,
+      "RidgePerHead_V-only_em": false,
+      "RidgePerHead_K-only": -15.36603577931722,
+      "RidgePerHead_K-only_em": false,
+      "RidgePerHead_Joint": -11.693008425335089,
+      "RidgePerHead_Joint_em": false
+    },
+    {
+      "id": "19180f758d03",
+      "hop": 3,
+      "answer": "Tester-Q2",
+      "Self": -14.102189699808756,
+      "Self_em": false,
+      "student_full": -14.102189699808756,
+      "student_full_em": 0.0,
+      "teacher_full": -19.281736691792805,
+      "teacher_full_em": 1.0,
+      "Affine_V-only": -9.805997212727865,
+      "Affine_V-only_em": false,
+      "Affine_K-only": -6.7841423352559405,
+      "Affine_K-only_em": true,
+      "Affine_Joint": -8.233284413814545,
+      "Affine_Joint_em": false,
+      "Whitened_V-only": -9.857375780741373,
+      "Whitened_V-only_em": false,
+      "Whitened_K-only": -6.8158596356709795,
+      "Whitened_K-only_em": true,
+      "Whitened_Joint": -8.129195014635721,
+      "Whitened_Joint_em": false,
+      "Procrustes_V-only": -10.058490753173828,
+      "Procrustes_V-only_em": false,
+      "Procrustes_K-only": -17.500309944152832,
+      "Procrustes_K-only_em": false,
+      "Procrustes_Joint": -14.244355201721191,
+      "Procrustes_Joint_em": false,
+      "CCA-r128_V-only": -17.66083017985026,
+      "CCA-r128_V-only_em": false,
+      "CCA-r128_K-only": -14.855953216552734,
+      "CCA-r128_K-only_em": false,
+      "CCA-r128_Joint": -19.3444979985555,
+      "CCA-r128_Joint_em": false,
+      "RidgePerHead_V-only": -16.985905011494953,
+      "RidgePerHead_V-only_em": false,
+      "RidgePerHead_K-only": -5.080358266830444,
+      "RidgePerHead_K-only_em": false,
+      "RidgePerHead_Joint": -7.9706493218739825,
+      "RidgePerHead_Joint_em": false
+    },
+    {
+      "id": "3d4116c79ea3",
+      "hop": 4,
+      "answer": "203",
+      "Self": -5.261397997538249,
+      "Self_em": true,
+      "student_full": -5.261397997538249,
+      "student_full_em": 1.0,
+      "teacher_full": -11.4401003519694,
+      "teacher_full_em": 1.0,
+      "Affine_V-only": -2.6801114877065024,
+      "Affine_V-only_em": false,
+      "Affine_K-only": -5.809588072200616,
+      "Affine_K-only_em": false,
+      "Affine_Joint": -6.46738862991333,
+      "Affine_Joint_em": false,
+      "Whitened_V-only": -2.673398494720459,
+      "Whitened_V-only_em": false,
+      "Whitened_K-only": -5.736394452552001,
+      "Whitened_K-only_em": false,
+      "Whitened_Joint": -6.436237494150798,
+      "Whitened_Joint_em": false,
+      "Procrustes_V-only": -2.5089011987050376,
+      "Procrustes_V-only_em": true,
+      "Procrustes_K-only": -4.258756081263225,
+      "Procrustes_K-only_em": false,
+      "Procrustes_Joint": -4.104293584823608,
+      "Procrustes_Joint_em": false,
+      "CCA-r128_V-only": -11.768022219340006,
+      "CCA-r128_V-only_em": false,
+      "CCA-r128_K-only": -11.504929224650065,
+      "CCA-r128_K-only_em": false,
+      "CCA-r128_Joint": -13.117993354797363,
+      "CCA-r128_Joint_em": false,
+      "RidgePerHead_V-only": -4.753343336284161,
+      "RidgePerHead_V-only_em": false,
+      "RidgePerHead_K-only": -9.27994187672933,
+      "RidgePerHead_K-only_em": false,
+      "RidgePerHead_Joint": -5.514692723751068,
+      "RidgePerHead_Joint_em": false
+    }
+  ],
+  "novelty_probe": {
+    "teacher": {
+      "n": 4,
+      "em": 0.0,
+      "mean_ll": -7.8101635326941805
+    },
+    "student": {
+      "n": 4,
+      "em": 0.0,
+      "mean_ll": -6.226512836913268
+    }
+  }
+}

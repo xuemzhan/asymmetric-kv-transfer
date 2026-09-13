@@ -1,0 +1,895 @@
+{
+  "task": "phase1_causal_substrate_v2",
+  "seed": 0,
+  "pair": "Qwen3-8B -> Qwen3-0.6B",
+  "n_calib": 70,
+  "n_eval": 56,
+  "self_LL": -9.890103404727382,
+  "self_EM": 0.42857142857142855,
+  "layer_results": [
+    {
+      "student_layer": 0,
+      "teacher_layer": 0,
+      "K_only_LL_delta": -0.21449408274765155,
+      "K_delta_ci95": [
+        -0.2690357034640632,
+        -0.16128480390734684
+      ],
+      "K_wilcoxon_p": 7.685452873514363e-09,
+      "K_cohens_d": -1.0408423852777169,
+      "V_only_LL_delta": 0.004303162013370364,
+      "V_delta_ci95": [
+        -0.01747235092541029,
+        0.025361675928009624
+      ],
+      "V_wilcoxon_p": 0.3276540350173558,
+      "V_cohens_d": 0.05208088310284101
+    },
+    {
+      "student_layer": 1,
+      "teacher_layer": 1,
+      "K_only_LL_delta": -0.07433418203756795,
+      "K_delta_ci95": [
+        -0.11865972871209382,
+        -0.027959361829737663
+      ],
+      "K_wilcoxon_p": 0.00023429252514190643,
+      "K_cohens_d": -0.42873899225433354,
+      "V_only_LL_delta": -0.009456520997662698,
+      "V_delta_ci95": [
+        -0.03435224216056142,
+        0.016264884924099252
+      ],
+      "V_wilcoxon_p": 0.22733645887726983,
+      "V_cohens_d": -0.0968392353378643
+    },
+    {
+      "student_layer": 2,
+      "teacher_layer": 3,
+      "K_only_LL_delta": -0.061920213858164486,
+      "K_delta_ci95": [
+        -0.13632389689021995,
+        0.009266691592364849
+      ],
+      "K_wilcoxon_p": 0.1442576151262213,
+      "K_cohens_d": -0.21777560430460394,
+      "V_only_LL_delta": -0.014213414802638633,
+      "V_delta_ci95": [
+        -0.03940962068830526,
+        0.010416986744968161
+      ],
+      "V_wilcoxon_p": 0.12117847294208026,
+      "V_cohens_d": -0.1510313369367786
+    },
+    {
+      "student_layer": 3,
+      "teacher_layer": 4,
+      "K_only_LL_delta": -0.32453733165216575,
+      "K_delta_ci95": [
+        -0.47593565040370944,
+        -0.17157229829525553
+      ],
+      "K_wilcoxon_p": 0.0002835282153353994,
+      "K_cohens_d": -0.5583679430582333,
+      "V_only_LL_delta": -0.38292081670026945,
+      "V_delta_ci95": [
+        -0.5056508283787957,
+        -0.26574665544928966
+      ],
+      "V_wilcoxon_p": 3.7374975758874495e-07,
+      "V_cohens_d": -0.8376608496080995
+    },
+    {
+      "student_layer": 4,
+      "teacher_layer": 5,
+      "K_only_LL_delta": -0.9238675821848769,
+      "K_delta_ci95": [
+        -1.0973080342756776,
+        -0.7458666249686713
+      ],
+      "K_wilcoxon_p": 5.969762943648687e-10,
+      "K_cohens_d": -1.3740369409558806,
+      "V_only_LL_delta": 0.06787457176012267,
+      "V_delta_ci95": [
+        -0.07773634097361753,
+        0.20590162252404587
+      ],
+      "V_wilcoxon_p": 0.037520348033123326,
+      "V_cohens_d": 0.12488426866625933
+    },
+    {
+      "student_layer": 5,
+      "teacher_layer": 6,
+      "K_only_LL_delta": -0.6364880604089108,
+      "K_delta_ci95": [
+        -0.7907110662591288,
+        -0.4891736726677925
+      ],
+      "K_wilcoxon_p": 1.4996743610187941e-09,
+      "K_cohens_d": -1.089178608550884,
+      "V_only_LL_delta": 0.12022660110319747,
+      "V_delta_ci95": [
+        0.009821055570258511,
+        0.2295378596529841
+      ],
+      "V_wilcoxon_p": 0.02821703133607961,
+      "V_cohens_d": 0.28221440957833727
+    },
+    {
+      "student_layer": 6,
+      "teacher_layer": 8,
+      "K_only_LL_delta": -0.12395706691504092,
+      "K_delta_ci95": [
+        -0.1904930074947428,
+        -0.060569445001502145
+      ],
+      "K_wilcoxon_p": 0.0030662038449953246,
+      "K_cohens_d": -0.49836383876759305,
+      "V_only_LL_delta": -0.03584003410512764,
+      "V_delta_ci95": [
+        -0.11207174518348485,
+        0.04097946241074069
+      ],
+      "V_wilcoxon_p": 0.4628648800752124,
+      "V_cohens_d": -0.12177142358258833
+    },
+    {
+      "student_layer": 7,
+      "teacher_layer": 9,
+      "K_only_LL_delta": 0.20466843650033947,
+      "K_delta_ci95": [
+        0.12174663558251361,
+        0.28410978462862607
+      ],
+      "K_wilcoxon_p": 4.531897363499062e-05,
+      "K_cohens_d": 0.6516158763244255,
+      "V_only_LL_delta": -0.027446483326154087,
+      "V_delta_ci95": [
+        -0.11949404458188516,
+        0.06250521520074645
+      ],
+      "V_wilcoxon_p": 0.819336561040986,
+      "V_cohens_d": -0.07615388467348892
+    },
+    {
+      "student_layer": 8,
+      "teacher_layer": 10,
+      "K_only_LL_delta": -0.0633889339334842,
+      "K_delta_ci95": [
+        -0.1586132071604015,
+        0.026699593876089462
+      ],
+      "K_wilcoxon_p": 0.4053961810651535,
+      "K_cohens_d": -0.1760414549325556,
+      "V_only_LL_delta": 0.3222410688246046,
+      "V_delta_ci95": [
+        0.08951016892876958,
+        0.5454589136195734
+      ],
+      "V_wilcoxon_p": 0.012271999150387493,
+      "V_cohens_d": 0.3688102448178624
+    },
+    {
+      "student_layer": 9,
+      "teacher_layer": 12,
+      "K_only_LL_delta": 0.07899392642970539,
+      "K_delta_ci95": [
+        -0.016238049897085362,
+        0.1738085776951441
+      ],
+      "K_wilcoxon_p": 0.09288741157661705,
+      "K_cohens_d": 0.2156469285273603,
+      "V_only_LL_delta": 0.10201728714708312,
+      "V_delta_ci95": [
+        -0.02210466687541451,
+        0.22345078912381441
+      ],
+      "V_wilcoxon_p": 0.03677856966738781,
+      "V_cohens_d": 0.2174545048590302
+    },
+    {
+      "student_layer": 10,
+      "teacher_layer": 13,
+      "K_only_LL_delta": 0.018114090832958635,
+      "K_delta_ci95": [
+        -0.03278948463550595,
+        0.06955371700309816
+      ],
+      "K_wilcoxon_p": 0.2926784930229057,
+      "K_cohens_d": 0.09074713664543575,
+      "V_only_LL_delta": 0.26045680400178156,
+      "V_delta_ci95": [
+        0.20060065852676848,
+        0.32585909150088166
+      ],
+      "V_wilcoxon_p": 3.937540818373336e-10,
+      "V_cohens_d": 1.0863564094711258
+    },
+    {
+      "student_layer": 11,
+      "teacher_layer": 14,
+      "K_only_LL_delta": -0.023274374087555876,
+      "K_delta_ci95": [
+        -0.17583011068792015,
+        0.12747198866313098
+      ],
+      "K_wilcoxon_p": 0.7752626707381234,
+      "K_cohens_d": -0.03935156861898648,
+      "V_only_LL_delta": -0.22964896140183547,
+      "V_delta_ci95": [
+        -0.2986853906717096,
+        -0.15956620230098062
+      ],
+      "V_wilcoxon_p": 5.724332802956412e-07,
+      "V_cohens_d": -0.8447166665731343
+    },
+    {
+      "student_layer": 12,
+      "teacher_layer": 15,
+      "K_only_LL_delta": -0.14112179807419858,
+      "K_delta_ci95": [
+        -0.2179669656762815,
+        -0.0657197553086527
+      ],
+      "K_wilcoxon_p": 0.0018331838443784397,
+      "K_cohens_d": -0.48330095986260235,
+      "V_only_LL_delta": 1.2683727277643422,
+      "V_delta_ci95": [
+        0.9860376003601621,
+        1.565171235447352
+      ],
+      "V_wilcoxon_p": 1.6591338272068008e-09,
+      "V_cohens_d": 1.1294729185941652
+    },
+    {
+      "student_layer": 13,
+      "teacher_layer": 17,
+      "K_only_LL_delta": 0.08613539384250979,
+      "K_delta_ci95": [
+        -0.044270087120988434,
+        0.2162895461635278
+      ],
+      "K_wilcoxon_p": 0.15819284072946171,
+      "K_cohens_d": 0.17337671203254265,
+      "V_only_LL_delta": 0.3132034172932393,
+      "V_delta_ci95": [
+        0.2601503984150799,
+        0.3701158593885859
+      ],
+      "V_wilcoxon_p": 7.968377335678e-11,
+      "V_cohens_d": 1.4824334987920191
+    },
+    {
+      "student_layer": 14,
+      "teacher_layer": 18,
+      "K_only_LL_delta": 0.10873949975506388,
+      "K_delta_ci95": [
+        0.001702732630773081,
+        0.21137161440130875
+      ],
+      "K_wilcoxon_p": 0.03533243359215392,
+      "K_cohens_d": 0.2687863016366426,
+      "V_only_LL_delta": -1.2000475212911883,
+      "V_delta_ci95": [
+        -1.470484257218173,
+        -0.9396768671931784
+      ],
+      "V_wilcoxon_p": 1.7843430043946e-10,
+      "V_cohens_d": -1.1686538319616186
+    },
+    {
+      "student_layer": 15,
+      "teacher_layer": 19,
+      "K_only_LL_delta": -0.203924306281676,
+      "K_delta_ci95": [
+        -0.2565203688823852,
+        -0.14988315402648103
+      ],
+      "K_wilcoxon_p": 9.56851322845054e-08,
+      "K_cohens_d": -0.9782146246794571,
+      "V_only_LL_delta": 0.10479186198392117,
+      "V_delta_ci95": [
+        0.04863210706914848,
+        0.1626619681194782
+      ],
+      "V_wilcoxon_p": 0.001783114427506285,
+      "V_cohens_d": 0.470842307091549
+    },
+    {
+      "student_layer": 16,
+      "teacher_layer": 21,
+      "K_only_LL_delta": 1.1273017765815894,
+      "K_delta_ci95": [
+        0.9580526080689109,
+        1.314221305811082
+      ],
+      "K_wilcoxon_p": 7.547498213151496e-11,
+      "K_cohens_d": 1.6436136868309488,
+      "V_only_LL_delta": 0.4763900999908705,
+      "V_delta_ci95": [
+        0.3732734303651169,
+        0.5870384117803346
+      ],
+      "V_wilcoxon_p": 1.4412466780473427e-10,
+      "V_cohens_d": 1.1550269275193317
+    },
+    {
+      "student_layer": 17,
+      "teacher_layer": 22,
+      "K_only_LL_delta": -0.06931072991600161,
+      "K_delta_ci95": [
+        -0.16274936318688907,
+        0.020385107655242676
+      ],
+      "K_wilcoxon_p": 0.365234253927773,
+      "K_cohens_d": -0.19761739083505853,
+      "V_only_LL_delta": -0.09201855844834685,
+      "V_delta_ci95": [
+        -0.18221775176604008,
+        -0.007011357078564548
+      ],
+      "V_wilcoxon_p": 0.2889531232873648,
+      "V_cohens_d": -0.2737982014069046
+    },
+    {
+      "student_layer": 18,
+      "teacher_layer": 23,
+      "K_only_LL_delta": -0.29290604647498447,
+      "K_delta_ci95": [
+        -0.38627749488717067,
+        -0.19820788287971008
+      ],
+      "K_wilcoxon_p": 2.1449371704973785e-06,
+      "K_cohens_d": -0.8141968120333714,
+      "V_only_LL_delta": -0.12914924713567455,
+      "V_delta_ci95": [
+        -0.22019239228810913,
+        -0.03989448225214194
+      ],
+      "V_wilcoxon_p": 0.009715447895743032,
+      "V_cohens_d": -0.36998323169801334
+    },
+    {
+      "student_layer": 19,
+      "teacher_layer": 24,
+      "K_only_LL_delta": 0.29000996153124664,
+      "K_delta_ci95": [
+        0.21431548661935057,
+        0.36238520092894677
+      ],
+      "K_wilcoxon_p": 7.989679188796317e-08,
+      "K_cohens_d": 1.0174170068778308,
+      "V_only_LL_delta": -0.207279777846062,
+      "V_delta_ci95": [
+        -0.2907123881258744,
+        -0.1250187245448657
+      ],
+      "V_wilcoxon_p": 0.0001032723121624801,
+      "V_cohens_d": -0.6477012256550195
+    },
+    {
+      "student_layer": 20,
+      "teacher_layer": 26,
+      "K_only_LL_delta": 0.6324213719154138,
+      "K_delta_ci95": [
+        0.530070556960683,
+        0.7370272490825558
+      ],
+      "K_wilcoxon_p": 1.2271181135184272e-10,
+      "K_cohens_d": 1.573802135403955,
+      "V_only_LL_delta": 0.5242723010193177,
+      "V_delta_ci95": [
+        0.45086171635962047,
+        0.6014946127485538
+      ],
+      "V_wilcoxon_p": 7.547498213151496e-11,
+      "V_cohens_d": 1.7900244924619986
+    },
+    {
+      "student_layer": 21,
+      "teacher_layer": 27,
+      "K_only_LL_delta": 1.6116912999235258,
+      "K_delta_ci95": [
+        1.4150707207223088,
+        1.8013062291431499
+      ],
+      "K_wilcoxon_p": 1.5204275893649925e-10,
+      "K_cohens_d": 2.133289337289384,
+      "V_only_LL_delta": -0.02020640812666639,
+      "V_delta_ci95": [
+        -0.22906623383020958,
+        0.1791374443847849
+      ],
+      "V_wilcoxon_p": 0.36093050587175546,
+      "V_cohens_d": -0.025270566079643196
+    },
+    {
+      "student_layer": 22,
+      "teacher_layer": 28,
+      "K_only_LL_delta": -0.38944097313980736,
+      "K_delta_ci95": [
+        -0.4689885626834916,
+        -0.30967913680857423
+      ],
+      "K_wilcoxon_p": 2.7391219245421416e-09,
+      "K_cohens_d": -1.2940664142046532,
+      "V_only_LL_delta": -0.42764922429965474,
+      "V_delta_ci95": [
+        -0.4818441353798422,
+        -0.3768075565298332
+      ],
+      "V_wilcoxon_p": 7.547498213151496e-11,
+      "V_cohens_d": -2.1047267763964492
+    },
+    {
+      "student_layer": 23,
+      "teacher_layer": 30,
+      "K_only_LL_delta": -0.44329156040233403,
+      "K_delta_ci95": [
+        -0.6248157458556307,
+        -0.2629398588383514
+      ],
+      "K_wilcoxon_p": 4.860655774651307e-05,
+      "K_cohens_d": -0.630044149558012,
+      "V_only_LL_delta": -0.41702409246768407,
+      "V_delta_ci95": [
+        -0.5014268538425118,
+        -0.33463943102758015
+      ],
+      "V_wilcoxon_p": 6.619994846099961e-10,
+      "V_cohens_d": -1.2961579950219977
+    },
+    {
+      "student_layer": 24,
+      "teacher_layer": 31,
+      "K_only_LL_delta": 0.03683411936695594,
+      "K_delta_ci95": [
+        -0.13992204093969374,
+        0.19750940381813745
+      ],
+      "K_wilcoxon_p": 0.004087954883419089,
+      "K_cohens_d": 0.056065432005107614,
+      "V_only_LL_delta": 0.20731430046145688,
+      "V_delta_ci95": [
+        0.08643970544948014,
+        0.320916543083775
+      ],
+      "V_wilcoxon_p": 0.0003317997196675419,
+      "V_cohens_d": 0.465811583394526
+    },
+    {
+      "student_layer": 25,
+      "teacher_layer": 32,
+      "K_only_LL_delta": 0.2889428315238981,
+      "K_delta_ci95": [
+        0.18929399291169569,
+        0.3900924503878437
+      ],
+      "K_wilcoxon_p": 2.0602464005377325e-06,
+      "K_cohens_d": 0.7393006811343494,
+      "V_only_LL_delta": 0.2377056052956461,
+      "V_delta_ci95": [
+        0.19478263945519794,
+        0.2799550603548334
+      ],
+      "V_wilcoxon_p": 3.937540818373336e-10,
+      "V_cohens_d": 1.4737070622785728
+    },
+    {
+      "student_layer": 26,
+      "teacher_layer": 33,
+      "K_only_LL_delta": -0.9745472266781905,
+      "K_delta_ci95": [
+        -1.133530680420106,
+        -0.8246645681542674
+      ],
+      "K_wilcoxon_p": 7.547498213151496e-11,
+      "K_cohens_d": -1.59976502616491,
+      "V_only_LL_delta": -0.6087136786003872,
+      "V_delta_ci95": [
+        -0.7210007634323422,
+        -0.503984673147971
+      ],
+      "V_wilcoxon_p": 9.373477581970729e-11,
+      "V_cohens_d": -1.4405187673665323
+    },
+    {
+      "student_layer": 27,
+      "teacher_layer": 35,
+      "K_only_LL_delta": -0.06499683713437181,
+      "K_delta_ci95": [
+        -0.1599453238474563,
+        0.03139516452922968
+      ],
+      "K_wilcoxon_p": 0.21502095354560058,
+      "K_cohens_d": -0.175093567484433,
+      "V_only_LL_delta": 0.05351053230073642,
+      "V_delta_ci95": [
+        -0.04802315954209554,
+        0.16293694004659867
+      ],
+      "V_wilcoxon_p": 0.40080764034244676,
+      "V_cohens_d": 0.13328323002335202
+    }
+  ],
+  "effective_ranks": [
+    {
+      "student_layer": 0,
+      "teacher_layer": 0,
+      "rank_student_V": 97361.296875,
+      "rank_teacher_V_mapped": 96446.859375,
+      "rank_diff": 5701.83544921875
+    },
+    {
+      "student_layer": 1,
+      "teacher_layer": 1,
+      "rank_student_V": 102811.9609375,
+      "rank_teacher_V_mapped": 102321.71875,
+      "rank_diff": 78810.0234375
+    },
+    {
+      "student_layer": 2,
+      "teacher_layer": 3,
+      "rank_student_V": 101748.4765625,
+      "rank_teacher_V_mapped": 101455.2734375,
+      "rank_diff": 92864.7890625
+    },
+    {
+      "student_layer": 3,
+      "teacher_layer": 4,
+      "rank_student_V": 102638.3671875,
+      "rank_teacher_V_mapped": 102114.5703125,
+      "rank_diff": 94963.7265625
+    },
+    {
+      "student_layer": 4,
+      "teacher_layer": 5,
+      "rank_student_V": 103006.390625,
+      "rank_teacher_V_mapped": 102430.375,
+      "rank_diff": 96269.3203125
+    },
+    {
+      "student_layer": 5,
+      "teacher_layer": 6,
+      "rank_student_V": 102516.8671875,
+      "rank_teacher_V_mapped": 101900.25,
+      "rank_diff": 95936.8125
+    },
+    {
+      "student_layer": 6,
+      "teacher_layer": 8,
+      "rank_student_V": 102389.953125,
+      "rank_teacher_V_mapped": 102282.5,
+      "rank_diff": 99539.640625
+    },
+    {
+      "student_layer": 7,
+      "teacher_layer": 9,
+      "rank_student_V": 103115.96875,
+      "rank_teacher_V_mapped": 103192.796875,
+      "rank_diff": 101077.28125
+    },
+    {
+      "student_layer": 8,
+      "teacher_layer": 10,
+      "rank_student_V": 93972.4609375,
+      "rank_teacher_V_mapped": 100683.203125,
+      "rank_diff": 89623.15625
+    },
+    {
+      "student_layer": 9,
+      "teacher_layer": 12,
+      "rank_student_V": 102340.453125,
+      "rank_teacher_V_mapped": 102532.90625,
+      "rank_diff": 100577.9375
+    },
+    {
+      "student_layer": 10,
+      "teacher_layer": 13,
+      "rank_student_V": 102503.8671875,
+      "rank_teacher_V_mapped": 103330.875,
+      "rank_diff": 99748.21875
+    },
+    {
+      "student_layer": 11,
+      "teacher_layer": 14,
+      "rank_student_V": 98730.359375,
+      "rank_teacher_V_mapped": 101797.296875,
+      "rank_diff": 94226.0625
+    },
+    {
+      "student_layer": 12,
+      "teacher_layer": 15,
+      "rank_student_V": 81425.40625,
+      "rank_teacher_V_mapped": 96758.8984375,
+      "rank_diff": 76309.0625
+    },
+    {
+      "student_layer": 13,
+      "teacher_layer": 17,
+      "rank_student_V": 83674.3125,
+      "rank_teacher_V_mapped": 96156.0078125,
+      "rank_diff": 77305.234375
+    },
+    {
+      "student_layer": 14,
+      "teacher_layer": 18,
+      "rank_student_V": 85837.5078125,
+      "rank_teacher_V_mapped": 96986.1640625,
+      "rank_diff": 81071.46875
+    },
+    {
+      "student_layer": 15,
+      "teacher_layer": 19,
+      "rank_student_V": 103459.6484375,
+      "rank_teacher_V_mapped": 103146.8515625,
+      "rank_diff": 101218.40625
+    },
+    {
+      "student_layer": 16,
+      "teacher_layer": 21,
+      "rank_student_V": 103493.9921875,
+      "rank_teacher_V_mapped": 103265.0625,
+      "rank_diff": 100475.359375
+    },
+    {
+      "student_layer": 17,
+      "teacher_layer": 22,
+      "rank_student_V": 103500.8984375,
+      "rank_teacher_V_mapped": 103480.078125,
+      "rank_diff": 100736.1328125
+    },
+    {
+      "student_layer": 18,
+      "teacher_layer": 23,
+      "rank_student_V": 102836.5859375,
+      "rank_teacher_V_mapped": 102048.5625,
+      "rank_diff": 100943.953125
+    },
+    {
+      "student_layer": 19,
+      "teacher_layer": 24,
+      "rank_student_V": 103390.703125,
+      "rank_teacher_V_mapped": 102879.5390625,
+      "rank_diff": 100406.2890625
+    },
+    {
+      "student_layer": 20,
+      "teacher_layer": 26,
+      "rank_student_V": 102106.78125,
+      "rank_teacher_V_mapped": 102115.046875,
+      "rank_diff": 99684.703125
+    },
+    {
+      "student_layer": 21,
+      "teacher_layer": 27,
+      "rank_student_V": 100476.1171875,
+      "rank_teacher_V_mapped": 100655.1796875,
+      "rank_diff": 97917.8515625
+    },
+    {
+      "student_layer": 22,
+      "teacher_layer": 28,
+      "rank_student_V": 101973.7421875,
+      "rank_teacher_V_mapped": 102371.8828125,
+      "rank_diff": 99907.8828125
+    },
+    {
+      "student_layer": 23,
+      "teacher_layer": 30,
+      "rank_student_V": 100659.1171875,
+      "rank_teacher_V_mapped": 101514.6015625,
+      "rank_diff": 97445.921875
+    },
+    {
+      "student_layer": 24,
+      "teacher_layer": 31,
+      "rank_student_V": 100238.6640625,
+      "rank_teacher_V_mapped": 100445.7578125,
+      "rank_diff": 97010.9609375
+    },
+    {
+      "student_layer": 25,
+      "teacher_layer": 32,
+      "rank_student_V": 97833.9375,
+      "rank_teacher_V_mapped": 98725.4609375,
+      "rank_diff": 95784.875
+    },
+    {
+      "student_layer": 26,
+      "teacher_layer": 33,
+      "rank_student_V": 99587.9765625,
+      "rank_teacher_V_mapped": 99824.7421875,
+      "rank_diff": 96293.3828125
+    },
+    {
+      "student_layer": 27,
+      "teacher_layer": 35,
+      "rank_student_V": 102830.40625,
+      "rank_teacher_V_mapped": 102757.65625,
+      "rank_diff": 99806.1796875
+    }
+  ],
+  "selective_V_injection": {
+    "V_8": {
+      "layers": [
+        8
+      ],
+      "LL_delta_vs_Self": 0.3222410688246046,
+      "LL_delta_ci95": [
+        0.08951016892876958,
+        0.5454589136195734
+      ],
+      "LL_mean": -9.567862335902776,
+      "EM": 0.9285714285714286,
+      "wilcoxon_p_vs_Self": 0.012271999150387493,
+      "cohens_d": 0.3688102448178624
+    },
+    "V_12": {
+      "layers": [
+        12
+      ],
+      "LL_delta_vs_Self": 1.2683727277643422,
+      "LL_delta_ci95": [
+        0.9860376003601621,
+        1.565171235447352
+      ],
+      "LL_mean": -8.621730676963038,
+      "EM": 1.0,
+      "wilcoxon_p_vs_Self": 1.6591338272068008e-09,
+      "cohens_d": 1.1294729185941652
+    },
+    "V_L8_L12": {
+      "layers": [
+        8,
+        12
+      ],
+      "LL_delta_vs_Self": 2.3286191744484226,
+      "LL_delta_ci95": [
+        1.9008881744709514,
+        2.7222131244805974
+      ],
+      "LL_mean": -7.561484230278958,
+      "EM": 0.75,
+      "wilcoxon_p_vs_Self": 9.013255639202581e-10,
+      "cohens_d": 1.470441963123509
+    },
+    "V_ALL": {
+      "layers": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "LL_delta_vs_Self": -0.04508289079326665,
+      "LL_delta_ci95": [
+        -1.0008021523374477,
+        0.8122960923141058
+      ],
+      "LL_mean": -9.935186295520648,
+      "EM": 0.2857142857142857,
+      "wilcoxon_p_vs_Self": 0.02436304261969215,
+      "cohens_d": -0.012928097191792762
+    }
+  },
+  "K_prefix_cumulative": {
+    "4": {
+      "layers_in_prefix": 5,
+      "LL_delta_vs_Self": -0.5662772702412655,
+      "LL_delta_ci95": [
+        -0.8068646394681525,
+        -0.32005194319786884
+      ],
+      "LL_mean": -10.456380674968646,
+      "EM": 0.9285714285714286,
+      "wilcoxon_p_vs_Self": 0.00016963108078510493,
+      "cohens_d": -0.6021829415335529
+    },
+    "8": {
+      "layers_in_prefix": 9,
+      "LL_delta_vs_Self": 0.3494854515182461,
+      "LL_delta_ci95": [
+        0.028526887541985634,
+        0.6638970180409591
+      ],
+      "LL_mean": -9.540617953209136,
+      "EM": 1.0,
+      "wilcoxon_p_vs_Self": 0.030646909619855223,
+      "cohens_d": 0.2842266199097587
+    },
+    "12": {
+      "layers_in_prefix": 13,
+      "LL_delta_vs_Self": 1.8019224720204268,
+      "LL_delta_ci95": [
+        1.3604833039878206,
+        2.196222823400807
+      ],
+      "LL_mean": -8.088180932706955,
+      "EM": 1.0,
+      "wilcoxon_p_vs_Self": 1.7071429716801308e-07,
+      "cohens_d": 1.1221314303683074
+    },
+    "16": {
+      "layers_in_prefix": 17,
+      "LL_delta_vs_Self": 1.5890270921017442,
+      "LL_delta_ci95": [
+        0.9621173542669567,
+        2.1604582599244813
+      ],
+      "LL_mean": -8.301076312625637,
+      "EM": 1.0,
+      "wilcoxon_p_vs_Self": 0.00018701178796218536,
+      "cohens_d": 0.6918565181257262
+    },
+    "20": {
+      "layers_in_prefix": 21,
+      "LL_delta_vs_Self": 2.342308969598456,
+      "LL_delta_ci95": [
+        1.6761135353157965,
+        2.952320974569153
+      ],
+      "LL_mean": -7.5477944351289254,
+      "EM": 1.0,
+      "wilcoxon_p_vs_Self": 1.4295720408190119e-06,
+      "cohens_d": 0.9481899736252728
+    },
+    "24": {
+      "layers_in_prefix": 25,
+      "LL_delta_vs_Self": 2.1938354107286226,
+      "LL_delta_ci95": [
+        1.7824048425035905,
+        2.63053972893155
+      ],
+      "LL_mean": -7.696267993998758,
+      "EM": 0.8571428571428571,
+      "wilcoxon_p_vs_Self": 3.736856706174947e-10,
+      "cohens_d": 1.328859274526137
+    },
+    "27": {
+      "layers_in_prefix": 28,
+      "LL_delta_vs_Self": 2.411531230483802,
+      "LL_delta_ci95": [
+        1.9330215801628843,
+        2.910784638706112
+      ],
+      "LL_mean": -7.478572174243579,
+      "EM": 0.7321428571428571,
+      "wilcoxon_p_vs_Self": 1.162909226400205e-10,
+      "cohens_d": 1.2724951116357361
+    }
+  },
+  "summary": {
+    "best_V_only_layer": 12,
+    "best_V_only_delta_LL": 1.2683727277643422,
+    "best_V_only_p": 1.6591338272068008e-09,
+    "best_K_only_layer": 21,
+    "best_K_only_delta_LL": 1.6116912999235258,
+    "best_K_only_p": 1.5204275893649925e-10,
+    "best_selective_V": "V_L8_L12",
+    "best_prefix": "27"
+  }
+}
