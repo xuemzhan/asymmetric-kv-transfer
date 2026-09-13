@@ -1,0 +1,406 @@
+== A1-evalcheck-synthetic: SKIP (found reports/phaseB_evalcheck_residual_seed0.json) ==
+== A1-evalcheck-squad: SKIP (found reports/phaseB_evalcheck_squad.json) ==
+== A1-attribution: SKIP (found reports/phaseB_evalcheck_attrib.json) ==
+== A2-causal20-1.7B-seed0: SKIP (found reports/phaseB_adapter_causal20_1.7B_0.6B_seed0.json) ==
+== A2-causal20-1.7B-seed1: SKIP (found reports/phaseB_adapter_causal20_1.7B_0.6B_seed1.json) ==
+== A2-causal20-1.7B-seed2: SKIP (found reports/phaseB_adapter_causal20_1.7B_0.6B_seed2.json) ==
+== A2-causal20-8B-seed0: START 2026-09-13T17:45:40+08:00 ==
+[common] load teacher 8B (36L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|█████████████████████▌                                                                                      | 1/5 [00:01<00:05,  1.37s/it]Loading checkpoint shards:  40%|███████████████████████████████████████████▏                                                                | 2/5 [00:02<00:03,  1.15s/it]Loading checkpoint shards:  60%|████████████████████████████████████████████████████████████████▊                                           | 3/5 [00:03<00:02,  1.05s/it]Loading checkpoint shards:  80%|██████████████████████████████████████████████████████████████████████████████████████▍                     | 4/5 [00:04<00:00,  1.09it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:04<00:00,  1.47it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:04<00:00,  1.17it/s]
+[common] load student 0.6B (28L) ...
+  no-adapter                   Self:EM=0.911 K-only:EM=0.000 V-only:EM=0.000 Joint:EM=0.000
+  [adapter(joint)] epoch 1/20 loss=2.256
+  [adapter(joint)] epoch 2/20 loss=1.482
+  [adapter(joint)] epoch 3/20 loss=1.386
+  [adapter(joint)] epoch 4/20 loss=0.937
+  [adapter(joint)] epoch 5/20 loss=1.054
+  [adapter(joint)] epoch 6/20 loss=0.696
+  [adapter(joint)] epoch 7/20 loss=0.718
+  [adapter(joint)] epoch 8/20 loss=0.965
+  [adapter(joint)] epoch 9/20 loss=0.527
+  [adapter(joint)] epoch 10/20 loss=0.907
+  [adapter(joint)] epoch 11/20 loss=0.284
+  [adapter(joint)] epoch 12/20 loss=0.360
+  [adapter(joint)] epoch 13/20 loss=0.656
+  [adapter(joint)] epoch 14/20 loss=1.029
+  [adapter(joint)] epoch 15/20 loss=0.531
+  [adapter(joint)] epoch 16/20 loss=0.594
+  [adapter(joint)] epoch 17/20 loss=0.624
+  [adapter(joint)] epoch 18/20 loss=0.636
+  [adapter(joint)] epoch 19/20 loss=0.417
+  [adapter(joint)] epoch 20/20 loss=0.465
+  adapter(joint)               Self:EM=0.964 K-only:EM=0.750 V-only:EM=0.339 Joint:EM=0.429 WrongJoint:EM=0.179 RandKV:EM=0.107 ZeroKV:EM=0.250
+  causal(joint)                Self:EM=0.964 K-only:EM=0.750 V-only:EM=0.339 Joint:EM=0.429 WrongJoint:EM=0.179 RandKV:EM=0.107 ZeroKV:EM=0.250
+[adapter] saved: reports/phaseB_adapter_causal20_8B_0.6B_seed0.json
+== A2-causal20-8B-seed0: DONE 2026-09-13T17:58:43+08:00 ==
+== A2-causal20-8B-seed1: START 2026-09-13T17:58:43+08:00 ==
+[common] load teacher 8B (36L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|█████████████████████▌                                                                                      | 1/5 [00:01<00:04,  1.23s/it]Loading checkpoint shards:  40%|███████████████████████████████████████████▏                                                                | 2/5 [00:02<00:03,  1.03s/it]Loading checkpoint shards:  60%|████████████████████████████████████████████████████████████████▊                                           | 3/5 [00:02<00:01,  1.06it/s]Loading checkpoint shards:  80%|██████████████████████████████████████████████████████████████████████████████████████▍                     | 4/5 [00:03<00:00,  1.21it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.62it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.30it/s]
+[common] load student 0.6B (28L) ...
+  no-adapter                   Self:EM=0.893 K-only:EM=0.000 V-only:EM=0.000 Joint:EM=0.000
+  [adapter(joint)] epoch 1/20 loss=2.193
+  [adapter(joint)] epoch 2/20 loss=1.290
+  [adapter(joint)] epoch 3/20 loss=0.948
+  [adapter(joint)] epoch 4/20 loss=1.029
+  [adapter(joint)] epoch 5/20 loss=0.914
+  [adapter(joint)] epoch 6/20 loss=0.677
+  [adapter(joint)] epoch 7/20 loss=0.711
+  [adapter(joint)] epoch 8/20 loss=0.417
+  [adapter(joint)] epoch 9/20 loss=0.622
+  [adapter(joint)] epoch 10/20 loss=0.343
+  [adapter(joint)] epoch 11/20 loss=0.489
+  [adapter(joint)] epoch 12/20 loss=0.330
+  [adapter(joint)] epoch 13/20 loss=0.764
+  [adapter(joint)] epoch 14/20 loss=0.616
+  [adapter(joint)] epoch 15/20 loss=0.329
+  [adapter(joint)] epoch 16/20 loss=0.615
+  [adapter(joint)] epoch 17/20 loss=0.452
+  [adapter(joint)] epoch 18/20 loss=0.298
+  [adapter(joint)] epoch 19/20 loss=0.358
+  [adapter(joint)] epoch 20/20 loss=0.173
+  adapter(joint)               Self:EM=1.000 K-only:EM=0.393 V-only:EM=0.411 Joint:EM=0.357 WrongJoint:EM=0.107 RandKV:EM=0.125 ZeroKV:EM=0.286
+  causal(joint)                Self:EM=1.000 K-only:EM=0.393 V-only:EM=0.411 Joint:EM=0.357 WrongJoint:EM=0.107 RandKV:EM=0.125 ZeroKV:EM=0.286
+[adapter] saved: reports/phaseB_adapter_causal20_8B_0.6B_seed1.json
+== A2-causal20-8B-seed1: DONE 2026-09-13T18:11:57+08:00 ==
+== A2-causal20-8B-seed2: START 2026-09-13T18:11:57+08:00 ==
+[common] load teacher 8B (36L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|█████████████████████▌                                                                                      | 1/5 [00:01<00:04,  1.11s/it]Loading checkpoint shards:  40%|███████████████████████████████████████████▏                                                                | 2/5 [00:01<00:02,  1.10it/s]Loading checkpoint shards:  60%|████████████████████████████████████████████████████████████████▊                                           | 3/5 [00:02<00:01,  1.20it/s]Loading checkpoint shards:  80%|██████████████████████████████████████████████████████████████████████████████████████▍                     | 4/5 [00:03<00:00,  1.38it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.84it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.47it/s]
+[common] load student 0.6B (28L) ...
+  no-adapter                   Self:EM=0.893 K-only:EM=0.000 V-only:EM=0.000 Joint:EM=0.000
+  [adapter(joint)] epoch 1/20 loss=2.054
+  [adapter(joint)] epoch 2/20 loss=1.124
+  [adapter(joint)] epoch 3/20 loss=1.649
+  [adapter(joint)] epoch 4/20 loss=1.141
+  [adapter(joint)] epoch 5/20 loss=0.884
+  [adapter(joint)] epoch 6/20 loss=0.782
+  [adapter(joint)] epoch 7/20 loss=0.605
+  [adapter(joint)] epoch 8/20 loss=0.641
+  [adapter(joint)] epoch 9/20 loss=0.376
+  [adapter(joint)] epoch 10/20 loss=0.642
+  [adapter(joint)] epoch 11/20 loss=0.627
+  [adapter(joint)] epoch 12/20 loss=0.939
+  [adapter(joint)] epoch 13/20 loss=0.560
+  [adapter(joint)] epoch 14/20 loss=0.563
+  [adapter(joint)] epoch 15/20 loss=0.436
+  [adapter(joint)] epoch 16/20 loss=1.688
+  [adapter(joint)] epoch 17/20 loss=0.414
+  [adapter(joint)] epoch 18/20 loss=0.798
+  [adapter(joint)] epoch 19/20 loss=0.381
+  [adapter(joint)] epoch 20/20 loss=0.419
+  adapter(joint)               Self:EM=0.821 K-only:EM=0.357 V-only:EM=0.393 Joint:EM=0.179 WrongJoint:EM=0.107 RandKV:EM=0.143 ZeroKV:EM=0.107
+  causal(joint)                Self:EM=0.821 K-only:EM=0.357 V-only:EM=0.393 Joint:EM=0.179 WrongJoint:EM=0.107 RandKV:EM=0.143 ZeroKV:EM=0.107
+[adapter] saved: reports/phaseB_adapter_causal20_8B_0.6B_seed2.json
+== A2-causal20-8B-seed2: DONE 2026-09-13T18:25:03+08:00 ==
+== A3-squad-within-split0: START 2026-09-13T18:25:03+08:00 ==
+[within] split 0: calib=15 docs, held-out=15 docs (disjoint)
+[common] load teacher 8B (36L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|█████████████████████▌                                                                                      | 1/5 [00:01<00:05,  1.34s/it]Loading checkpoint shards:  40%|███████████████████████████████████████████▏                                                                | 2/5 [00:02<00:03,  1.16s/it]Loading checkpoint shards:  60%|████████████████████████████████████████████████████████████████▊                                           | 3/5 [00:03<00:02,  1.08s/it]Loading checkpoint shards:  80%|██████████████████████████████████████████████████████████████████████████████████████▍                     | 4/5 [00:04<00:00,  1.07it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:04<00:00,  1.44it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:04<00:00,  1.15it/s]
+[common] load student 0.6B (28L) ...
+[within] calibration attention maps ...
+`torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to eager attention. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.
+[within] fitting output-aware V mapper (real targets) ...
+[within] fitting output-aware V mapper (shuffled targets) ...
+[within] fitting W_O-aware V mapper ...
+  [no-adapter 5/15]
+  [no-adapter 10/15]
+  [no-adapter 15/15]
+[within] training rank-8 adapter on SQuAD calibration (20 epochs) ...
+  [within-squad] epoch 1/20 loss=8.741
+  [within-squad] epoch 2/20 loss=4.463
+  [within-squad] epoch 3/20 loss=2.334
+  [within-squad] epoch 4/20 loss=0.978
+  [within-squad] epoch 5/20 loss=0.349
+  [within-squad] epoch 6/20 loss=0.306
+  [within-squad] epoch 7/20 loss=0.061
+  [within-squad] epoch 8/20 loss=0.041
+  [within-squad] epoch 9/20 loss=0.112
+  [within-squad] epoch 10/20 loss=0.060
+  [within-squad] epoch 11/20 loss=0.007
+  [within-squad] epoch 12/20 loss=0.005
+  [within-squad] epoch 13/20 loss=0.105
+  [within-squad] epoch 14/20 loss=0.005
+  [within-squad] epoch 15/20 loss=0.001
+  [within-squad] epoch 16/20 loss=0.000
+  [within-squad] epoch 17/20 loss=0.000
+  [within-squad] epoch 18/20 loss=0.000
+  [within-squad] epoch 19/20 loss=0.000
+  [within-squad] epoch 20/20 loss=0.000
+  [adapted_ 5/15]
+  [adapted_ 10/15]
+  [adapted_ 15/15]
+[within] saved: reports/phaseB_squadwithin_split0.json
+Self EM (held-out) = 0.333
+  Self                     EM=0.333 CI95=[0.133, 0.600]
+  K-only                   EM=0.000 CI95=[0.000, 0.000]
+  V-only-affine            EM=0.000 CI95=[0.000, 0.000]
+  Joint-affine             EM=0.000 CI95=[0.000, 0.000]
+  V-only-outaware          EM=0.000 CI95=[0.000, 0.000]
+  V-only-outaware-shuf     EM=0.000 CI95=[0.000, 0.000]
+  V-only-woaware           EM=0.000 CI95=[0.000, 0.000]
+  Joint-woaware            EM=0.000 CI95=[0.000, 0.000]
+  -- with within-domain adapter --
+  adapted_Self             EM=0.667
+  adapted_K-only           EM=0.000
+  adapted_V-only-affine    EM=0.000
+  adapted_Joint-affine     EM=0.000
+  adapted_V-only-outaware  EM=0.000
+  adapted_V-only-outaware-shuf EM=0.000
+  adapted_V-only-woaware   EM=0.000
+  adapted_Joint-woaware    EM=0.000
+== A3-squad-within-split0: DONE 2026-09-13T18:29:24+08:00 ==
+== A3-squad-within-split1: START 2026-09-13T18:29:24+08:00 ==
+[within] split 1: calib=15 docs, held-out=15 docs (disjoint)
+[common] load teacher 8B (36L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|█████████████████████▌                                                                                      | 1/5 [00:01<00:04,  1.23s/it]Loading checkpoint shards:  40%|███████████████████████████████████████████▏                                                                | 2/5 [00:02<00:03,  1.03s/it]Loading checkpoint shards:  60%|████████████████████████████████████████████████████████████████▊                                           | 3/5 [00:02<00:01,  1.06it/s]Loading checkpoint shards:  80%|██████████████████████████████████████████████████████████████████████████████████████▍                     | 4/5 [00:03<00:00,  1.21it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.63it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.30it/s]
+[common] load student 0.6B (28L) ...
+[within] calibration attention maps ...
+`torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to eager attention. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.
+[within] fitting output-aware V mapper (real targets) ...
+[within] fitting output-aware V mapper (shuffled targets) ...
+[within] fitting W_O-aware V mapper ...
+  [no-adapter 5/15]
+  [no-adapter 10/15]
+  [no-adapter 15/15]
+[within] training rank-8 adapter on SQuAD calibration (20 epochs) ...
+  [within-squad] epoch 1/20 loss=9.410
+  [within-squad] epoch 2/20 loss=4.802
+  [within-squad] epoch 3/20 loss=2.577
+  [within-squad] epoch 4/20 loss=1.057
+  [within-squad] epoch 5/20 loss=0.400
+  [within-squad] epoch 6/20 loss=0.186
+  [within-squad] epoch 7/20 loss=0.214
+  [within-squad] epoch 8/20 loss=0.112
+  [within-squad] epoch 9/20 loss=0.122
+  [within-squad] epoch 10/20 loss=0.076
+  [within-squad] epoch 11/20 loss=0.088
+  [within-squad] epoch 12/20 loss=0.002
+  [within-squad] epoch 13/20 loss=0.003
+  [within-squad] epoch 14/20 loss=0.000
+  [within-squad] epoch 15/20 loss=0.000
+  [within-squad] epoch 16/20 loss=0.000
+  [within-squad] epoch 17/20 loss=0.000
+  [within-squad] epoch 18/20 loss=0.000
+  [within-squad] epoch 19/20 loss=0.000
+  [within-squad] epoch 20/20 loss=0.000
+  [adapted_ 5/15]
+  [adapted_ 10/15]
+  [adapted_ 15/15]
+[within] saved: reports/phaseB_squadwithin_split1.json
+Self EM (held-out) = 0.200
+  Self                     EM=0.200 CI95=[0.000, 0.400]
+  K-only                   EM=0.000 CI95=[0.000, 0.000]
+  V-only-affine            EM=0.000 CI95=[0.000, 0.000]
+  Joint-affine             EM=0.000 CI95=[0.000, 0.000]
+  V-only-outaware          EM=0.000 CI95=[0.000, 0.000]
+  V-only-outaware-shuf     EM=0.000 CI95=[0.000, 0.000]
+  V-only-woaware           EM=0.000 CI95=[0.000, 0.000]
+  Joint-woaware            EM=0.000 CI95=[0.000, 0.000]
+  -- with within-domain adapter --
+  adapted_Self             EM=0.400
+  adapted_K-only           EM=0.000
+  adapted_V-only-affine    EM=0.000
+  adapted_Joint-affine     EM=0.000
+  adapted_V-only-outaware  EM=0.000
+  adapted_V-only-outaware-shuf EM=0.000
+  adapted_V-only-woaware   EM=0.000
+  adapted_Joint-woaware    EM=0.000
+== A3-squad-within-split1: DONE 2026-09-13T18:33:51+08:00 ==
+== A3-squad-within-split2: START 2026-09-13T18:33:51+08:00 ==
+[within] split 2: calib=15 docs, held-out=15 docs (disjoint)
+[common] load teacher 8B (36L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|█████████████████████▌                                                                                      | 1/5 [00:01<00:04,  1.11s/it]Loading checkpoint shards:  40%|███████████████████████████████████████████▏                                                                | 2/5 [00:01<00:02,  1.11it/s]Loading checkpoint shards:  60%|████████████████████████████████████████████████████████████████▊                                           | 3/5 [00:02<00:01,  1.21it/s]Loading checkpoint shards:  80%|██████████████████████████████████████████████████████████████████████████████████████▍                     | 4/5 [00:03<00:00,  1.39it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.87it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.49it/s]
+[common] load student 0.6B (28L) ...
+[within] calibration attention maps ...
+`torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to eager attention. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.
+[within] fitting output-aware V mapper (real targets) ...
+[within] fitting output-aware V mapper (shuffled targets) ...
+[within] fitting W_O-aware V mapper ...
+  [no-adapter 5/15]
+  [no-adapter 10/15]
+  [no-adapter 15/15]
+[within] training rank-8 adapter on SQuAD calibration (20 epochs) ...
+  [within-squad] epoch 1/20 loss=9.461
+  [within-squad] epoch 2/20 loss=4.674
+  [within-squad] epoch 3/20 loss=2.139
+  [within-squad] epoch 4/20 loss=1.448
+  [within-squad] epoch 5/20 loss=0.647
+  [within-squad] epoch 6/20 loss=0.379
+  [within-squad] epoch 7/20 loss=0.224
+  [within-squad] epoch 8/20 loss=0.164
+  [within-squad] epoch 9/20 loss=0.101
+  [within-squad] epoch 10/20 loss=0.143
+  [within-squad] epoch 11/20 loss=0.031
+  [within-squad] epoch 12/20 loss=0.100
+  [within-squad] epoch 13/20 loss=0.051
+  [within-squad] epoch 14/20 loss=0.032
+  [within-squad] epoch 15/20 loss=0.001
+  [within-squad] epoch 16/20 loss=0.000
+  [within-squad] epoch 17/20 loss=0.000
+  [within-squad] epoch 18/20 loss=0.000
+  [within-squad] epoch 19/20 loss=0.000
+  [within-squad] epoch 20/20 loss=0.000
+  [adapted_ 5/15]
+  [adapted_ 10/15]
+  [adapted_ 15/15]
+[within] saved: reports/phaseB_squadwithin_split2.json
+Self EM (held-out) = 0.400
+  Self                     EM=0.400 CI95=[0.133, 0.667]
+  K-only                   EM=0.000 CI95=[0.000, 0.000]
+  V-only-affine            EM=0.000 CI95=[0.000, 0.000]
+  Joint-affine             EM=0.000 CI95=[0.000, 0.000]
+  V-only-outaware          EM=0.000 CI95=[0.000, 0.000]
+  V-only-outaware-shuf     EM=0.000 CI95=[0.000, 0.000]
+  V-only-woaware           EM=0.000 CI95=[0.000, 0.000]
+  Joint-woaware            EM=0.000 CI95=[0.000, 0.000]
+  -- with within-domain adapter --
+  adapted_Self             EM=0.400
+  adapted_K-only           EM=0.000
+  adapted_V-only-affine    EM=0.000
+  adapted_Joint-affine     EM=0.000
+  adapted_V-only-outaware  EM=0.000
+  adapted_V-only-outaware-shuf EM=0.000
+  adapted_V-only-woaware   EM=0.000
+  adapted_Joint-woaware    EM=0.000
+== A3-squad-within-split2: DONE 2026-09-13T18:38:16+08:00 ==
+== A4-errorbudget-1.7B-seed0: START 2026-09-13T18:38:16+08:00 ==
+[common] load teacher 1.7B (28L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|██████████████████████████████████████████████████████                                                      | 1/2 [00:00<00:00,  1.08it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:01<00:00,  1.62it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:01<00:00,  1.51it/s]
+[common] load student 0.6B (28L) ...
+[budget] calibration attention maps ...
+`torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to eager attention. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.
+[budget] fitting W_O-aware V mapper ...
+[budget] evaluation attention maps (student Self cache) ...
+  [8/56]
+  [16/56]
+  [24/56]
+  [32/56]
+  [40/56]
+  [48/56]
+  [56/56]
+[budget] saved: reports/phaseB_errorbudget_1.7B_0.6B_seed0.json
+  raw                e_raw=6.1745 e_attn=6.1976 e_wo=6.0375 EM=0.000
+  affine             e_raw=0.1954 e_attn=2.3474 e_wo=2.6402 EM=0.054
+  outaware           e_raw=0.5536 e_attn=0.0623 e_wo=0.0641 EM=0.911
+  outaware-shuffled  e_raw=5.5745 e_attn=1.1784 e_wo=1.3896 EM=0.089
+  woaware            e_raw=0.5124 e_attn=0.0584 e_wo=0.0585 EM=0.929
+  spearman: {'e_raw_vs_EM': -0.39999999999999997, 'e_attn_vs_EM': -0.9999999999999999, 'e_wo_vs_EM': -0.9999999999999999, 'n_variants': 5, 'note': 'Spearman over 5 mapper variants in one run; n is too small for a p-value.'}
+== A4-errorbudget-1.7B-seed0: DONE 2026-09-13T18:44:37+08:00 ==
+== A4-errorbudget-1.7B-seed1: START 2026-09-13T18:44:37+08:00 ==
+[common] load teacher 1.7B (28L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|██████████████████████████████████████████████████████                                                      | 1/2 [00:00<00:00,  1.10it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:01<00:00,  2.21it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:01<00:00,  1.92it/s]
+[common] load student 0.6B (28L) ...
+[budget] calibration attention maps ...
+`torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to eager attention. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.
+[budget] fitting W_O-aware V mapper ...
+[budget] evaluation attention maps (student Self cache) ...
+  [8/56]
+  [16/56]
+  [24/56]
+  [32/56]
+  [40/56]
+  [48/56]
+  [56/56]
+[budget] saved: reports/phaseB_errorbudget_1.7B_0.6B_seed1.json
+  raw                e_raw=6.1700 e_attn=6.1854 e_wo=6.0314 EM=0.000
+  affine             e_raw=0.1930 e_attn=2.3538 e_wo=2.6499 EM=0.143
+  outaware           e_raw=0.5477 e_attn=0.0631 e_wo=0.0665 EM=0.929
+  outaware-shuffled  e_raw=5.5953 e_attn=1.1272 e_wo=1.3517 EM=0.071
+  woaware            e_raw=0.5119 e_attn=0.0645 e_wo=0.0669 EM=0.857
+  spearman: {'e_raw_vs_EM': -0.6, 'e_attn_vs_EM': -0.8999999999999998, 'e_wo_vs_EM': -0.8999999999999998, 'n_variants': 5, 'note': 'Spearman over 5 mapper variants in one run; n is too small for a p-value.'}
+== A4-errorbudget-1.7B-seed1: DONE 2026-09-13T18:50:51+08:00 ==
+== A4-errorbudget-1.7B-seed2: START 2026-09-13T18:50:51+08:00 ==
+[common] load teacher 1.7B (28L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|██████████████████████████████████████████████████████                                                      | 1/2 [00:00<00:00,  1.07it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:01<00:00,  2.16it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:01<00:00,  1.87it/s]
+[common] load student 0.6B (28L) ...
+[budget] calibration attention maps ...
+`torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to eager attention. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.
+[budget] fitting W_O-aware V mapper ...
+[budget] evaluation attention maps (student Self cache) ...
+  [8/56]
+  [16/56]
+  [24/56]
+  [32/56]
+  [40/56]
+  [48/56]
+  [56/56]
+[budget] saved: reports/phaseB_errorbudget_1.7B_0.6B_seed2.json
+  raw                e_raw=6.1824 e_attn=6.1997 e_wo=6.0459 EM=0.000
+  affine             e_raw=0.1948 e_attn=2.3289 e_wo=2.6118 EM=0.143
+  outaware           e_raw=0.5531 e_attn=0.0680 e_wo=0.0720 EM=0.964
+  outaware-shuffled  e_raw=5.6099 e_attn=1.1049 e_wo=1.4167 EM=0.071
+  woaware            e_raw=0.5125 e_attn=0.0667 e_wo=0.0683 EM=0.929
+  spearman: {'e_raw_vs_EM': -0.6, 'e_attn_vs_EM': -0.7999999999999999, 'e_wo_vs_EM': -0.7999999999999999, 'n_variants': 5, 'note': 'Spearman over 5 mapper variants in one run; n is too small for a p-value.'}
+== A4-errorbudget-1.7B-seed2: DONE 2026-09-13T18:57:12+08:00 ==
+== A4-errorbudget-8B-seed0: START 2026-09-13T18:57:12+08:00 ==
+[common] load teacher 8B (36L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|█████████████████████▌                                                                                      | 1/5 [00:01<00:04,  1.12s/it]Loading checkpoint shards:  40%|███████████████████████████████████████████▏                                                                | 2/5 [00:01<00:02,  1.08it/s]Loading checkpoint shards:  60%|████████████████████████████████████████████████████████████████▊                                           | 3/5 [00:02<00:01,  1.19it/s]Loading checkpoint shards:  80%|██████████████████████████████████████████████████████████████████████████████████████▍                     | 4/5 [00:03<00:00,  1.35it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.82it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.45it/s]
+[common] load student 0.6B (28L) ...
+[budget] calibration attention maps ...
+`torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to eager attention. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.
+[budget] fitting W_O-aware V mapper ...
+[budget] evaluation attention maps (student Self cache) ...
+  [8/56]
+  [16/56]
+  [24/56]
+  [32/56]
+  [40/56]
+  [48/56]
+  [56/56]
+[budget] saved: reports/phaseB_errorbudget_8B_0.6B_seed0.json
+  raw                e_raw=1.2909 e_attn=1.2400 e_wo=1.2602 EM=0.000
+  affine             e_raw=0.3394 e_attn=4.0380 e_wo=4.8237 EM=0.000
+  outaware           e_raw=0.9933 e_attn=0.0806 e_wo=0.0948 EM=0.232
+  outaware-shuffled  e_raw=5.5424 e_attn=0.6379 e_wo=0.7560 EM=0.036
+  woaware            e_raw=0.8903 e_attn=0.0881 e_wo=0.0957 EM=0.268
+  spearman: {'e_raw_vs_EM': -0.19999999999999998, 'e_attn_vs_EM': -0.7999999999999999, 'e_wo_vs_EM': -0.7999999999999999, 'n_variants': 5, 'note': 'Spearman over 5 mapper variants in one run; n is too small for a p-value.'}
+== A4-errorbudget-8B-seed0: DONE 2026-09-13T19:03:44+08:00 ==
+== A4-errorbudget-8B-seed1: START 2026-09-13T19:03:44+08:00 ==
+[common] load teacher 8B (36L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|█████████████████████▌                                                                                      | 1/5 [00:01<00:04,  1.11s/it]Loading checkpoint shards:  40%|███████████████████████████████████████████▏                                                                | 2/5 [00:01<00:02,  1.08it/s]Loading checkpoint shards:  60%|████████████████████████████████████████████████████████████████▊                                           | 3/5 [00:02<00:01,  1.20it/s]Loading checkpoint shards:  80%|██████████████████████████████████████████████████████████████████████████████████████▍                     | 4/5 [00:03<00:00,  1.37it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.82it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.46it/s]
+[common] load student 0.6B (28L) ...
+[budget] calibration attention maps ...
+`torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to eager attention. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.
+[budget] fitting W_O-aware V mapper ...
+[budget] evaluation attention maps (student Self cache) ...
+  [8/56]
+  [16/56]
+  [24/56]
+  [32/56]
+  [40/56]
+  [48/56]
+  [56/56]
+[budget] saved: reports/phaseB_errorbudget_8B_0.6B_seed1.json
+  raw                e_raw=1.2902 e_attn=1.2394 e_wo=1.2603 EM=0.000
+  affine             e_raw=0.3364 e_attn=4.0650 e_wo=4.8828 EM=0.000
+  outaware           e_raw=0.9898 e_attn=0.0838 e_wo=0.0993 EM=0.250
+  outaware-shuffled  e_raw=5.6246 e_attn=0.7038 e_wo=0.8464 EM=0.071
+  woaware            e_raw=0.8789 e_attn=0.0907 e_wo=0.0984 EM=0.286
+  spearman: {'e_raw_vs_EM': -0.19999999999999998, 'e_attn_vs_EM': -0.7999999999999999, 'e_wo_vs_EM': -0.8999999999999998, 'n_variants': 5, 'note': 'Spearman over 5 mapper variants in one run; n is too small for a p-value.'}
+== A4-errorbudget-8B-seed1: DONE 2026-09-13T19:10:14+08:00 ==
+== A4-errorbudget-8B-seed2: START 2026-09-13T19:10:14+08:00 ==
+[common] load teacher 8B (36L) ...
+Loading checkpoint shards:   0%|                                                                                                                    | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|█████████████████████▌                                                                                      | 1/5 [00:01<00:04,  1.14s/it]Loading checkpoint shards:  40%|███████████████████████████████████████████▏                                                                | 2/5 [00:01<00:02,  1.08it/s]Loading checkpoint shards:  60%|████████████████████████████████████████████████████████████████▊                                           | 3/5 [00:02<00:01,  1.19it/s]Loading checkpoint shards:  80%|██████████████████████████████████████████████████████████████████████████████████████▍                     | 4/5 [00:03<00:00,  1.37it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.85it/s]Loading checkpoint shards: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:03<00:00,  1.46it/s]
+[common] load student 0.6B (28L) ...
+[budget] calibration attention maps ...
+`torch.nn.functional.scaled_dot_product_attention` does not support `output_attentions=True`. Falling back to eager attention. This warning can be removed using the argument `attn_implementation="eager"` when loading the model.
+[budget] fitting W_O-aware V mapper ...
+[budget] evaluation attention maps (student Self cache) ...
+  [8/56]
+  [16/56]
+  [24/56]
+  [32/56]
+  [40/56]
+  [48/56]
+  [56/56]
+[budget] saved: reports/phaseB_errorbudget_8B_0.6B_seed2.json
+  raw                e_raw=1.2915 e_attn=1.2393 e_wo=1.2599 EM=0.000
+  affine             e_raw=0.3406 e_attn=4.0699 e_wo=4.8852 EM=0.000
+  outaware           e_raw=0.9966 e_attn=0.0810 e_wo=0.0958 EM=0.268
+  outaware-shuffled  e_raw=5.5131 e_attn=0.6667 e_wo=0.7979 EM=0.089
+  woaware            e_raw=0.8893 e_attn=0.0892 e_wo=0.0973 EM=0.250
+  spearman: {'e_raw_vs_EM': -0.09999999999999999, 'e_attn_vs_EM': -0.8999999999999998, 'e_wo_vs_EM': -0.8999999999999998, 'n_variants': 5, 'note': 'Spearman over 5 mapper variants in one run; n is too small for a p-value.'}
+== A4-errorbudget-8B-seed2: DONE 2026-09-13T19:16:46+08:00 ==
+== audit3 GPU queue finished 2026-09-13T19:16:46+08:00 ==
+Next: git add reports/ && git commit, then on the editing machine:
+  python scripts/cluster_stats_audit3.py
+  python paper/audit/verify_audit3_edits.py

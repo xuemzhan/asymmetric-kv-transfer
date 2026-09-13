@@ -28,6 +28,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 
 import numpy as np
@@ -189,6 +190,13 @@ def run(pair, seed, rank, epochs, lr, n_calib, n_eval, output, targets,
     mv = fit_mapper("V", ct, cs, lmap)
     mapped_calib = [map_teacher(mk, mv, calib_t[i], lmap) for i in range(len(train))]
     mapped_eval = [map_teacher(mk, mv, eval_t[i], lmap) for i in range(len(test))]
+
+    # The raw/stacked teacher state arrays and the mapped teacher states are the
+    # dominant host-RAM cost. The container caps cgroup memory and a supervisor
+    # watchdog SIGTERMs the top-RSS process near that cap, so release the raw
+    # and stacked arrays as soon as the mapped states exist.
+    del calib_t, eval_t, ct, cs
+    gc.collect()
 
     def states_for(kind):
         if kind == "Self":

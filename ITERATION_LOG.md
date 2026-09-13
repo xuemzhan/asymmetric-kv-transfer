@@ -998,3 +998,57 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
   `scripts/error_taxonomy_selfdiag.py`、三个论文守卫（`verify_corrected_paper.py`、
   `verify_audit2_edits.py`、`verify_audit3_edits.py`）全部通过。
 - **未改动**：任何实验逻辑、报告数值、论文结论。
+## W26 (2026-09-13): audit3 GPU 队列实跑（A1–A4，含容器内存看门狗适配）
+
+- **触发**：执行 `REVISION_PLAN3` PART II 的 GPU 项，命令载体
+  `scripts/run_audit3_gpu_queue.sh`（A1→A2→A3→A4）。队列跑完 0 FAILED，
+  产物全部落 `reports/`（18 个 JSON + 队列日志）。
+- **运行中修的两个真实缺陷（否则跑不起来）**：
+  - `phaseB_errorbudget.py`：`wo_slices[(l,q)]` 未转置，`d @ Wq` 维度失配
+    （1024 vs 128）。o_proj 为 `(hidden, n_q*D)`，需 `Wl[:, qD:(q+1)D].T` 得
+    `(D, hidden)`，与 `phaseB_outaware` 的取法一致。已修。
+  - **容器内存看门狗**：`/etc/csghub/mem_monitor.sh` 在 cgroup v2
+    `memory.current > memory.max-200M` 时 `kill` 掉 RSS 最大的进程
+    （本容器 `memory.max=67.6 GB`，**计入 page cache**）。8B 的旧 `load_model_gpu`
+    （CPU 载入再 `.to('cuda')`）RSS 冲到 ~34 GB，连人带页缓存越过阈值被 SIGTERM。
+    修法：`low_cpu_mem_usage=True` + `device_map={"":0}` 逐 shard 直推 GPU
+    （RSS 峰值降到 ~27–32 GB，实测与旧路径 logits **max abs diff = 0.0**，数值等价），
+    并在 `phaseB_adapter/errorbudget/squad_within` 里于 mapped states 建好后
+    `del` 原始/堆叠 teacher 数组（`gc.collect()`）。全程 cgroup 峰值 ≤65.3 GB。
+- **A1（evaluator residual）** `phaseB_evalcheck_residual_seed0.json` /
+  `_squad.json` / `_attrib.json`：
+  - synthetic：0.6B top1=0.929 / KL_med=0.0047 / max|d|=1.344 / normEM 一致 0.964；
+    1.7B top1=0.929 / KL_med=0.0015 / max|d|=0.875 / normEM 0.929；
+    4B top1=0.982 / KL_med=0.0010 / max|d|=0.969 / normEM 0.982。Self EM 两条路径
+    0.911/0.875、0.429/0.393、0.804/0.786。
+  - **归因探针**：同 doc 两次 capture 逐位相同（0.0）；bf16 回环 0.0/top1=1.0；
+    显式 position_ids 0.0/top1=1.0；残余全部来自 **attention kernel path**
+    （max 0.844、KL_med 0.0048），eager 下同量级（top1=0.875、KL_med 0.0046）。
+  - SQuAD validator：0.6B top1=0.933、normEM 一致 0.933、KL_med 0.0052、
+    SelfEM 0.367/0.367。
+  - **门禁判定（诚实）**：KL 中位数远低于 <0.01（更远低于停止线 0.1）且归因指向
+    低精度 kernel 路径 ⇒ 前提成立；但**字面「top-1 agreement = 1.000」未满足**
+    （近 tie 翻转 2–4/56）。这是预登记门禁的中间态，未自行放宽，留作者裁量。
+- **A2（20-epoch causality，3 seeds，`--dump-rows`）** `phaseB_adapter_causal20_*`：
+  | Pair | correct Joint EM (s0/s1/s2) | max destroyed | margin (mean) | 门禁 |
+  |---|---|---|---|---|
+  | 1.7B→0.6B | 0.857/0.857/1.000 | ≤0.179 | **+0.750** | content causality established |
+  | 8B→0.6B | 0.429/0.357/0.179 | 0.482/0.286/0.143 | **+0.095** | 均值 <0.10 → **unresolved/suggestive**（不得升级） |
+  - 注：adapter 训练在 GPU 上有非确定性（同 seed 两次跑 8B s0 得 0.679 vs 0.429）；
+    以 3-seed 分布报告，门禁按 3-seed 均值判。
+- **A3（第二域 within-domain repair，3 splits）** `phaseB_squadwithin_split{0,1,2}`：
+  - 所有迁移臂（K-only / V-only×{affine,outaware,wo} / Joint×{affine,wo} 及
+    加 adapter 后的同一组）**三 split 全部 EM=0.000**；held-out Self = 0.333/0.200/0.400。
+  - **门禁判定 = 更强的负结果**：consumer compatibility 绑定任务分布，SQuAD
+    从「仅不跨域」升级为「域内也不复制」。caveat：`adapted_Self` 上升
+    （0.667/0.400/0.400），适配器部分学到与注入状态无关的任务/模板信号。
+- **A4（state vs consumption 误差预算）** `phaseB_errorbudget_{1.7B,8B}_0.6B_seed{0,1,2}`：
+  - raw 误差最小的 affine（pooled e_raw=0.267）EM 最低（0.057），
+    outaware/woaware e_raw≈0.70 但 EM≈0.59 ⇒ **e_raw 不追踪 EM**（pooled Spearman −0.43）；
+  - **e_attn / e_wo 追踪 EM**（pooled Spearman −0.877 / −0.841）⇒ 「where you align
+    matters」有数字支撑，无需按 II.A4 的降级分支改写；
+  - shuffled 对照出现「低 e_attn 但低 EM」（8B e_attn=0.638/EM=0.071）的局部反例，
+    正文需如实写。
+- **论文/登记未动**：本轮只跑 GPU 实验与落报告；`METRIC_CORRECTION §9` 登记、
+  PART III 的 W1–W9 条件式改写、`verify_audit3_edits.py` 数字断言留待后续
+   （用户本轮只要求「需要 GPU 的实验」）。代码改动 4 个文件见 git status。

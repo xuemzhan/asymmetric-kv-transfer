@@ -26,6 +26,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 
 import numpy as np
@@ -162,7 +163,8 @@ def main():
                                          target_s=calib_s_shuf)
     print("[budget] fitting W_O-aware V mapper ...", flush=True)
     W_wo = fit_wo_aware_mapper(student, calib_t, calib_s, attn_calib, lmap)
-    del ct, cs
+    del ct, cs, calib_t, calib_s, attn_calib
+    gc.collect()
     torch.cuda.empty_cache()
 
     # student weight-side structure (identical for every layer of a model)
@@ -175,7 +177,7 @@ def main():
     for l in range(s_layers):
         Wl = student.model.layers[l].self_attn.o_proj.weight.detach().float().cpu().numpy()
         for q in range(n_q):
-            wo_slices[(l, q)] = Wl[:, q * D:(q + 1) * D].astype(np.float64)
+            wo_slices[(l, q)] = Wl[:, q * D:(q + 1) * D].T.astype(np.float64)
 
     variants = {
         "raw": [raw_map_teacher(eval_t[i], lmap, s_layers).v for i in range(len(test))],
@@ -188,6 +190,8 @@ def main():
                               for i in range(len(test))],
         "woaware": [apply_wo_aware(eval_t[i], lmap, W_wo) for i in range(len(test))],
     }
+    del eval_t
+    gc.collect()
 
     print("[budget] evaluation attention maps (student Self cache) ...", flush=True)
     rows = []

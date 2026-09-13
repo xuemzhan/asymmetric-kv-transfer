@@ -102,11 +102,18 @@ def load_student(pair: str):
 
 
 def load_model_gpu(path: str, attn_implementation: str | None = None):
-    """Deterministic full-GPU load (CPU load then .to('cuda:0')).
+    """Deterministic full-GPU load, streamed to the device.
 
-    device_map='auto' sometimes CPU-offloads the 8B teacher depending on
-    transient accelerator memory state, which makes runs ~10x slower and is
-    not reproducible. Loading to CPU first and moving to the GPU avoids that.
+    The container enforces a cgroup memory cap and a supervisor watchdog that
+    SIGTERMs the top-RSS process once the cap is approached. A plain
+    `from_pretrained` then `.to('cuda:0')` materialises a full second copy of
+    the weights in host RAM (the 8B teacher reaches ~34GB RSS), which trips
+    that watchdog. `low_cpu_mem_usage` plus an explicit `device_map` streams
+    the shards straight to `cuda:0`, so host RSS stays near the KV arrays.
+
+    An explicit `{"": 0}` map (not `"auto"`) pins every module to the GPU, so
+    the load stays deterministic; `auto` could CPU-offload an 8B teacher
+    depending on transient device memory and be ~10x slower.
 
     `attn_implementation` is only passed when given, so every existing caller
     keeps the library default; the evaluator attribution probe passes
@@ -114,11 +121,11 @@ def load_model_gpu(path: str, attn_implementation: str | None = None):
     """
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    kwargs = {"torch_dtype": torch.bfloat16}
+    kwargs = {"torch_dtype": torch.bfloat16, "low_cpu_mem_usage": True,
+              "device_map": {"": 0}}
     if attn_implementation is not None:
         kwargs["attn_implementation"] = attn_implementation
     model = AutoModelForCausalLM.from_pretrained(path, **kwargs)
-    model = model.to("cuda:0")
     tok = AutoTokenizer.from_pretrained(path)
     model.eval()
     return model, tok

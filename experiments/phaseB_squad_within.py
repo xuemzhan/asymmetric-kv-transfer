@@ -27,6 +27,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 
 import numpy as np
@@ -168,6 +169,10 @@ def main():
     v_wo = [apply_wo_aware(eval_t[i], lmap, W_wo) for i in range(len(eval_set))] \
         if W_wo is not None else None
     mapped_calib = [map_teacher(mk, mv, calib_t[i], lmap) for i in range(len(calib))]
+    # `calib_t` is not needed after the mapped calibration states exist; release
+    # it (and the attention maps) to stay under the container's memory watchdog.
+    del calib_t, attn_calib
+    gc.collect()
 
     def rows_with(tag_prefix=""):
         rows = []

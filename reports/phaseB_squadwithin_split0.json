@@ -1,0 +1,964 @@
+{
+  "task": "phaseB_squad_within",
+  "pair": "8B_0.6B",
+  "split_seed": 0,
+  "v_mappers": [
+    "affine",
+    "outaware",
+    "wo"
+  ],
+  "adapter": true,
+  "rank": 8,
+  "epochs": 20,
+  "calib_domain": "SQuAD",
+  "eval_domain": "SQuAD (held-out documents)",
+  "n_calib": 15,
+  "n_eval": 15,
+  "calib_ids": [
+    "squad_0_2",
+    "squad_0_5",
+    "squad_0_8",
+    "squad_0_10",
+    "squad_0_11",
+    "squad_0_13",
+    "squad_0_14",
+    "squad_0_16",
+    "squad_0_17",
+    "squad_0_22",
+    "squad_0_23",
+    "squad_0_24",
+    "squad_0_26",
+    "squad_0_27",
+    "squad_0_28"
+  ],
+  "eval_ids": [
+    "squad_0_0",
+    "squad_0_1",
+    "squad_0_3",
+    "squad_0_4",
+    "squad_0_6",
+    "squad_0_7",
+    "squad_0_9",
+    "squad_0_12",
+    "squad_0_15",
+    "squad_0_18",
+    "squad_0_19",
+    "squad_0_20",
+    "squad_0_21",
+    "squad_0_25",
+    "squad_0_29"
+  ],
+  "self_EM": 0.3333333333333333,
+  "summary": {
+    "Self": {
+      "LL_mean": -15.389252973662481,
+      "LL_ci95": [
+        -17.98548242550426,
+        -12.904660744004781
+      ],
+      "delta_vs_self": 0.0,
+      "delta_ci95": [
+        0.0,
+        0.0
+      ],
+      "wilcoxon_p": 1.0,
+      "cohens_d": 0.0,
+      "EM": 0.3333333333333333,
+      "EM_ci95": [
+        0.13333333333333333,
+        0.6
+      ]
+    },
+    "K-only": {
+      "LL_mean": -10.92444613573097,
+      "LL_ci95": [
+        -13.362795877100929,
+        -8.365757104454769
+      ],
+      "delta_vs_self": 4.464806837931511,
+      "delta_ci95": [
+        2.490349575740004,
+        6.277474869911868
+      ],
+      "wilcoxon_p": 0.00152587890625,
+      "cohens_d": 1.1643465459697755,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "V-only-affine": {
+      "LL_mean": -12.841385857831863,
+      "LL_ci95": [
+        -15.027666196416297,
+        -10.431417652633456
+      ],
+      "delta_vs_self": 2.547867115830618,
+      "delta_ci95": [
+        0.7391752805832832,
+        4.518301873013139
+      ],
+      "wilcoxon_p": 0.01806640625,
+      "cohens_d": 0.653799865048631,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "Joint-affine": {
+      "LL_mean": -9.379638123498076,
+      "LL_ci95": [
+        -12.00809952724666,
+        -6.813101892701929
+      ],
+      "delta_vs_self": 6.0096148501644056,
+      "delta_ci95": [
+        3.9226152344593808,
+        7.839660208548699
+      ],
+      "wilcoxon_p": 0.00042724609375,
+      "cohens_d": 1.5016711725027017,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "V-only-outaware": {
+      "LL_mean": -11.605956211317155,
+      "LL_ci95": [
+        -13.692680143269282,
+        -9.46325044829221
+      ],
+      "delta_vs_self": 3.783296762345329,
+      "delta_ci95": [
+        2.2967765660465704,
+        5.262096930364767
+      ],
+      "wilcoxon_p": 0.0006103515625,
+      "cohens_d": 1.2495966917101007,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "V-only-outaware-shuf": {
+      "LL_mean": -10.464715960858362,
+      "LL_ci95": [
+        -12.055631327269568,
+        -8.824767808185683
+      ],
+      "delta_vs_self": 4.924537012804122,
+      "delta_ci95": [
+        3.217587443864535,
+        6.8289866397229435
+      ],
+      "wilcoxon_p": 6.103515625e-05,
+      "cohens_d": 1.3242289514650003,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "V-only-woaware": {
+      "LL_mean": -11.216010902703754,
+      "LL_ci95": [
+        -13.11101475409099,
+        -9.173901969116358
+      ],
+      "delta_vs_self": 4.173242070958727,
+      "delta_ci95": [
+        2.8453494337395067,
+        5.603677720858464
+      ],
+      "wilcoxon_p": 0.0001220703125,
+      "cohens_d": 1.4702341373885677,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "Joint-woaware": {
+      "LL_mean": -11.761503395154362,
+      "LL_ci95": [
+        -14.224840875524022,
+        -9.235304700741692
+      ],
+      "delta_vs_self": 3.627749578508119,
+      "delta_ci95": [
+        1.5480600264586866,
+        5.62517457096728
+      ],
+      "wilcoxon_p": 0.00537109375,
+      "cohens_d": 0.8750272925884278,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "summary_adapted": {
+    "adapted_Self": {
+      "LL_mean": -17.42532603998033,
+      "LL_ci95": [
+        -20.097505039582174,
+        -14.848582462369452
+      ],
+      "delta_vs_self": 0.0,
+      "delta_ci95": [
+        0.0,
+        0.0
+      ],
+      "wilcoxon_p": 1.0,
+      "cohens_d": 0.0,
+      "EM": 0.6666666666666666,
+      "EM_ci95": [
+        0.4,
+        0.8666666666666667
+      ]
+    },
+    "adapted_K-only": {
+      "LL_mean": -16.569711423904177,
+      "LL_ci95": [
+        -19.646287753884756,
+        -13.301743990224507
+      ],
+      "delta_vs_self": 0.8556146160761519,
+      "delta_ci95": [
+        -1.4438776266574853,
+        2.977205552392536
+      ],
+      "wilcoxon_p": 0.27685546875,
+      "cohens_d": 0.1925837609930492,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_V-only-affine": {
+      "LL_mean": -16.690840497773788,
+      "LL_ci95": [
+        -19.604804671876014,
+        -13.457984529461179
+      ],
+      "delta_vs_self": 0.7344855422065374,
+      "delta_ci95": [
+        -1.760097045879515,
+        3.2998059921132192
+      ],
+      "wilcoxon_p": 0.638671875,
+      "cohens_d": 0.14009377033379042,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_Joint-affine": {
+      "LL_mean": -17.626760344244538,
+      "LL_ci95": [
+        -20.89017605794801,
+        -14.290844196427095
+      ],
+      "delta_vs_self": -0.2014343042642113,
+      "delta_ci95": [
+        -3.0767960052963286,
+        2.444434781595074
+      ],
+      "wilcoxon_p": 0.890380859375,
+      "cohens_d": -0.03550735251558854,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_V-only-outaware": {
+      "LL_mean": -12.75353289793408,
+      "LL_ci95": [
+        -15.022864438492155,
+        -10.264636074860892
+      ],
+      "delta_vs_self": 4.671793142046249,
+      "delta_ci95": [
+        3.232372837435632,
+        6.082057322585393
+      ],
+      "wilcoxon_p": 0.0001220703125,
+      "cohens_d": 1.6018513279580542,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_V-only-outaware-shuf": {
+      "LL_mean": -12.441619374827733,
+      "LL_ci95": [
+        -14.229956913737075,
+        -10.538084647986626
+      ],
+      "delta_vs_self": 4.983706665152595,
+      "delta_ci95": [
+        3.3313876951166566,
+        6.869756634294039
+      ],
+      "wilcoxon_p": 0.0001220703125,
+      "cohens_d": 1.3538817265703502,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_V-only-woaware": {
+      "LL_mean": -12.571455207060252,
+      "LL_ci95": [
+        -14.86151294185245,
+        -10.118108095181368
+      ],
+      "delta_vs_self": 4.853870832920075,
+      "delta_ci95": [
+        3.3645550056960856,
+        6.416188082297642
+      ],
+      "wilcoxon_p": 0.0001220703125,
+      "cohens_d": 1.556781099186675,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_Joint-woaware": {
+      "LL_mean": -15.621745210488635,
+      "LL_ci95": [
+        -18.413073232067955,
+        -12.584618136617873
+      ],
+      "delta_vs_self": 1.8035808294916913,
+      "delta_ci95": [
+        -0.19528905679782207,
+        3.6673229599074695
+      ],
+      "wilcoxon_p": 0.10699462890625,
+      "cohens_d": 0.45564059668757156,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "rows": [
+    {
+      "id": "squad_0_0",
+      "answer": "peer tuitions",
+      "Self": -23.325015385945637,
+      "Self_em": 1.0,
+      "K-only": -14.404429117838541,
+      "K-only_em": 0.0,
+      "V-only-affine": -17.509920756022137,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -14.588892936706543,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -16.74968369801839,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -13.904476483662924,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -16.307311693827312,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -17.811903317769367,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_1",
+      "answer": "BBC 1",
+      "Self": -9.511252721150717,
+      "Self_em": 0.0,
+      "K-only": -5.589567859967549,
+      "K-only_em": 0.0,
+      "V-only-affine": -9.200981775919596,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -3.628249684969584,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -7.026284058888753,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -7.331511974334717,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -7.041087468465169,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -5.521346728006999,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_3",
+      "answer": "ctenophores and cnidarians",
+      "Self": -19.349072217941284,
+      "Self_em": 0.0,
+      "K-only": -12.454185545444489,
+      "K-only_em": 0.0,
+      "V-only-affine": -12.890600264072418,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -11.066678076982498,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -12.703632891178131,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -10.24586045742035,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -12.001772046089172,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -13.25605446100235,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_4",
+      "answer": "32.9%",
+      "Self": -12.928600883483886,
+      "Self_em": 1.0,
+      "K-only": -6.59077296257019,
+      "K-only_em": 0.0,
+      "V-only-affine": -8.32001256942749,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -6.480953685194254,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -8.058981585502625,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -8.15712308883667,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -9.08200716972351,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -7.7611992582678795,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_6",
+      "answer": "unfair",
+      "Self": -14.620322227478027,
+      "Self_em": 0.0,
+      "K-only": -13.276755332946777,
+      "K-only_em": 0.0,
+      "V-only-affine": -13.5159912109375,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -11.209167957305908,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -15.106118202209473,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -14.289512634277344,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -13.269297122955322,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -13.347135543823242,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_7",
+      "answer": "a new entrance building",
+      "Self": -12.028445482254028,
+      "Self_em": 1.0,
+      "K-only": -12.066959619522095,
+      "K-only_em": 0.0,
+      "V-only-affine": -11.823203325271606,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -10.878020167350769,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -9.9335275888443,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -10.346814751625061,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -8.377535104751587,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -12.271739959716797,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_9",
+      "answer": "blood–brain barrier, blood–cerebrospinal fluid barrier",
+      "Self": -19.070361137390137,
+      "Self_em": 0.0,
+      "K-only": -10.557717272213527,
+      "K-only_em": 0.0,
+      "V-only-affine": -16.51127679007394,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -10.449116740907941,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -14.229299238749913,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -13.814774581364222,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -13.425158943448748,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -11.990524019513812,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_12",
+      "answer": "1534",
+      "Self": -7.679559350013733,
+      "Self_em": 0.0,
+      "K-only": -2.804660066962242,
+      "K-only_em": 0.0,
+      "V-only-affine": -3.7756818532943726,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -0.9191565029323101,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -5.091916859149933,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -5.024334967136383,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -3.9217261970043182,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -4.374554298818111,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_15",
+      "answer": "seclude himself",
+      "Self": -17.14552625020345,
+      "Self_em": 0.0,
+      "K-only": -10.502806027730307,
+      "K-only_em": 0.0,
+      "V-only-affine": -14.356346448262533,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -5.996749718983968,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -14.609843889872232,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -11.339473406473795,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -11.876051584879557,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -9.31742525100708,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_18",
+      "answer": "holds Luther accountable",
+      "Self": -15.985390345255533,
+      "Self_em": 0.0,
+      "K-only": -18.908170700073242,
+      "K-only_em": 0.0,
+      "V-only-affine": -16.809268315633137,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -20.377471923828125,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -9.63413143157959,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -7.648192564646403,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -12.014786084493002,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -18.62947877248128,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_19",
+      "answer": "178",
+      "Self": -7.49750820795695,
+      "Self_em": 1.0,
+      "K-only": -2.4423940976460776,
+      "K-only_em": 0.0,
+      "V-only-affine": -3.6377743085225425,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -0.7618109906713167,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -3.9217291673024497,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -4.664789756139119,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -3.371809482574463,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -3.40765243768692,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_20",
+      "answer": "problem instance",
+      "Self": -14.855193138122559,
+      "Self_em": 0.0,
+      "K-only": -8.27823519706726,
+      "K-only_em": 0.0,
+      "V-only-affine": -16.978989601135254,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -10.159594535827637,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -13.060443878173828,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -10.269437789916992,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -13.359227180480957,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -14.063069343566895,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_21",
+      "answer": "Tomingaj",
+      "Self": -26.042725880940754,
+      "Self_em": 1.0,
+      "K-only": -17.26579411824544,
+      "K-only_em": 0.0,
+      "V-only-affine": -13.712679545084635,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -14.803737302621206,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -16.139153798421223,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -12.59513250986735,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -14.984352747599283,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -14.700693766276041,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_25",
+      "answer": "rules",
+      "Self": -15.71094799041748,
+      "Self_em": 0.0,
+      "K-only": -18.101581573486328,
+      "K-only_em": 0.0,
+      "V-only-affine": -18.877614974975586,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -12.152613639831543,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -17.80847930908203,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -14.857681274414062,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -16.014503479003906,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -20.3240909576416,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_29",
+      "answer": "rapid combustion",
+      "Self": -15.088873386383057,
+      "Self_em": 0.0,
+      "K-only": -10.622662544250488,
+      "K-only_em": 0.0,
+      "V-only-affine": -14.700446128845215,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -7.222357988357544,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -10.016117572784424,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -12.48162317276001,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -13.19353723526001,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -9.64568281173706,
+      "Joint-woaware_em": 0.0
+    }
+  ],
+  "rows_adapted": [
+    {
+      "id": "squad_0_0",
+      "answer": "peer tuitions",
+      "adapted_Self": -25.924514134724934,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -22.90866978963216,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -20.59728177388509,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -22.599945704142254,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -16.3203280766805,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -16.696997324625652,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -17.934200286865234,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -20.53294308980306,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_1",
+      "answer": "BBC 1",
+      "adapted_Self": -12.092777570088705,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -10.337112426757812,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -14.118562380472818,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -13.128917694091797,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -6.90480391184489,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -10.86437702178955,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -7.016740322113037,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -10.805268287658691,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_3",
+      "answer": "ctenophores and cnidarians",
+      "adapted_Self": -22.228116393089294,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -16.21292781829834,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -17.58496081829071,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -18.029929637908936,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -14.885985016822815,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -13.072470545768738,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -15.104126811027527,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -17.306464076042175,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_4",
+      "answer": "32.9%",
+      "adapted_Self": -14.454315757751464,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -10.796113204956054,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -11.816651201248169,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -11.942901992797852,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -9.446159505844117,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -9.26982069015503,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -9.17794451713562,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -7.3951810836792,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_6",
+      "answer": "unfair",
+      "adapted_Self": -15.892282962799072,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -18.27374792098999,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -16.11424207687378,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -16.315093994140625,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -15.168776512145996,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -14.559751033782959,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -13.721808910369873,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -15.38403844833374,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_7",
+      "answer": "a new entrance building",
+      "adapted_Self": -13.698678016662598,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -16.362693309783936,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -14.598247289657593,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -20.00038766860962,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -11.528741002082825,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -10.73647677898407,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -9.535536289215088,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -15.791624546051025,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_9",
+      "answer": "blood–brain barrier, blood–cerebrospinal fluid barrier",
+      "adapted_Self": -20.505466801779612,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -14.525378090994698,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -19.124373606273107,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -17.135282516479492,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -16.136399814060756,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -15.067169325692314,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -14.69162951196943,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -15.42957592010498,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_12",
+      "answer": "1534",
+      "adapted_Self": -10.195406913757324,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -6.2746583223342896,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -5.3065396547317505,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -8.550625562667847,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -5.760688424110413,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -6.244823396205902,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -4.627050936222076,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -5.927276432514191,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_15",
+      "answer": "seclude himself",
+      "adapted_Self": -18.162225405375164,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -20.9378236134847,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -19.329335530598957,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -19.969249089558918,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -14.736675580342611,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -12.84128506978353,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -13.33270517985026,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -20.050662358601887,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_18",
+      "answer": "holds Luther accountable",
+      "adapted_Self": -17.080520311991375,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -20.01473045349121,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -22.358267466227215,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -25.093281428019207,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -12.5632537206014,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -12.260825157165527,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -15.104741096496582,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -19.157774607340496,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_19",
+      "answer": "178",
+      "adapted_Self": -8.92077668507894,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -4.854107101758321,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -3.1863637367884317,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -3.746116324327886,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -2.3197948932647705,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -4.545272032419841,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -2.9820504188537598,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -5.32062292098999,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_20",
+      "answer": "problem instance",
+      "adapted_Self": -17.63753080368042,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -17.022748470306396,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -21.936619758605957,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -17.554872512817383,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -15.514434337615967,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -13.276155948638916,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -14.937207698822021,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -13.770925521850586,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_21",
+      "answer": "Tomingaj",
+      "adapted_Self": -28.310964584350586,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -21.98082955678304,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -16.080193201700848,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -18.570878346761067,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -18.620787302652996,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -13.82614008585612,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -15.906782786051432,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -22.166906992594402,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_25",
+      "answer": "rules",
+      "adapted_Self": -19.123004913330078,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -28.100183486938477,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -26.478296279907227,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -31.971050262451172,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -19.708526611328125,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -19.310190200805664,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -20.380985260009766,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -23.074628829956055,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_29",
+      "answer": "rapid combustion",
+      "adapted_Self": -17.15330934524536,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -19.943947792053223,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -21.732672691345215,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -19.792872428894043,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -11.687638759613037,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -14.052536010742188,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -14.1183180809021,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -22.212285041809082,
+      "adapted_Joint-woaware_em": 0.0
+    }
+  ]
+}
