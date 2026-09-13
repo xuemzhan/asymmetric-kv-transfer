@@ -976,3 +976,25 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
 - **新增 `README.md`**：项目主张、主要结论、目录结构、环境、数据重建、快速开始、
   论文编译、溯源与守卫说明；`AGENTS.md` 结构树加入 `README.md`。
 - **未改动**：任何实验逻辑、报告数值、论文内容。
+
+## W25 (2026-09-13): 拉取 W23/W24 后的路径对齐（无实验、无数值改动）
+
+- **触发**：从 GitHub 拉取 W23（目录重组）与 W24（README + 归档 stale v1 守卫），
+  核对本地与远端结构一致。
+- **核实**：`experiments/` 迁移后我的 A1/A2 代码完整（`phaseB_evalcheck.py` 的
+  logits/KL/top-1/`--attrib`、`phaseB_adapter.py` 的 `--dump-rows` 均在）；
+  `scripts/run_audit3_gpu_queue.sh` 已由 W23 改为 `python3 experiments/phaseB_*.py`；
+  `reports/cluster_stats_audit3.json`、`reports/error_taxonomy_selfdiag.json` 仍在 `reports/`。
+- **本机修正（文档路径对齐）**：
+  - `REVISION_PLAN3.md`：A1–A4 命令、新脚本标题、取证表与文件清单全部改为
+    `experiments/phaseB_*.py`（与队列脚本一致）；
+  - `METRIC_CORRECTION.md`：被污染对照那段改为过去式，并注明 W23 已删除该 LEGACY 文件
+    （脚本仍保留按名字跳过 LEGACY 的防御）；
+  - `REVISION_PLAN2.md`：加路径提示（其命令写于迁移之前，现应在 `experiments/` 下执行）；
+  - `main.tex` 复现声明：实现位于 `experiments/phaseB_*.py`、分析脚本位于 `scripts/`，
+    并把 `cluster_stats_audit3.json` 列入溯源报告清单；arXiv 包同步重新编译。
+- **验证（本机）**：`compileall`（experiments/scripts/tests/data）、`tests/test_stats_utils.py`、
+  `scripts/cluster_stats_audit3.py`（输出与已提交 JSON 逐字节一致）、
+  `scripts/error_taxonomy_selfdiag.py`、三个论文守卫（`verify_corrected_paper.py`、
+  `verify_audit2_edits.py`、`verify_audit3_edits.py`）全部通过。
+- **未改动**：任何实验逻辑、报告数值、论文结论。
