@@ -54,8 +54,12 @@ fix.
 The standard protocol overstates transfer. Its greedy exact-match (EM) metric is
 computed on a cache that has already been advanced through the query and the gold
 answer, and it re-feeds the final query token as the first generation input; we
-confirm both defects in the published evaluation code. Under a corrected
-evaluator, K-only reaches at most $0.149$ EM and Joint at most $0.065$, against
+confirm both defects in the published evaluation code, and we validate the
+corrected evaluator against a full-prefill reference on the whole Self test set
+(normalized-EM agreement $0.929$--$0.982$; first-token logit error at most
+$1.35$). Under that evaluator, no pair averages more than $0.149$ EM for keys or
+$0.065$ for the joint arm over three seeds (largest single seed $0.161$),
+against
 $0.44$--$0.90$ for the student's own cache; on the flagship $8$B$\to0.6$B pair
 all three teacher arms are $0.000$, and V-only exceeds $0.15$ on one pair only
 ($8$B$\to4$B, $0.440$ against a Self of $0.815$). Teacher-forced
@@ -63,16 +67,19 @@ log-likelihood, which earlier work reports as transfer, is not a transfer
 metric: over three seeds a wrong document ($+2.61$ vs $+2.62$), a
 moment-matched random Gaussian key ($+2.33$), and an all-zero cache ($+2.75$)
 reproduce $89$--$105\%$ of the K-only gain while each yields EM $\approx 0$,
-against $0.899\pm0.010$ for the student's own cache; the same evaluator therefore
-does detect usable context. SQuAD replicates
+against $0.899\pm0.010$ for the student's own cache. A control that breaks the
+key--value correspondence instead of permuting both drives EM to $0.000$, so the
+evaluator does detect content corruption. SQuAD replicates
 the negative result (Self $0.367$; K-only, V-only, and Joint $0.000$; K-only
 $\dll$ $+5.24$).
 
-The failure lies in how the receiving model reads the state, not in the state's
-addressing geometry. Offsetting or randomly permuting the layer map does not
-reduce transfer, so layer alignment alone does not explain the failure;
-under mapped teacher keys the student's top-1 attention agreement with its own
-routing is $0.59$--$0.70$. Fitting the value mapper where the student reads
+The failure lies in how the receiving model reads the state. Under a mapper fit
+in representation space, layer alignment looks irrelevant: scrambling the layer
+map costs nothing. Under a mapper fit in consumption space the same scrambling
+collapses V-only EM from $0.91$ to $0.11$--$0.23$, so the earlier null result was
+a floor effect of the mapper and alignment does matter once the consumer reads
+the state correctly. Under mapped teacher keys the student's top-1 attention
+agreement with its own routing is $0.59$--$0.70$. Fitting the value mapper where the student reads
 value raises V-only EM from $0.113$ to $0.90$--$0.94$
 ($1.7$B$\to0.6$B) and from $0.000$ to $0.25$--$0.27$ ($8$B$\to0.6$B), while a
 shuffled-target mapper stays at $0.08/0.07$. A rank-8 correction of the
@@ -80,11 +87,17 @@ student's output projections ($\sim$$0.7$M parameters), trained by next-token
 cross-entropy on calibration answers under injected teacher KV, restores
 K/V/Joint EM to $0.94/0.94/0.83$
 ($1.7$B$\to0.6$B; Joint spread $0.55$--$0.96$ across seeds) and
-$0.79/0.36/0.47$ ($8$B$\to0.6$B). The same adapter trained on student states
-stays much lower ($0.20/0.35/0.18$ and $0.11/0.11/0.12$), and one trained on
-shuffled-document teacher states is intermediate (Joint $0.46$ and $0.13$). All
-experiments are within a single model family, and the adapter is trained on the
-task distribution it is evaluated on.
+$0.79/0.36/0.47$ ($8$B$\to0.6$B), measured against an adapted Self of $0.940$ on
+the flagship pair rather than the unadapted $0.899$. Holding the adapter fixed and
+destroying the injected content drops EM to the floor on $1.7$B$\to0.6$B ($0.625$
+for correct teacher KV against at most $0.018$ for wrong-document, random, and
+zero caches), while on $8$B$\to0.6$B the margin narrows ($0.304$ against
+$0.143$--$0.161$). The same adapter trained on student states stays much lower
+($0.20/0.35/0.18$ and $0.11/0.11/0.12$), and one trained on shuffled-document
+teacher states is intermediate (Joint $0.46$ and $0.13$). The repair does not
+transfer across domains: on SQuAD the same mapper and adapter leave K-only and
+Joint EM at $0.000$. All experiments are within a single model family, and the
+adapter is trained on the task distribution it is evaluated on.
 \end{abstract}
 % ============================================================================
 \section{Introduction}
@@ -117,8 +130,10 @@ Figure~\ref{fig:setting}). Our contributions are:
 \item \textbf{A corrected evaluation and a content-control suite (negative
   result).} We fix both evaluator defects, require generation to start from a
   fresh cache, and verify the corrected evaluator against a full-prefill
-  reference (exact-match agreement $6/6$ on a probe set). Under it, no teacher
-  arm exceeds $0.149$ EM for keys and $0.065$ for the joint arm, against
+  reference on the complete $56$-item Self test set of every student size under
+  study ($0.6$B, $1.7$B, $4$B; normalized-EM agreement $0.929$--$0.982$,
+  first-token logit error at most $1.35$). Under it, no pair's three-seed mean
+  exceeds $0.149$ EM for keys and $0.065$ for the joint arm, against
   $0.44$--$0.90$ for the student's own cache; on the flagship $8$B$\to0.6$B pair
   all three teacher arms are $0.000$. Values exceed $0.15$ on one pair only:
   V-only on $8$B$\to4$B reaches $0.440$ against a Self of $0.815$. The
@@ -128,17 +143,26 @@ Figure~\ref{fig:setting}). Our contributions are:
   document ($+2.61$ vs $+2.62$), a moment-matched random Gaussian key ($+2.33$),
   and an all-zero cache ($+2.75$) reproduce $89$--$105\%$ of the K-only gain
   while each yields EM $\approx 0$, against $0.899\pm0.010$ for the student's own
-  cache; the evaluator therefore does detect usable context when it is present.
+  cache. Breaking the key--value correspondence does register: shuffling one side
+  of the student's cache and leaving the other in place drives EM to $0.000$ in
+  every seed and both pairs, whereas applying the \emph{same} permutation to both
+  sides leaves it at $0.86$--$0.93$. The shared-permutation control the previous
+  draft relied on was therefore uninformative, and the evaluator does respond to
+  content corruption.
   The negative result replicates on SQuAD (Self $0.367$; K-only,
   V-only, and joint $0.000$). Our own pre-registered gate for this project used
   the same EM metric; we withdraw its task-metric clause, while its likelihood
   clause stands (V-only $\dll \le 0$ across three seeds, not significant).
 
 \item \textbf{A consumer-side diagnosis.} We remove the state-side explanations.
-  Layer alignment alone does not explain the failure: on the equal-depth pair,
-  offsetting the layer map or replacing it with a random permutation does not
-  reduce transfer---the permutation raises the V $\dll$ ($+1.35$ vs $+0.83$)---and
-  corrected value EM is $0$ in every case. What does change is the consumer's
+  Layer alignment is masked rather than absent. With a mapper fit in
+  representation space the value arm sits at the floor (corrected V-only EM
+  $\le0.143$ in every seed) and offsetting or permuting the layer map changes
+  nothing, which is what we reported before. With a mapper fit in consumption
+  space the same scrambling matters: V-only EM falls from $0.911$ under the
+  proportional map to $0.107$--$0.232$ under offsets and permutation, with
+  non-overlapping document-clustered intervals. The earlier null result was a
+  floor effect of the mapper. What does change is the consumer's
   routing: under mapped teacher keys, the student's top-1 attention agreement
   with its own routing is $0.70$ ($1.7$B$\to0.6$B) and $0.59$
   ($8$B$\to0.6$B), with routing total-variation $0.165$ and $0.245$. Fitting the
@@ -153,13 +177,21 @@ Figure~\ref{fig:setting}). Our contributions are:
   cross-entropy on calibration answers under injected teacher KV while the
   student and mapper stay frozen,
   restores K/V/joint EM to $0.94/0.94/0.83$ for $1.7$B$\to0.6$B (joint arm
-  spread $0.55$--$0.96$ across seeds) and $0.79/0.36/0.47$ for $8$B$\to0.6$B.
-  The same adapter trained on the student's own states stays much lower
+  spread $0.55$--$0.96$ across seeds) and $0.79/0.36/0.47$ for $8$B$\to0.6$B,
+  measured against an \emph{adapted} Self of $0.940\pm0.041$ rather than the
+  unadapted $0.899$. Holding the adapter fixed and destroying the injected
+  content separates the arms cleanly on $1.7$B$\to0.6$B (correct teacher KV
+  $0.625$, against at most $0.018$ for wrong-document, random, and zero caches)
+  but only weakly on $8$B$\to0.6$B ($0.304$ against $0.143$--$0.161$), so the
+  causal reading is firm on the equal-depth pair and provisional on the flagship
+  pair. The same adapter trained on the student's own states stays much lower
   ($0.20/0.35/0.18$ and $0.11/0.11/0.12$), so it must see the teacher-state
   distribution; an adapter trained on shuffled-document teacher states is
   intermediate (joint $0.46$ and $0.13$), so part of the recovery is specific to
-  the transferred content and part is generic to teacher-like states. We state
-  this split rather than claim content-specific adaptation alone.
+  the transferred content and part is generic to teacher-like states. The repair
+  does not carry across domains: on SQuAD, outside the task distribution, the
+  same mapper and the same adapter leave K-only and joint EM at $0.000$. We
+  state these splits rather than claim content-specific adaptation alone.
 \end{enumerate}
 
 The practical message separates two levels of compatibility. At the level of
@@ -167,10 +199,12 @@ The practical message separates two levels of compatibility. At the level of
 that minimises representation error can leave the state unusable. At the level of
 \emph{consumption space}, alignment is what matters, and it can be restored in two
 ways---by fitting the mapper where the student actually reads value, and, when that
-is not enough, by a small adaptation of the consumer itself. Our results are
-strong at the first level: the value mapper fit in consumption space recovers most
-of V-only transfer without changing a single consumer weight, and only the
-residual gap needs the second. The mismatch is diagnosable (routing divergence)
+is not enough, by a small adaptation of the consumer itself. The second level is
+where our evidence is clearest: on the equal-depth pair the consumption-space
+value mapper recovers the value arm without changing a single consumer weight and
+only the residual gap needs the adapter, whereas on the flagship pair the mapper
+alone recovers about a quarter of Self and the adapter is required. The mismatch
+is diagnosable (routing divergence)
 and repairable, and evaluations of cross-model transfer should include content
 controls.
 
@@ -256,11 +290,29 @@ degrades to punctuation loops once the cache is perturbed. We confirm both
 defects in the released code and use a corrected evaluator in which
 teacher-forced log-likelihood and greedy generation each start from a
 \emph{fresh} cache and the first generated token is taken from the prefill
-logits. The corrected evaluator agrees with a full-prefill reference
-implementation on a six-item end-to-end probe (exact-match agreement $6/6$;
-only tokenization drift differs); the item-level composition of that probe was
-not retained, so this establishes end-to-end equivalence on six cases rather
-than a broad validation.
+logits. We validate the corrected evaluator against a full-prefill reference
+implementation on the complete $56$-item Self test set of three student sizes
+(Figure~\ref{fig:evalcheck}). Normalized exact-match agreement is $0.964$
+($0.6$B), $0.929$ ($1.7$B), and $0.982$ ($4$B); token-level greedy agreement is
+$0.786$, $0.804$, and $0.929$; and the largest absolute error on the first
+generated token's logits is $1.34$, $0.88$, and $0.97$. Greedy tokenization
+therefore diverges on a minority of items without changing the extracted answer,
+and the two paths agree to within two items on Self exact match for every
+student: the corrected path is end-to-end equivalent to full prefill on the
+quantity we report.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\textwidth]{figures/fig_evalcheck.pdf}
+\caption{Validator for the corrected evaluator: cache injection against a
+full-prefill reference on the complete $56$-item Self test set of each student
+size, seed 0. (a) Agreement between the two paths. Token-level greedy agreement
+is lower than normalized exact-match agreement because greedy tokenization drifts
+without changing the extracted answer. (b) First generated token's logits agree
+to within $1.34$ in absolute value, and Self exact match under the two paths
+differs by at most two items.}
+\label{fig:evalcheck}
+\end{figure}
 
 Throughout, \emph{corrected EM} denotes greedy exact match under this evaluator.
 All EM numbers reported in the previous version of this work were produced by the
@@ -323,10 +375,15 @@ log-likelihood (LL), relative to the Self arm of the same sample, is reported as
 a secondary and explicitly non-task quantity. Content controls are a
 wrong-document cache (a different project's state), a random Gaussian key with
 matched per-layer moments, a random KV pair, an all-zero cache, an identity
-(unmapped) V-only injection. A simultaneous permutation of the student's own keys
-and values is not a content control---attention is invariant to a shared
-reordering of $K$ and $V$---so we do not include one; every control above destroys
-content. For the adapter we additionally train on student KV and on
+(unmapped) V-only injection, and two \emph{correspondence-breaking} shuffles of
+the student's own cache: one permutes the key token order and leaves values in
+place, the other is its mirror on values. We also compute a same-permutation arm
+that reorders keys and values together; we report it only as an invariance check,
+because attention is invariant to a shared reordering of $K$ and $V$ and such an
+arm cannot detect content corruption. Every other control destroys content. The
+shuffles act on the student's own state, so both are pair-independent by
+construction, and their agreement across pairs is a consistency check rather than
+an independent result. For the adapter we additionally train on student KV and on
 shuffled-document teacher KV.
 
 \subsection{Statistical protocol}
@@ -344,15 +401,20 @@ part of our own earlier work.
 
 \emph{Confirmatory.} The four-arm injection protocol, the six pairs, the
 three-seed requirement, and the pre-registered G0 gate predate this revision. The
-content-control suite, the layer-map ablation, the held-out layer scan, and the
-routing/mapper comparison were specified in a written revision plan before the
-corresponding runs.
+content-control suite, the layer-map ablation, the held-out layer scan, the
+routing/mapper comparison, the evaluator validator, the repaired-regime layer
+scrambling, the adapter causality test, and the cross-domain repair attempt were
+all specified in a written revision plan, with a decision rule, before the
+corresponding runs; the plan and the raw reports are in the repository.
 
 \emph{Exploratory.} The corrected evaluator, the consumption adapter, the
 projection ablation, the decomposition of the likelihood gains into K and V main
 effects and their interaction, and the observation that only equal-depth pairs
 show non-zero V-only EM were introduced after we found the evaluator defects.
-They are hypothesis-generating.
+They are hypothesis-generating. Two of our earlier conclusions also moved:
+scrambling the layer map, which we had reported as harmless, is harmful once the
+mapper is fixed (Section~6.1), and the flagship pair's adapter behaviour is
+weaker than the equal-depth pair's.
 
 \emph{Withdrawn.} Our pre-registered G0 gate was defined on the defective EM
 metric. Its task-metric clause is therefore withdrawn; its likelihood clause
@@ -370,12 +432,17 @@ the pipeline itself is unchanged and that only the EM path was broken.
 The student answers most questions from its own cache ($0.899 \pm 0.010$ for the
 three pairs with a $0.6$B student, $0.440 \pm 0.010$ for the two with a $1.7$B
 student, $0.815 \pm 0.021$ for the $4$B student). No teacher arm comes close.
-K-only is at most $0.149 \pm 0.010$ ($8$B$\to4$B) and Joint at most
-$0.065 \pm 0.055$ ($8$B$\to4$B); on the flagship $8$B$\to0.6$B pair all three
+Averaged over seeds, K-only is at most $0.149 \pm 0.010$ ($8$B$\to4$B) and Joint
+at most $0.065 \pm 0.055$ ($8$B$\to4$B); the largest value any single seed
+reaches on either arm is $0.161$ (K-only) and $0.125$ (Joint), both on
+$8$B$\to4$B. On the flagship $8$B$\to0.6$B pair all three
 teacher arms are $0.000$ in every seed. The single arm above $0.15$ is V-only on
 $8$B$\to4$B, at $0.440 \pm 0.010$---a little over half of that pair's Self
 ($0.815$)---and V-only is $0.000$ on all four unequal-depth pairs. No other
-teacher arm exceeds $0.15$.
+teacher arm exceeds $0.15$ when averaged over seeds. At seed 0---the only seed for
+which the source archives document-clustered intervals for EM---the best arms of
+that pair carry CI95 $[0.375, 0.482]$ (V-only), $[0.071, 0.214]$ (K-only), and
+$[0.000, 0.054]$ (Joint), all far below Self.
 
 Meanwhile the same injections raise teacher-forced likelihood substantially:
 K-only by up to $+8.52$ ($8$B$\to4$B) and Joint by up to $+8.37$, with the
@@ -390,7 +457,8 @@ questions.
 EM is corrected greedy exact match; $\dll$ is teacher-forced answer
 log-likelihood relative to Self. Values are mean $\pm$ std over seeds.
 A blank std means the source reports no dispersion for that cell; every such
-cell is a $0.000$ arm in all three seeds.}
+cell is a $0.000$ arm in all three seeds. Document-clustered CI95 for EM is
+archived for seed 0 only and is quoted in the text for the largest arms.}
 \label{tab:main}
 \begin{tabular}{lcccccccc}
 \toprule
@@ -430,28 +498,40 @@ where the source reports document-clustered intervals, the K-only gain has CI95
 $[+2.21, +2.64]$ and the zero-KV gain $[+2.49, +3.00]$, so the control intervals
 overlap the real arm's.
 
-Every one of these arms yields corrected EM at or near $0$. The same evaluator
-scores $0.899 \pm 0.010$ on the student's own cache, so it is not insensitive to
-context: it reads usable context and returns nothing for teacher-injected states.
-We also note that reordering the token axis of $K$ and $V$ by the \emph{same}
-permutation leaves the attention output unchanged, so such a shuffle is not a
-content-destroying control; a control must break the key--value correspondence to
-be informative, and we do not report a same-permutation arm. The same pattern
-holds at seed 0 for the
-equal-depth pair $1.7$B$\to0.6$B, where zero KV ($+2.76$) and random K
-($+2.21$) exceed the real K-only ($-0.82$) and V-only ($+0.83$) injections.
-That $1.7$B control set was run at seed 0 only and was not replicated across
-seeds, so it reads as a consistency check on the $8$B controls rather than as an
-independent three-seed result.
+Every one of these arms yields corrected EM at or near $0$. A control that does
+break the correspondence is informative: permuting the token order of the
+student's own keys while leaving its values aligned to their positions drives EM
+to $0.000$ in all three seeds, and the mirror control on values does the same
+(Table~\ref{tab:controls}). The same-permutation arm that the previous draft
+relied on is not a content control---attention is invariant to a shared
+reordering of $K$ and $V$---and it returns $0.929$, $0.875$, and $0.857$ across
+seeds, which is what that invariance predicts; we report it only as a check that
+the evaluator is not suppressing a permutation-invariant quantity.
+
+The evaluator is therefore not insensitive to context: it scores
+$0.899 \pm 0.010$ on the student's own cache, returns nothing for
+teacher-injected states, and returns nothing when the key--value correspondence
+is destroyed. The same pattern holds over three seeds for the equal-depth pair
+$1.7$B$\to0.6$B. There the real K-only injection \emph{lowers} answer
+log-likelihood ($-0.82 \pm 0.02$) and answers $0.030 \pm 0.010$ of questions,
+while content-free caches raise it (zero KV $+2.75 \pm 0.01$, random K
+$+2.33 \pm 0.27$, wrong-document K $-0.78 \pm 0.06$) and answer at most $0.036$;
+a wrong-document cache is indistinguishable from the real one on both axes. Here
+the dissociation runs the other way---likelihood improves as content is
+destroyed---which is the same failure of the likelihood metric seen from the
+opposite side. Unlike at $8$B, however, the content-free arms do not exceed the
+real arm on every comparison, and the content-free arms are pair-independent by
+construction, so we read the $1.7$B suite as corroborating the $8$B controls
+rather than as an independent replication.
 
 \begin{table}[t]
 \centering
 \small
 \caption{Content controls on $8$B$\to0.6$B, corrected evaluator, three seeds
-(mean $\pm$ std) except where noted. ``Share'' is the arm's $\dll$ divided by the
-K-only $\dll$ of the same runs. The random-K EM value and the clustered
-intervals quoted in the text are seed 0, the only seed for which the source
-reports them.}
+(mean $\pm$ std). ``Share'' is the arm's $\dll$ divided by the
+K-only $\dll$ of the same runs. The last three rows act on the student's own
+cache rather than on the teacher state, so they are identical on every pair by
+construction; the first five are teacher- or content-free arms.}
 \label{tab:controls}
 \begin{tabular}{lccc}
 \toprule
@@ -459,10 +539,14 @@ Arm & $\dll$ vs Self & Corrected EM & Share of K-only gain \\
 \midrule
 K-only (real)          & $+2.62{\pm}0.29$ & $0.000$ & $100\%$ \\
 Wrong-document K       & $+2.61{\pm}0.31$ & $0.000$ & $100\%$ \\
-Random Gaussian K      & $+2.33{\pm}0.27$ & $0.018$ & $89\%$ \\
+Random Gaussian K      & $+2.33{\pm}0.27$ & $0.012{\pm}0.010$ & $89\%$ \\
 Zero KV                & $+2.75{\pm}0.01$ & $0.000$ & $105\%$ \\
 Joint (real)           & $+4.52{\pm}0.15$ & $0.000$ & --- \\
-Wrong-document Joint   & $+4.50$          & $0.000$ & --- \\
+Wrong-document Joint   & $+4.50{\pm}0.18$ & $0.000$ & --- \\
+\midrule
+Shuffled K (student)   & $-1.19{\pm}0.10$ & $0.000$ & --- \\
+Shuffled V (student)   & $-1.28{\pm}0.04$ & $0.000$ & --- \\
+Same permutation, K and V (student) & $-0.01{\pm}0.00$ & $0.887{\pm}0.037$ & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -490,7 +574,9 @@ $p=1.9\times10^{-4}$). The K-only gain is significant at every seed
 $0$--$2$); we report those per-seed tests instead of a pooled $p$, because the
 per-example deltas a pooled test would need were not retained. The negative
 result and the LL/EM dissociation therefore replicate out of domain, on data the
-mapper never saw. We note that the
+mapper never saw. Neither repair transfers to this set: the synthetic-trained
+mapper and the synthetic-trained adapter both leave K-only and joint EM at
+$0.000$ here (Section~6.4, Table~\ref{tab:squadrepair}). We note that the
 legacy evaluator scored K-only at $0.733$ EM on this set while the corrected
 evaluator scores it at $0.000$, and that the legacy Self score was $0.767$
 against a corrected Self of $0.367$: the defect moved the reference point as well
@@ -498,19 +584,38 @@ as the arm.
 % ============================================================================
 \section{Analysis}
 
-\subsection{Layer alignment alone does not explain the failure}
+\subsection{Layer alignment matters once the consumer reads the state}
 For the equal-depth pair $1.7$B$\to0.6$B we vary only the layer map and hold the
-capability gap fixed (Figure~\ref{fig:layers}a). Proportional (identity) mapping
-gives corrected V-only EM $0.05$--$0.14$ across three seeds; offsets of $\pm3$
-and a random permutation give $0.000$ in every seed; and the random permutation
-\emph{increases} the V likelihood delta ($+1.35$ vs $+0.83$ at seed 0) as well as
-the joint delta ($+1.14$ vs $-2.24$). For the unequal-depth pair $8$B$\to0.6$B,
-proportional mapping gives the best and most stable joint likelihood
-($+4.41$--$+4.68$ over seeds), while offsets, permutations, and a
-calibration-learned top-1 source-layer selection reduce it and are unstable;
-corrected V-only EM stays at or below $0.11$ for every map and seed. Scrambling
-the layer map does not destroy transfer, and improving it does not create
-transfer.
+capability gap fixed (Figure~\ref{fig:layers}a). Under the affine mapper that
+earlier work uses, the value arm is pinned at the floor and the layer map looks
+irrelevant: proportional (identity) mapping gives corrected V-only EM
+$0.05$--$0.14$ across three seeds, offsets of $\pm3$ and a random permutation
+give $0.000$ in every seed, and the permutation even \emph{raises} the V
+likelihood delta ($+1.35$ vs $+0.83$ at seed 0). We previously read this as layer
+alignment being unimportant. It is a floor effect of the mapper: with the value
+arm already at $0$, no layer map can make it worse.
+
+Repeating the ablation with the consumption-space mapper of
+Table~\ref{tab:mappers}, which lifts proportional V-only EM to $0.911/0.929/0.964$
+across the three seeds (mean $0.935$), changes the answer. At seed 0 the same
+offsets and permutation now cost most of the transfer: V-only EM falls to $0.214$
+(offset $+3$), $0.232$ (offset $-3$), and $0.107$ (random permutation). Every
+scrambled arm falls below the lowest proportional seed, and the seed-0
+document-clustered intervals separate the proportional arm ($[0.839, 0.982]$)
+from all three scrambled arms ($[0.125, 0.304]$, $[0.143, 0.321]$,
+$[0.054, 0.179]$). Layer alignment is therefore necessary but not sufficient. It
+is invisible while the mapper fails to place the value where the consumer reads
+it, and it becomes the dominant factor once the mapper does.
+
+For the unequal-depth pair $8$B$\to0.6$B, proportional mapping gives the best and
+most stable joint likelihood ($+4.41$--$+4.68$ over seeds), while offsets,
+permutations, and a calibration-learned top-1 source-layer selection reduce it and
+are unstable; corrected V-only EM is $0.000$ for every map and seed, and K-only
+never exceeds $0.107$. Improving the layer map does not create transfer on this
+pair. We do not read that as alignment being unimportant here, because the
+consumption-side mapper recovers only a quarter of Self on this pair
+(Table~\ref{tab:mappers}): the same floor effect plausibly still applies. The
+repaired-regime scrambling experiment was run on the equal-depth pair only.
 
 \subsection{K and V likelihood effects and their interaction}
 \label{sec:factorial}
@@ -629,8 +734,18 @@ projections, trained on calibration teacher KV, raises K/V/Joint EM from
 $0.030/0.113/0.000$ to $0.940/0.940/0.827$ for $1.7$B$\to0.6$B and from
 $0.000/0.000/0.000$ to $0.792 \pm 0.162/0.357 \pm 0.047/0.470 \pm 0.119$ for
 $8$B$\to0.6$B. On the equal-depth pair this nearly reaches the Self reference
-($0.899$); on the flagship pair it recovers roughly half of Self on the joint arm
-and most of the K arm.
+($0.899$ unadapted); on the flagship pair it recovers roughly half of Self on the
+joint arm and most of the K arm.
+
+The reference frame matters here. The adapter changes the student, so the
+appropriate ceiling is the \emph{adapted} Self arm, which the archived summaries
+now retain: $0.940 \pm 0.041$ on both pairs. Read against it, the equal-depth
+recovery is essentially complete on the K and V arms ($0.940$) and short on the
+joint arm ($0.827$), while the flagship recovery is partial on all three
+($0.792$, $0.357$, $0.470$). The adapter also alters the student's own
+readout---by $+0.041$ on $1.7$B$\to0.6$B and $+0.041$ on $8$B$\to0.6$B relative
+to the unadapted $0.899$---so an unadapted Self baseline would have understated
+the gap on the flagship pair and overstated it on no pair.
 
 Both controls fall short of the teacher-KV adapter, which is the evidence that
 matters for interpretation. Training the same adapter on the student's own states
@@ -644,25 +759,121 @@ $0.827$ for the content-matched adapter. The joint-trained condition also varies
 across seeds ($1.7$B joint $0.55$--$0.96$), which the standard deviations in the
 table show.
 
-Adapting \texttt{o\_proj} is the most effective and the most content-specific
-choice we tested: on $1.7$B$\to0.6$B at seed 0 the joint-trained joint arm scores
-$0.964$ when \texttt{o\_proj} is adapted, against $0.625$ when
-\texttt{q\_proj},\texttt{k\_proj} are adapted (with student-trained values of
-$0.036$ and $0.411$ respectively). This ablation is preliminary (seed 0, two of
-the three attention projections) and we report it as suggestive evidence that
-locating the correction at the attention output is the stronger and more
-content-specific choice. Read together with the mapper results above, it is
-consistent with a bottleneck at the attention-output consumption stage rather
-than at the state projections.
+We also ablate which projection carries the correction, on $1.7$B$\to0.6$B
+(Table~\ref{tab:ablation}). Adapting the attention output and adapting the value
+projection are equally effective at seed 0 (joint arm $0.964$ for both), so this
+ablation does not single out \texttt{o\_proj}: any projection on the value path
+serves. What the ablation does separate is the addressing path. Adapting
+\texttt{q\_proj},\texttt{k\_proj} reaches only $0.625$ on the joint arm, and it
+degrades the student's own readout to $0.786$ (from $0.911$) while the
+output-side corrections raise it to $0.964$. The content-specificity control
+points the same way: an adapter trained on student KV instead of teacher KV
+collapses to $0.036$ when \texttt{o\_proj} is adapted and to $0.000$ when
+\texttt{v\_proj} is, but stays at $0.411$ when
+\texttt{q\_proj},\texttt{k\_proj} are adapted, so much of what the addressing
+path learns is generic state adaptation rather than content. The ablation is
+seed 0 only except for \texttt{o\_proj}, so we read it as suggestive. Taken with
+the mapper results above, it is consistent with the bottleneck sitting on the
+value-consumption path rather than on the projections that produce $K$.
+
+Holding a trained adapter fixed and destroying the injected content is the causal
+test (Table~\ref{tab:causal}). On $1.7$B$\to0.6$B, correct teacher KV answers
+$0.625$ of questions while wrong-document teacher KV, moment-matched random KV,
+and an all-zero cache answer at most $0.018$: the adapter is reading the injected
+teacher state rather than solving the task. On $8$B$\to0.6$B the same test is
+much weaker---$0.304$ for correct KV against $0.143$--$0.161$ for the destroyed
+arms. The margin is in the expected direction but small, and with $n=56$ and one
+seed we cannot separate it from no margin; we report the flagship causality as
+unresolved. Both causality runs use a shorter schedule ($10$ epochs) than
+Table~\ref{tab:adapter} ($20$ epochs), which is why their correct-KV arms sit
+below the corresponding rows there.
+
+The repair is also tied to the task distribution. Applying the synthetic-trained
+mapper and the synthetic-trained adapter to SQuAD without retraining leaves
+K-only, V-only, and joint EM at $0.000$ and $0.033$ respectively
+(Table~\ref{tab:squadrepair}). The consumption-space mapper makes the SQuAD value
+arm's likelihood \emph{worse} ($\dll$ $+4.62$ against $+1.05$ under the default
+protocol) while EM stays at $0.000$, so on this set it moves the state further
+from usable rather than closer. The adapter is not inert: it raises the student's
+own SQuAD score from $0.367$ to $0.600$ without seeing SQuAD data, so it does
+transfer some generic benefit to the student's reading. It simply does not make
+the transferred state answer questions there. We therefore claim repairability of
+consumption under our task distribution, not task generalization.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Consumption adapter (rank 8 on \texttt{o\_proj}), corrected EM on
-held-out test, mean $\pm$ std over three seeds. ``Self'' is the student's own
-cache under the adapted model. For $8$B$\to0.6$B the Self column was not
-retained in the archived summaries and is omitted; the $8$B student-KV V-only
-cell has no reported dispersion.}
+\caption{Causality test for the consumption adapter: the state changes, the
+adapter does not. One adapter, trained on teacher KV (rank 8, $10$ epochs, seed
+0), is frozen and injected with four different states. A causal adapter answers
+only from the correct teacher state; the $8$B columns show that this test has
+little power there. ``Self'' is the student's own cache under the same adapted
+model. Table~\ref{tab:adapter} gives the three-seed, $20$-epoch numbers for the
+same two pairs.}
+\label{tab:causal}
+\begin{tabular}{lcc}
+\toprule
+Injected state & $1.7$B$\to0.6$B & $8$B$\to0.6$B \\
+\midrule
+Correct teacher KV (joint)        & $\mathbf{0.625}$ & $\mathbf{0.304}$ \\
+Wrong-document teacher KV          & $0.000$ & $0.143$ \\
+Moment-matched random KV           & $0.018$ & $0.161$ \\
+Zero KV                            & $0.000$ & $0.161$ \\
+\midrule
+Self (own cache, adapted)          & $0.786$ & $0.982$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Projection ablation on $1.7$B$\to0.6$B, seed 0, rank 8, $20$ epochs.
+Each condition trains its own adapter from scratch and is then evaluated on all
+four arms. Only \texttt{o\_proj} with teacher-KV training was repeated across
+seeds (Table~\ref{tab:adapter}, joint arm $0.554$--$0.964$), so the other rows are
+single-seed.}
+\label{tab:ablation}
+\begin{tabular}{llcccc}
+\toprule
+Adapted projection & Adapter trained on & Self & K-only & V-only & Joint \\
+\midrule
+\texttt{o\_proj} & teacher KV & $0.964$ & $\mathbf{0.964}$ & $\mathbf{0.964}$ & $\mathbf{0.964}$ \\
+\texttt{v\_proj} & teacher KV & $0.964$ & $0.964$ & $0.964$ & $0.964$ \\
+\texttt{q\_proj},\texttt{k\_proj} & teacher KV & $0.786$ & $0.821$ & $0.857$ & $0.625$ \\
+\midrule
+\texttt{o\_proj} & student KV & $0.893$ & $0.036$ & $0.036$ & $0.036$ \\
+\texttt{v\_proj} & student KV & $0.857$ & $0.000$ & $0.571$ & $0.000$ \\
+\texttt{q\_proj},\texttt{k\_proj} & student KV & $0.536$ & $0.411$ & $0.446$ & $0.411$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Cross-domain repair on SQuAD ($n=30$, seed 0), without retraining. The
+mapper and the adapter are the ones fit on the synthetic distribution; nothing is
+tuned on SQuAD. ``Student own cache'' is the same model reading its own state.}
+\label{tab:squadrepair}
+\begin{tabular}{lcccc}
+\toprule
+Condition & Own cache & K-only & V-only & Joint \\
+\midrule
+Default protocol              & $0.367$ & $0.000$ & $0.000$ & $0.000$ \\
+Consumption-space mapper      & $0.367$ & $0.000$ & $0.000$ & $0.000$ \\
+Synthetic-trained adapter     & $0.600$ & $0.000$ & $0.033$ & $0.000$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Consumption adapter (rank 8 on \texttt{o\_proj} unless noted),
+corrected EM on held-out test, mean $\pm$ std over three seeds. ``Self'' is the
+student's own cache under the adapted model, so the reference frame is the
+adapted, not the unadapted, student.}
 \label{tab:adapter}
 \begin{tabular}{llcccc}
 \toprule
@@ -676,9 +887,9 @@ Pair & Adapter trained on & Self & K-only & V-only & Joint \\
 \midrule
 \multirow{4}{*}{$8$B$\to0.6$B}
  & none            & $0.899{\pm}0.010$ & $0.000$ & $0.000$ & $0.000$ \\
- & teacher KV      & --- & $\mathbf{0.792{\pm}0.162}$ & $\mathbf{0.357{\pm}0.047}$ & $\mathbf{0.470{\pm}0.119}$ \\
- & student KV      & --- & $0.113{\pm}0.010$ & $0.107$ & $0.119{\pm}0.021$ \\
- & shuffled teacher KV & --- & $0.369{\pm}0.109$ & $0.113{\pm}0.052$ & $0.131{\pm}0.021$ \\
+ & teacher KV      & $0.940{\pm}0.041$ & $\mathbf{0.792{\pm}0.162}$ & $\mathbf{0.357{\pm}0.047}$ & $\mathbf{0.470{\pm}0.119}$ \\
+ & student KV      & $0.976{\pm}0.021$ & $0.113{\pm}0.010$ & $0.107$ & $0.119{\pm}0.021$ \\
+ & shuffled teacher KV & $0.411{\pm}0.099$ & $0.369{\pm}0.109$ & $0.113{\pm}0.052$ & $0.131{\pm}0.021$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -689,8 +900,10 @@ Pair & Adapter trained on & Self & K-only & V-only & Joint \\
 \caption{Consumption adapter, corrected EM on held-out test (three seeds). A
 rank-8 correction of \texttt{o\_proj} trained on calibration teacher KV recovers
 the teacher arms; the same adapter trained on student KV does not, and one
-trained on shuffled-document teacher KV is intermediate. Error bars are std over
-seeds where reported.}
+trained on shuffled-document teacher KV is intermediate. The ``none'' group is
+the unadapted model and ``Self'' is its own cache, which the adapter also moves,
+so the adapted Self bars are the reference frame. Error bars are std over seeds
+where reported.}
 \label{fig:adapter}
 \end{figure}
 
@@ -699,9 +912,13 @@ A validation scan over all $28$ student layers selects the pair $(12, 16)$ in
 every seed, with $L_{12}$ ranked first in all three seeds, so the previously
 reported value hotspot is not an artifact of selecting on test
 (Figure~\ref{fig:layers}b). Under the corrected metric the selected pair reaches
-test EM $0.35$, the post-hoc $(8, 12)$ pair reaches $0.22$, injecting all layers
-reaches $0.00$, and Self is $0.91$. Selective value injection therefore carries
-some answer content, but far too little to constitute task transfer.
+test EM $0.351$ ($0.339$, $0.357$, $0.357$ across seeds), the post-hoc $(8, 12)$
+pair reaches $0.220$, injecting all layers reaches $0.000$, and Self is $0.899$.
+A second value pair chosen post hoc for a higher validation score, $(12, 20)$,
+reaches only $0.131$, below the validation-selected pair in every seed: selecting
+on validation did not cost us anything, and the pre-registered selection is the
+stronger one. Selective value injection therefore carries some answer content,
+but far too little to constitute task transfer.
 
 \subsection{Cost}
 For completeness: the byte crossover between transmitting a mapper and
@@ -713,12 +930,14 @@ not bear on the state--consumer findings above.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_layers.pdf}
-\caption{(a) Layer-map ablation on the equal-depth pair $1.7$B$\to0.6$B (seed 0).
-Offsets and a random permutation do not reduce transfer; the permutation raises
-the V and joint likelihood deltas. Corrected V-only EM is $0.000$ for every
-scrambled map. (b) Held-out value-layer selection on $8$B$\to0.6$B (three seeds):
-the validation-selected pair, the post-hoc pair, and all-layer injection, against
-the Self reference.}
+\caption{(a) Layer-map ablation on the equal-depth pair $1.7$B$\to0.6$B (seed 0),
+run twice: once with a mapper fit in representation space (affine), where the
+value arm is pinned at the floor and the layer map looks irrelevant, and once with
+the consumption-space mapper, where the proportional map reaches $0.911$ and the
+same scrambling costs most of it. Alignment is invisible until the consumer reads
+the state. (b) Held-out value-layer selection on $8$B$\to0.6$B (three seeds): the
+validation-selected pair, a post-hoc pair, and all-layer injection, against the
+Self reference.}
 \label{fig:layers}
 \end{figure}
 % ============================================================================
@@ -737,7 +956,15 @@ representation error and still leaves the state unusable. \emph{Consumption-spac
 compatibility is what tracks task performance, and it can be restored either by
 changing \emph{how the consumer reads} the state (a mapper fit in consumption
 space, which leaves every consumer weight untouched) or, for the residual gap, by
-adapting the consumer itself. Changing the state's layer alignment does neither.
+adapting the consumer itself.
+
+The role of layer alignment depends on which level is in play, and our own earlier
+reading of it was wrong. In representation space the value arm sits at the floor
+and scrambling the layer map costs nothing, which we took to mean alignment does
+not matter (Section~6.1). In consumption space, where the mapper places value
+where the student reads it, the same scrambling collapses V-only EM from $0.911$
+to $0.11$--$0.23$. Alignment is a precondition that the ordinary affine mapper
+hides behind its own floor, not a quantity the consumer can ignore.
 
 Our evidence does not establish that the recovered information is the teacher's
 document content in full. The shuffled-document adapter control is intermediate,
@@ -768,12 +995,13 @@ pair and part of them on the flagship pair.
 \item \textbf{Corpus effects.} Every document shares a template, and each
   document is reused across about seven questions (test: $56$ questions from $8$
   documents). Wrong-document controls are therefore conservative as content
-  controls, since two documents differ mainly in the entities they mention. We
-  report document-clustered intervals for the LL control table but not for the
-  four-arm EM table: clustering that table needs per-example EM paired with
-  document identifiers, which our archived summaries do not contain. That table
-  therefore reports std over seeds only, and its intervals are likely too narrow
-  given the document clustering.
+  controls, since two documents differ mainly in the entities they mention. The
+  four-arm EM table reports std over seeds and no interval: document-clustered EM
+  intervals exist only in the seed-0 reports, where the clustering fix landed after
+  seeds 1 and 2 had been written, and we quote those seed-0 intervals in the text
+  rather than mix them into a three-seed table. Its std is therefore likely too
+  narrow given the document clustering, and we do not use it to separate the
+  $8$B$\to4$B arms from zero.
 \item \textbf{Variance.} The $1.7$B adapter's joint arm ranges from $0.55$ to
   $0.96$ across seeds, and several likelihood quantities have large seed-to-seed
   spread (for example $8$B$\to1.7$B K-only $+1.04 \pm 1.53$). Three seeds is a
@@ -783,19 +1011,37 @@ pair and part of them on the flagship pair.
   calibration data, remain untested; a stronger mapper could change how much of
   the failure is attributable to consumption rather than to mapping.
 \item \textbf{Evaluator provenance.} Our corrected numbers come from our own
-  evaluator, validated against a full-prefill reference on a six-item
-  end-to-end probe. Six cases show that the two implementations agree; they are
-  not a broad validation of the evaluator, and the items themselves were not
-  retained. Legacy numbers are reported for comparison in the supplementary
-  material rather than in the main text.
+  evaluator, validated against a full-prefill reference on the complete $56$-item
+  Self test set of three student sizes (Figure~\ref{fig:evalcheck}). Greedy
+  tokenization still diverges from the reference on $7$--$21\%$ of items
+  depending on student size, so the agreement is on the extracted answer and on
+  the first-token logits (error $\le1.34$), not token-for-token. Legacy numbers
+  are reported for comparison in the supplementary material rather than in the
+  main text.
 \item \textbf{Unexplained baseline spread.} Self EM differs by student
   ($0.899$ for the three $0.6$B students, $0.440$ for the two $1.7$B students,
-  $0.815$ for the $4$B student). Our sources do not explain this gap. It does not
-  affect within-pair arm comparisons, which is what our claims rest on, but it
-  means absolute EM levels are not comparable across pairs.
-\item \textbf{Partial seed coverage.} The $1.7$B$\to0.6$B control suite is seed 0
-  only, as are the projection ablation ($0.964$ vs $0.625$), the identity V-only
-  control, and the random-KV control.
+  $0.815$ for the $4$B student). Raw and normalized exact match agree for every
+  student ($0.911$, $0.429$, $0.804$ raw against $0.911$, $0.429$, $0.804$
+  normalized; $0$ items flip from wrong to right under normalization) and the
+  failure counts are $5$, $32$, and $11$ of $56$, so the $1.7$B dip is not a
+  formatting artifact we can see. We still cannot explain it. It does not affect
+  within-pair arm comparisons, which is what our claims rest on, but it means
+  absolute EM levels are not comparable across pairs.
+\item \textbf{Partial seed coverage.} Two results are seed 0 only: the
+  repaired-regime layer scrambling (Section~6.1) and the projection ablation of
+  Table~\ref{tab:ablation}. The $1.7$B$\to0.6$B control suite, the identity
+  V-only control, the random-KV control, and both causality runs are seed 0 only
+  as well, whereas the $8$B controls and all four-arm scans have three seeds.
+  Where a comparison matters for a headline claim we used a three-seed run.
+\item \textbf{Flagship causality.} Destroying the injected content separates the
+  correct arm from the controls clearly on $1.7$B$\to0.6$B but only weakly on
+  $8$B$\to0.6$B ($0.304$ against $0.143$--$0.161$, one seed). We cannot rule out
+  that part of the flagship recovery is generic adaptation to teacher-like
+  states.
+\item \textbf{Cross-domain repair.} The mapper and the adapter are fit on the
+  synthetic distribution and do not repair SQuAD (Table~\ref{tab:squadrepair}).
+  We claim repairability of consumption under our task distribution, not task
+  generalization, and we did not retrain on SQuAD.
 \item \textbf{Withdrawn claims.} The pre-registered G0 gate and all previously
   published EM figures for this project are withdrawn (Section~4.5). The
   likelihood results survive, but they are likelihood results.
@@ -813,12 +1059,15 @@ Cross-model KV transfer is a state--consumer compatibility problem. Standard
 linear maps make teacher state predictable and raise teacher-forced likelihood,
 but under a corrected evaluator those states do not answer questions, and
 content-free caches reproduce the likelihood gains that made the transfer look
-real. The failure follows the consumer: routing diverges under mapped keys,
-mappers fit in the consumer's space recover much of the value arm, and a small
-rank-8 adaptation of the student's output projection recovers most of the K, V,
-and joint arms on the equal-depth pair and part of them on the flagship pair.
-Evaluation of cross-model cache reuse should measure task performance with
-content controls, and reuse systems should expect to adapt the consumer.
+real. The failure follows the consumer: routing diverges under mapped keys;
+mappers fit in the consumer's space recover the value arm on the equal-depth pair
+without touching a single consumer weight, and a small rank-8 adaptation of the
+student's output projections recovers most of the K, V, and joint arms there and
+part of them on the flagship pair, though not on a second domain. Layer alignment
+returns to the picture once the consumer reads the state, which the ordinary
+affine mapper hides. Evaluation of cross-model cache reuse should measure task
+performance with content controls, and reuse systems should expect to adapt the
+consumer.
 
 % ============================================================================
 \section{Reproducibility statement}
@@ -835,7 +1084,12 @@ per-sample decomposition write JSON reports under \texttt{reports/}
 \texttt{phaseB\_mechanism\_*.json},
 \texttt{phaseB\_outaware\_*.json},
 \texttt{phaseB\_adapter\_*.json},
-\texttt{phaseB\_squad\_seed*.json}, and
+\texttt{phaseB\_alignment\_repaired\_*.json},
+\texttt{phaseB\_evalcheck\_seed0.json},
+\texttt{phaseB\_selfdiag\_seed0.json},
+\texttt{phaseB\_squad\_seed*.json},
+\texttt{phaseB\_squad\_outaware\_seed0.json},
+\texttt{phaseB\_squad\_adapter\_seed0.json}, and
 \texttt{factorial\_analysis.json} for the decomposition). A
 detailed correction note (\texttt{paper/audit/METRIC\_CORRECTION.md}) documents
 the evaluator defects, the legacy numbers they produced, and the mapping from

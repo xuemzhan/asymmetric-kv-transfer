@@ -141,14 +141,22 @@ DLL = {
                [0.15, 0.25, 0.52, 0.27, 0.14, 0.28]),
 }
 
-CONTROLS = [  # 8B->0.6B; three-seed means except where noted
-    # label, dLL, dLL std, EM, EM note
+CONTROLS = [  # 8B->0.6B; three-seed means (std)
+    # label, dLL, dLL std, EM
     ("K-only", 2.62, 0.29, 0.000),
     ("wrong-doc K", 2.61, 0.31, 0.000),
-    ("random K", 2.33, 0.27, 0.018),
+    ("random K", 2.33, 0.27, 0.012),
     ("zero KV", 2.75, 0.01, 0.000),
     ("Joint", 4.52, 0.15, 0.000),
-    ("wrong-doc Joint", 4.50, None, 0.000),
+    ("wrong-doc Joint", 4.50, 0.18, 0.000),
+]
+# Correspondence-breaking shuffles of the STUDENT's own cache. Built from the
+# student state, so they are pair-independent: the same values hold on 1.7B->0.6B.
+SHUFFLES = [
+    # label, dLL, dLL std, EM, EM std
+    ("shuf. K\n(corr.\nbroken)", -1.19, 0.10, 0.000, 0.000),
+    ("shuf. V\n(corr.\nbroken)", -1.28, 0.04, 0.000, 0.000),
+    ("same perm.\nK and V", -0.01, 0.00, 0.887, 0.037),
 ]
 SELF_EM, SELF_EM_SD = 0.899, 0.010
 
@@ -161,7 +169,11 @@ MAPPERS = [  # V-only corrected EM, three-seed means
 ROUTING = {"1.7B$\\to$0.6B": (0.70, 0.698, 0.701, 0.165, 0.971),
            "8B$\\to$0.6B": (0.59, 0.577, 0.590, 0.245, 0.932)}
 
+# "Self" is the student's own cache under the SAME adapted model, so the adapted
+# Self bars are the reference frame (0.940 on both pairs, against 0.899 unadapted).
 ADAPTER_17 = {  # 1.7B->0.6B, three-seed mean (std)
+    "Self":   {"none": (0.899, 0.010), "teacher": (0.940, 0.041),
+               "student": (0.899, 0.045), "shuffled": (0.482, 0.064)},
     "K-only": {"none": (0.030, 0.010), "teacher": (0.940, 0.041),
                "student": (0.203, 0.203), "shuffled": (0.559, 0.020)},
     "V-only": {"none": (0.113, 0.051), "teacher": (0.940, 0.041),
@@ -169,7 +181,9 @@ ADAPTER_17 = {  # 1.7B->0.6B, three-seed mean (std)
     "Joint":  {"none": (0.000, 0.0), "teacher": (0.827, 0.237),
                "student": (0.179, 0.247), "shuffled": (0.458, 0.152)},
 }
-ADAPTER_8B = {  # 8B->0.6B, three-seed mean (std); None = not reported
+ADAPTER_8B = {  # 8B->0.6B, three-seed mean (std)
+    "Self":   {"none": (0.899, 0.010), "teacher": (0.940, 0.041),
+               "student": (0.976, 0.021), "shuffled": (0.411, 0.099)},
     "K-only": {"none": (0.000, 0.0), "teacher": (0.792, 0.162),
                "student": (0.113, 0.010), "shuffled": (0.369, 0.109)},
     "V-only": {"none": (0.000, 0.0), "teacher": (0.357, 0.047),
@@ -178,14 +192,23 @@ ADAPTER_8B = {  # 8B->0.6B, three-seed mean (std); None = not reported
                "student": (0.119, 0.021), "shuffled": (0.131, 0.021)},
 }
 
-LAYER_MAPS = [  # 1.7B->0.6B, seed 0
-    ("proportional", -0.82, 0.83, -2.24, 0.054),
-    ("offset +3", 0.24, 0.98, 1.67, 0.000),
-    ("offset $-$3", 2.69, 0.89, 3.31, 0.000),
-    ("random perm.", 0.36, 1.35, 1.14, 0.000),
+# Layer-map ablation, 1.7B->0.6B, seed 0, V-only corrected EM under two mappers.
+# The affine mapper pins the value arm at the floor, so the layer map looks
+# irrelevant; the consumption-space mapper lifts the proportional map to 0.911 and
+# the same scrambling then costs most of it. Bars carry the seed-0
+# document-clustered CI95 half-widths (affine: no interval archived).
+LAYER_MAPS = [
+    # label, affine V EM, outaware V EM, outaware CI half-width
+    ("proportional", 0.054, 0.911, 0.0715),
+    ("offset +3", 0.000, 0.214, 0.0895),
+    ("offset $-$3", 0.000, 0.232, 0.0890),
+    ("random perm.", 0.000, 0.107, 0.0625),
 ]
-HELDOUT = [("val-selected\n(12,16)", 0.35), ("post-hoc\n(8,12)", 0.22),
-           ("all layers", 0.00)]
+# Proportional V-only EM under the consumption-space mapper, three seeds
+OUTAWARE_PROP_SEEDS = [0.911, 0.929, 0.964]
+
+HELDOUT = [("val-selected\n(12,16)", 0.351), ("post-hoc\n(12,20)", 0.131),
+           ("post-hoc\n(8,12)", 0.220), ("all layers", 0.000)]
 
 
 # --- figures ----------------------------------------------------------------
@@ -258,7 +281,8 @@ def fig_fourarm():
 
 
 def fig_controls():
-    fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.4))
+    fig, axes = plt.subplots(1, 3, figsize=(7.4, 2.6),
+                             width_ratios=[1.26, 1.0, 0.98])
     labels = [c[0] for c in CONTROLS]
     y = np.arange(len(CONTROLS))[::-1]
 
@@ -274,7 +298,7 @@ def fig_controls():
         off = 0.0 if c[2] is None else c[2]
         ax.text(b.get_width() + off + 0.07, b.get_y() + b.get_height() / 2,
                 f"{c[1]:+.2f}", va="center", fontsize=7.2)
-    ax.set_title("(a) Content-free caches match the K-only gain")
+    ax.set_title("(a) Content-free caches match K-only", fontsize=8.0)
 
     ax = axes[1]
     em = [c[3] for c in CONTROLS] + [SELF_EM]
@@ -290,7 +314,24 @@ def fig_controls():
         w = r.get_width()
         ax.text(w + sd + 0.02, r.get_y() + r.get_height() / 2,
                 f"{w:.3f}" if w < 0.1 else f"{w:.2f}", va="center", fontsize=7.2)
-    ax.set_title("(b) Only the correct cache answers")
+    ax.set_title("(b) Only the correct cache answers", fontsize=8.0)
+
+    ax = axes[2]
+    sl = [s[0] for s in SHUFFLES]
+    sem = [s[3] for s in SHUFFLES]
+    esd = [s[4] for s in SHUFFLES]
+    xs = np.arange(len(SHUFFLES))
+    cols = [PALETTE["red_2"], PALETTE["red_2"], PALETTE["neutral"]]
+    b = ax.bar(xs, sem, 0.62, yerr=esd, capsize=1.5, color=cols,
+               edgecolor="#272727", linewidth=BAR_LW)
+    annotate(ax, [b], fmt=fmt_em, fs=7.4)
+    ax.axhline(SELF_EM, color=PALETTE["dark"], lw=1.2, ls="--")
+    ax.text(0.06, SELF_EM + 0.035, f"Self {SELF_EM:.2f}", fontsize=6.8,
+            ha="left", color="#272727")
+    ax.set_xticks(xs); ax.set_xticklabels(sl, fontsize=6.4)
+    ax.set_xlim(-0.6, len(sem) - 0.4)
+    ax.set_ylim(0, 1.12); ax.set_ylabel("corrected EM")
+    ax.set_title("(c) K--V correspondence registers", fontsize=8.0)
     finalize(fig, "fig_controls")
 
 
@@ -332,7 +373,7 @@ def fig_mappers():
 
 
 def _adapter_panel(ax, data, title):
-    arms = ["K-only", "V-only", "Joint"]
+    arms = ["Self", "K-only", "V-only", "Joint"]
     conds = [("none", PALETTE["neutral"]), ("teacher", PALETTE["blue_main"]),
              ("student", PALETTE["dark"]), ("shuffled", PALETTE["red_2"])]
     alpha = {"none": 0.95, "teacher": 1.0, "student": 0.75, "shuffled": 0.85}
@@ -347,7 +388,7 @@ def _adapter_panel(ax, data, title):
                    edgecolor="#272727", linewidth=BAR_LW, alpha=alpha[cname],
                    hatch=hatch[cname], label=cname)
         annotate(ax, b, fmt=fmt_em, fs=5.4)
-    ax.set_xticks(x); ax.set_xticklabels(arms, fontsize=8)
+    ax.set_xticks(x); ax.set_xticklabels(arms, fontsize=7.6)
     ax.set_ylim(0, 1.34); ax.set_ylabel("corrected exact match")
     ax.set_title(title)
     ax.legend(ncol=2, fontsize=6.8, title="adapter trained on", title_fontsize=6.8,
@@ -363,40 +404,84 @@ def fig_adapter():
 
 
 def fig_layers():
-    fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.4))
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.5))
     ax = axes[0]
     names = [m[0] for m in LAYER_MAPS]
-    x = np.arange(len(names)); w = 0.26
-    for i, (idx, c, lab) in enumerate([(1, PALETTE["blue_secondary"], "K-only"),
-                                       (2, PALETTE["red_strong"], "V-only"),
-                                       (3, PALETTE["blue_main"], "Joint")]):
-        v = [m[idx] for m in LAYER_MAPS]
-        b = ax.bar(x + (i - 1) * w, v, w, color=c, edgecolor="#272727",
-                   linewidth=BAR_LW, label=lab)
-        annotate(ax, b, fmt="{:+.2f}", fs=6.2)
+    x = np.arange(len(names)); w = 0.34
+    series = [(1, PALETTE["neutral"], "affine mapper", [0] * len(LAYER_MAPS)),
+              (2, PALETTE["blue_main"], "consumption-space mapper",
+               [m[3] for m in LAYER_MAPS])]
+    for i, c, lab, err in series:
+        v = [m[i] for m in LAYER_MAPS]
+        b = ax.bar(x + (i - 1.5) * w, v, w, yerr=err, capsize=1.5, color=c,
+                   edgecolor="#272727", linewidth=BAR_LW, label=lab)
+        for r, val, e in zip(b, v, err):
+            ax.text(r.get_x() + r.get_width() / 2, val + e + 0.022, fmt_em(val),
+                    ha="center", va="bottom", fontsize=6.4, color="#272727")
     ax.axhline(0, color="#272727", lw=1.0)
-    ax.set_ylim(-3.2, 4.6)
-    ax.set_xticks(x)
-    ax.set_xticklabels([f"{m[0]}\n(V EM {m[4]:.3f})" for m in LAYER_MAPS], fontsize=7.0)
-    ax.set_ylabel("$\\Delta$ log-likelihood (seed 0)")
-    ax.set_title("(a) Scrambling the layer map does not hurt")
-    ax.legend(ncol=3, fontsize=7.2, loc="upper center", handlelength=1.0,
-              columnspacing=1.2, handletextpad=0.5)
+    ax.set_ylim(0, 1.22)
+    ax.set_xticks(x); ax.set_xticklabels(names, fontsize=7.4)
+    ax.set_ylabel("corrected V-only EM (seed 0)")
+    ax.set_title("(a) Alignment matters once the consumer reads value")
+    ax.legend(ncol=1, fontsize=6.8, loc="upper right", handlelength=1.0,
+              columnspacing=1.0, handletextpad=0.5)
 
     ax = axes[1]
     lab = [h[0] for h in HELDOUT]
     v = [h[1] for h in HELDOUT]
     x = np.arange(len(v))
-    b = ax.bar(x, v, 0.55, color=[PALETTE["blue_main"], PALETTE["red_2"], PALETTE["neutral"]],
+    b = ax.bar(x, v, 0.55,
+               color=[PALETTE["blue_main"], PALETTE["red_2"],
+                      PALETTE["red_2"], PALETTE["neutral"]],
                edgecolor="#272727", linewidth=BAR_LW)
-    annotate(ax, [b], fmt="{:.2f}", fs=7.5)
+    annotate(ax, [b], fmt="{:.3f}", fs=6.8)
     ax.axhline(SELF_EM, color=PALETTE["dark"], lw=1.2, ls="--")
     ax.text(len(v) - 0.45, SELF_EM + 0.02, f"Self {SELF_EM:.2f}", fontsize=7.4,
             ha="right", color="#272727")
-    ax.set_xticks(x); ax.set_xticklabels(lab, fontsize=7.6)
+    ax.set_xticks(x); ax.set_xticklabels(lab, fontsize=7.0)
     ax.set_ylim(0, 1.05); ax.set_ylabel("test corrected exact match")
     ax.set_title("(b) Held-out value-layer selection")
     finalize(fig, "fig_layers")
+
+
+EVALCHECK = [  # student, token agreement, normalized-EM agreement, logit max err,
+               # self EM under injection, self EM under full prefill
+    ("$0.6$B", 0.786, 0.964, 1.344, 0.911, 0.875),
+    ("$1.7$B", 0.804, 0.929, 0.875, 0.429, 0.393),
+    ("$4$B", 0.929, 0.982, 0.969, 0.804, 0.786),
+]
+
+
+def fig_evalcheck():
+    fig, axes = plt.subplots(1, 2, figsize=(5.6, 2.4))
+    x = np.arange(len(EVALCHECK)); w = 0.34
+
+    ax = axes[0]
+    for i, (key, c, lab) in enumerate([(1, PALETTE["neutral"], "token-level greedy"),
+                                       (2, PALETTE["blue_main"], "normalized EM")]):
+        v = [e[key] for e in EVALCHECK]
+        b = ax.bar(x + (i - 0.5) * w, v, w, color=c, edgecolor="#272727",
+                   linewidth=BAR_LW, label=lab)
+        annotate(ax, b, fmt="{:.3f}", fs=6.4, pad=0.015)
+    ax.set_xticks(x); ax.set_xticklabels([e[0] for e in EVALCHECK], fontsize=7.6)
+    ax.set_ylim(0, 1.22); ax.set_ylabel("agreement")
+    ax.set_title("(a) Injection vs full prefill")
+    ax.legend(ncol=1, fontsize=6.8, loc="upper center", handlelength=1.0,
+              columnspacing=1.0, handletextpad=0.5)
+
+    ax = axes[1]
+    for i, (key, c, lab) in enumerate([(5, PALETTE["blue_main"], "full prefill"),
+                                       (4, PALETTE["green_3"], "cache injection")]):
+        v = [e[key] for e in EVALCHECK]
+        b = ax.bar(x + (i - 0.5) * w, v, w, color=c, edgecolor="#272727",
+                   linewidth=BAR_LW, label=lab)
+        annotate(ax, b, fmt=fmt_em, fs=6.4, pad=0.015)
+    ax.set_xticks(x); ax.set_xticklabels([e[0] for e in EVALCHECK], fontsize=7.6)
+    ax.set_ylim(0, 1.22); ax.set_ylabel("Self corrected EM")
+    ax.set_title("(b) The two paths agree on Self")
+    ax.legend(ncol=1, fontsize=6.8, loc="upper center", handlelength=1.0,
+              columnspacing=1.0, handletextpad=0.5)
+    finalize(fig, "fig_evalcheck")
 
 
 if __name__ == "__main__":
@@ -406,4 +491,5 @@ if __name__ == "__main__":
     fig_mappers()
     fig_adapter()
     fig_layers()
+    fig_evalcheck()
     print("done")

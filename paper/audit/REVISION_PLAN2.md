@@ -197,7 +197,7 @@ arms["Shuf_V"] = KV(k=sk, v=shuf.v)   # 保留 K，打乱 V
 | B7 | `tab:main` + §3.4 | I.7 (C3) | 主表 EM 改报 document-clustered CI95；统计协议补 document-level 检验 |
 | B8 | Results / Analysis | I.8 (C4) | 增加跨域修复结果；按结果限定 positive claim 的适用范围 |
 
-**待决：标题。** 现标题 "Needs a Compatible Consumer" 偏强，因为 consumer-aware mapper 在 **consumer 权重完全不变**的情况下就把 1.7B→0.6B 的 V-only 从 0.113 提到 0.935。建议改为
+**待决：标题（见 II-C）。** 现标题 "Needs a Compatible Consumer" 偏强，因为 consumer-aware mapper 在 **consumer 权重完全不变**的情况下就把 1.7B→0.6B 的 V-only 从 0.113 提到 0.935。建议改为
 `Cross-Model KV Transfer Requires Consumer-Aware Alignment: Evaluation, Diagnosis, and Repair`。
 本轮**未改标题**，等你确认后再动（需同步 `main.tex`、`\hypersetup{pdftitle}`、`paper/arxiv_metadata.md`）。
 
@@ -229,3 +229,39 @@ arms["Shuf_V"] = KV(k=sk, v=shuf.v)   # 保留 K，打乱 V
 ## V. 本机遗留
 
 `paper/main.pdf` 被 Codex 进程占用，本轮未能就地刷新（仍为 22:04 版本）；最新版已写入 `paper/arxiv_submission/main.pdf`（16 页，全部修改已包含）。关闭占用后可重跑 `tools/compile_paper.ps1` 同步。
+
+---
+
+## II-C　已完成（W20b，编辑机器，消费 GPU 结果）
+
+PART II-B 的 8 条已全部落地。每条的"审稿编号 → 数据产物 → 正文位置 → 断言"如下：
+
+| # | audit2 | 数据产物（必须先有此文件） | 正文位置 | 守卫断言（`verify_audit2_edits.py`） |
+|---|---|---|---|---|
+| B1 | §3 | `phaseB_evalcheck_seed0.json` | Method 3.3；Limitations "Evaluator provenance"；新的 Fig. 2 | 标签 `B1`：`six-item` 全文 0 次；`normalized-EM agreement $0.929$--$0.982$` 存在 |
+| B2 | §4 | `phaseB_controls_8B_0.6B_seed{0_fixed,1,2}.json` | Results 5.2；Table 2；Fig. 4(c) | 标签 `B4`：`Shuffled K (student)`、`Same permutation, K and V (student)` 存在；`we do not report a same-permutation arm` 0 次 |
+| B3 | §7 | `phaseB_adapter_{1.7B,8B}_0.6B_*_seed*.json` | Table 8 的 Self 列 | 标签 `B3`：`the Self column was not retained` 0 次；`adapted Self of $0.940\pm0.041$` 存在 |
+| B4 | §6 | `phaseB_adapter_causal_*.json` | Analysis 6.4；Table 5 | 标签 `B2`：`\label{tab:causal}` 存在；`flagship causality as` 存在 |
+| B5 | §9 | `phaseB_alignment_repaired_1.7B_0.6B_seed0.json` | Analysis 6.1（**标题已改**）；Discussion 7.1；Fig. 7(a) 重画 | 标签 `C1`：`Layer alignment alone does not explain the failure` 全文 0 次 |
+| B6 | §12 | `phaseB_selfdiag_seed0.json` | Limitations "Unexplained baseline spread" | 标签 `C2`：`formatting artifact we can see` 存在 |
+| B7 | §11 | `phaseB_fourarm_seed0.json` | Results 5.1 正文 + Table 1 表注 | 标签 `C3`：seed-0 聚类区间在正文给出；Limitations 改写为"只有 seed 0 有聚类区间" |
+| B8 | §13 | `phaseB_squad_{outaware,adapter}_seed0.json` | Results 5.3；Analysis 6.4；Table 7；Limitations | 标签 `C4`：`\label{tab:squadrepair}` 存在 |
+
+**本轮新发现的还需修正之处（不在原 PART II-B 表内）：**
+
+1. **contaminated 产物**：`reports/phaseB_controls_8B_0.6B_seed0.json` 是旧 evaluator 的残留
+   （Self 0.429，`Zero_KV` EM 1.000），已改名加 `_LEGACY_DO_NOT_USE` 后缀。
+2. **`Shuf_K`/`Shuf_V` 的真实构造**：由**学生自身** cache 打乱（`phaseB_controls.py:141-148`），
+   与学生规模无关的 teacher 无关量，故 1.7B 与 8B 数值完全相同。正文已按此描述，
+   并说明"跨 pair 一致是自洽性检查，不是独立复现"。
+3. **v_proj 与 o_proj 等价**：seed 0 上 joint 臂都是 0.964，原"o_proj 最有效"的表述已被
+   替换为"值路径上任一投影都可，区别在地址路径"，并给出 `q,k` 0.625 / Self 0.786 的证据。
+4. **post-hoc oracle 层对 (12,20) 只有 0.131**，低于 validation 选出的 (12,16) 的 0.351：
+   预注册选择没有吃亏，已写入 6.5 并进 Fig. 7(b)。
+
+**仍未做的（编辑性、可选）：** audit2 §15 要求的旧 K/V asymmetry 叙事压缩；
+标题是否改为 "Requires Consumer-Aware Alignment"（**仍等你决定**，改动需同步
+`main.tex`、`\hypersetup{pdftitle}`、`paper/arxiv_metadata.md`）。
+
+**V 节的遗留已解决：** `paper/main.pdf` 现由 `tools/tectonic/tectonic.exe` 生成并可写；
+最新 PDF 同步写入 `paper/main.pdf` 与 `paper/arxiv_submission/main.pdf`（20 页）。

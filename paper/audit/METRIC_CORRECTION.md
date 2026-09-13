@@ -414,3 +414,54 @@ domains; the repair is task-distribution-specific.
 **C3 completion** (`phaseB_fourarm_8B_4B_seed0.json`): 8B→4B Self 0.804,
 K 0.143, V 0.429 (clustered CI [0.375,0.482]), Joint 0.018. V-only is the only
 arm whose clustered CI excludes zero, and it remains far below Self.
+
+
+---
+
+## 8. Paper-side integration of the revision-2 results (W20b)
+
+Section 7 records what the GPU machine produced. This section records the
+derived publication quantities the paper now prints, so that every number in the
+manuscript can be checked against a report without re-running anything.
+
+**Independently recomputed 3-seed aggregates** (all from `reports/*.json`, none
+hand-written):
+
+| Quantity | Report(s) | Value used in the paper |
+|---|---|---|
+| 8B→0.6B controls, `Shuf_K` / `Shuf_V` | `phaseB_controls_8B_0.6B_seed{0_fixed,1,2}.json` | ΔLL −1.19±0.10 / −1.28±0.04, EM 0.000 (3/3) |
+| 8B→0.6B `Shuf_KV` invariance check | same | ΔLL −0.01±0.00, EM 0.887±0.037 |
+| Random-K EM (3 seeds, was seed-0 only) | same | 0.012±0.010 |
+| Wrong-document Joint ΔLL dispersion | same | +4.50±0.18 (paper previously printed it bare) |
+| Adapter Self column, both pairs | `phaseB_adapter_{1.7B,8B}_0.6B_*_seed*.json` | 0.940±0.041 (teacher); 0.976±0.021 / 0.411±0.099 (8B student / shuffled) |
+| Proportional V-only EM under the consumption-space mapper | `phaseB_outaware_1.7B_0.6B_seed{0,1,2}.json` | 0.911 / 0.929 / 0.964 |
+| Post-hoc oracle layer pair (12,20) | `phaseB_layers_heldout_8B_0.6B_seed{0,1,2}.json` | 0.131 (vs 0.351 validation-selected) |
+| Projection ablation, `v_proj` / `q_proj,k_proj` | `phaseB_adapter_1.7B_0.6B_{v_proj,q_proj_k_proj}_seed0.json` | joint 0.964 / 0.625 (seed 0) |
+
+**Wording correction carried into the paper.** `Shuf_K` and `Shuf_V` are built
+from the *student's own* cache (`phaseB_controls.py:141-148`:
+`shuf = shuffled_kv(eval_s[i])`, `Shuf_K = KV(k=shuf.k, v=sv)`), not from the
+teacher state. They are therefore pair-independent by construction, which is why
+1.7B and 8B report identical values. The paper describes them as
+correspondence-breaking controls on the student's cache and says so explicitly;
+it does not read their cross-pair agreement as an independent replication.
+
+**Conclusion that reversed.** Section 3b (B1, affine mapper) reported that
+scrambling the layer map does not reduce transfer. Section 7 C1 shows that result
+was a floor effect. The paper now reports both regimes in Section 6.1, retitled
+"Layer alignment matters once the consumer reads the state", and the old blanket
+claim is asserted absent across the whole manuscript by
+`paper/audit/verify_audit2_edits.py`.
+
+**Contaminated artifact.** `reports/phaseB_controls_8B_0.6B_seed0.json` is a
+stale legacy-evaluator run (Self 0.429, `Zero_KV` EM 1.000) that predates the
+controls fix. No paper number has ever used it; it is renamed
+`phaseB_controls_8B_0.6B_seed0_LEGACY_DO_NOT_USE.json` so that it cannot be
+mistaken for the corrected seed-0 run (`..._seed0_fixed.json`, Self 0.911,
+`Zero_KV` EM 0.000).
+
+**Traceability.** `paper/audit/verify_audit2_edits.py` asserts, per audit2
+finding, that the superseded strings are absent and the replacements present,
+including one assertion per new number above. It distinguishes PART I (W19b,
+edit-only findings) from PART II (W20b, findings that needed new GPU runs) and
+runs clean.
