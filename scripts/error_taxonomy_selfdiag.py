@@ -7,7 +7,7 @@ generations so a reader can see that the failures are ordinary task errors
 rather than a pipeline artefact.
 
 Everything here is computed from the archived generations in
-`reports/phaseB_selfdiag_seed0.json` (written by `phaseB_selfdiag.py` with the
+`reports/phaseB_selfdiag_seed0.json` (written by `experiments/phaseB_selfdiag.py` with the
 `return_gen` change from REVISION_PLAN2 I-4), so no GPU and no model access is
 needed. The classifier is deterministic and rule-based:
 

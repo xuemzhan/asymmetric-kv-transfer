@@ -26,7 +26,8 @@ V3 is a research project investigating KV cache transfer between teacher and stu
 │   ├── audit/           # audit1-3, revision plans, guards
 │   └── archive/         # Superseded v1 drafts/figures
 ├── ITERATION_LOG.md     # SOLE iteration log (read first every session)
-└── AGENTS.md
+├── AGENTS.md
+└── README.md            # Overview, environment, quick start
 ```
 
 ## WHERE TO LOOK

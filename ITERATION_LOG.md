@@ -960,3 +960,19 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
   `scripts/verify_corrected_paper.py`、`paper/audit/verify_audit2_edits.py`、
   `paper/audit/verify_audit3_edits.py`、`tests/test_stats_utils.py` 全部 exit 0。
 - **未改动**：任何实验逻辑、报告数值、论文内容。
+
+## W24 (2026-09-13): 整理后评估 + 冒烟测试 + README
+
+- **评估**：逐项核对重组结果。目录引用一致（`scripts/error_taxonomy_selfdiag.py` 文档串
+  改指 `experiments/phaseB_selfdiag.py`）；发现 `scripts/verify_paper_numbers.py` 是
+  W17 已声明废弃的 v1 守卫（对重写后的论文有 23 条断言失败，属既有问题），移入
+  `scripts/archive/verify_paper_numbers_v1_stale.py`。
+- **冒烟测试（本机）**：
+  - CPU：`py_compile` 全部通过；`tests/test_stats_utils.py`、`verify_corrected_paper.py`、
+    `verify_audit2_edits.py`、`verify_audit3_edits.py`、`scripts/factorial_analysis.py`、
+    `scripts/cluster_stats_audit3.py`、`scripts/error_taxonomy_selfdiag.py` 全部 exit 0；
+  - GPU（RTX 4090）：`python3 experiments/phaseB_fourarm.py --seed 0 --n-calib 4 --n-eval 2
+    --pairs 1.7B_0.6B --output /tmp/smoke_fourarm.json` 端到端跑通（1.7B→0.6B，四臂输出）。
+- **新增 `README.md`**：项目主张、主要结论、目录结构、环境、数据重建、快速开始、
+  论文编译、溯源与守卫说明；`AGENTS.md` 结构树加入 `README.md`。
+- **未改动**：任何实验逻辑、报告数值、论文内容。
