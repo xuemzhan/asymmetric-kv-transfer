@@ -858,3 +858,36 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
   `scripts/verify_corrected_paper.py` 已对齐 audit2 后的字符串，ALL PASS。
 - **环境**：另一 session 的 `apcs inject-eval` 长时间占用 GPU/CPU，运行极慢；对 numpy/BLAS 限线程
   （`OMP_NUM_THREADS=8`）后完成；8B 早期一次 OOM 已重跑。
+
+## W21 (2026-09-13): 三审（audit3）取证 + REVISION_PLAN3（方案，未跑新实验）
+
+- **触发**：独立三审 `paper/audit/audit3.md`。判定当前约 **6/10**（Weak
+  Accept / Borderline，confidence 4.5/5），明确"没有明显证据可以推翻主结论"，剩下的
+  是**结论边界与机制拆分**；并列出 6 件必做事（audit3 §18）。同轮本机自审见
+  `paper/audit/SELF_REVIEW_W21.md`（修 9 处数值/归属错误，如 V-only std 0.06→0.05、
+  1.7B adapter 四个单元格舍入、`ITERATION_LOG` 里不可复现的 Wilcoxon p=0.074）。
+- **产出（本机，只读取证）**：`paper/audit/REVISION_PLAN3.md` —— audit3 六项 → 
+  T1/T2/T3/T4 + A1–A6 的可执行方案，含代码规格、命令、预登记门禁、机器分工、成本与停止规则。
+  **`paper/main.tex` 本轮未改**（文本修复等作者确认后统一落地，见 PLAN3 PART I）。
+- **本轮核实的事实（逐文件检查，无 GPU）**：
+  - `phaseB_fourarm_seed{0,1,2}.json` 的 rows **全部带 `doc_id`**，controls/outaware 可用
+    `id` join `data/test_v2_seed{seed}.json`；alignment_repaired 的 summary 已含
+    `EM_ci95_clustered` → 论文"clustered intervals exist only in the seed-0 reports"
+    已**过时**，A6 可在本机对全部 seed 重算（audit3 §10 的成本接近 0）。
+  - `phaseB_adapter_*.json` 与 `phaseB_adapter_causal_*.json` **不含逐样本 rows** →
+    聚类统计对 adapter/causality 必须先加 `--dump-rows` 并随 A2 重跑。
+  - causality 报告 `epochs=10` 而 headline 为 `20`（audit3 §6 属实）；8B causality 仅 seed 0
+    且 correct 0.304 vs 破坏臂 0.143–0.161（§7 属实）。
+  - evaluator 两个 bug 只存在于本项目自身旧实现（`METRIC_CORRECTION.md:12` 指明是
+    `phase0_g0.answer_loglik` + `greedy_answer`），而 `main.tex:57/121/291/961` 四处写成
+    "published evaluation code" / "released code" → audit3 §15 的归属问题属实，需拆成
+    "实现层发现"与"方法论发现"两层。
+  - `main.tex:702-706` 用 "mapped keys 的 addressing perturbation" 解释 V-only residual，
+    但 V-only = student K + mapped teacher V（`main.tex:279-283`）→ audit3 §4 的指控成立。
+  - `data/nq_test_seed0.json` 的 `doc` 为空（NQ 无文档状态）→ 第二域只有 SQuAD（30 题/
+    30 文档）可用于 within-domain repair，且天然无聚类问题。
+  - 守卫基线：`python paper/audit/verify_audit2_edits.py` → **OK（全断言通过）**。
+- **结论**：audit3 未推翻任何主结论；三项主要 concern 为 evaluator 数值 residual、
+  K/V 机制混用、20-epoch causality 未覆盖。
+- **待办**（详见 `REVISION_PLAN3.md` §0 优先级表）：T1/T2/T3（本机文本，可立即做）、
+  A6（本机统计）、A1（GPU，阻塞项）、A2/A3/A4（GPU）、T4 标题与 A5 文档宽度待决策。
