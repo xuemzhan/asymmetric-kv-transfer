@@ -1066,10 +1066,16 @@ pair and part of them on the flagship pair.
   $0.815$ for the $4$B student). Raw and normalized exact match agree for every
   student ($0.911$, $0.429$, $0.804$ raw against $0.911$, $0.429$, $0.804$
   normalized; $0$ items flip from wrong to right under normalization) and the
-  failure counts are $5$, $32$, and $11$ of $56$, so the $1.7$B dip is not a
-  formatting artifact we can see. We still cannot explain it. It does not affect
-  within-pair arm comparisons, which is what our claims rest on, but it means
-  absolute EM levels are not comparable across pairs.
+  failure counts are $5$, $32$, and $11$ of $56$. Classifying the archived
+  generations, every $1.7$B failure is a well-formed answer naming the wrong
+  entity or value---another component or plant of the same template, or the
+  opposite polarity on the yes/no questions---with no refusal, no repetition
+  loop, no empty output and no generation truncated at the decode cap; the
+  $0.6$B and $4$B failures are of the same kind. The $1.7$B dip is therefore
+  task error, not a formatting or extraction artifact, but we still cannot
+  explain why that size is the weakest. It does not affect within-pair arm
+  comparisons, which is what our claims rest on, but it means absolute EM
+  levels are not comparable across pairs.
 \item \textbf{Partial seed coverage.} Four results are seed 0 only: the
   repaired-regime layer scrambling (Section~6.1), the projection ablation of
   Table~\ref{tab:ablation}, and the two adapter causality runs. The

@@ -927,3 +927,10 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
   `METRIC_CORRECTION.md` 新增 §9（A6 结果 + A1–A5 待跑说明 + 文本修复清单）。
 - **待办**：GPU 机器 `git pull` 后执行 `bash scripts/run_audit3_gpu_queue.sh`；
   回来后按 REVISION_PLAN3 PART III 的条件式改写（W1–W5、W7）落地并登记 §10。
+- **追加（同日，A7 可选项）**：`scripts/error_taxonomy_selfdiag.py` 用已归档生成文本
+  对 Self 基线失败做规则分类（0.6B 5 个 other_text；1.7B 32 个全部是"格式正确、实体/数值答错"；
+  4B 11 个同类），无 refusal / 重复循环 / 空输出 / 截断。结论：1.7B 低谷是任务错误而非
+  抽取工件，Limitations 相应改写；`reports/error_taxonomy_selfdiag.json` 已归档。
+- **仓库卫生**：`.gitignore` 移除 `reports/*.json`（报告 JSON 是论文数字的溯源记录，
+  被忽略会导致 GPU 机器的新产物无法回流）；补提交 27 个历史报告（816 KiB）。
+  `verify_audit2_edits.py` 中两条被 audit3 取代的断言（X6/C2）已更新为指向新措辞。

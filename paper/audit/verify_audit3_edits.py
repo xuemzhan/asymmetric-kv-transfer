@@ -139,6 +139,24 @@ def main() -> int:
                 FAILURES.append("A6: 1.7B V-OutAware clustered CI changed (%s, %s)"
                                 % (lo, hi))
 
+    # ------------------------------------- A7: audit3 par.13 (optional, CPU)
+    # Rule-based taxonomy of the archived Self-baseline generations.
+    present("A7", tex, "Classifying the archived\n  generations, every $1.7$B failure")
+    present("A7", tex, "no generation truncated at the decode cap")
+    tax_path = os.path.join(ROOT, "reports", "error_taxonomy_selfdiag.json")
+    if not os.path.isfile(tax_path):
+        FAILURES.append("A7: %s must exist" % tax_path)
+    else:
+        tax = json.load(io.open(tax_path, encoding="utf-8"))["students"]
+        counts = tax.get("1.7B", {}).get("counts", {})
+        if counts.get("wrong_entity") != 32 or counts.get("correct") != 24:
+            FAILURES.append("A7: 1.7B taxonomy changed: %s" % counts)
+        for bad in ("refusal_or_hedge", "repetition_loop", "no_content",
+                    "hit_length_limit"):
+            if counts.get(bad):
+                FAILURES.append("A7: 1.7B failures include %s=%d"
+                                % (bad, counts[bad]))
+
     if FAILURES:
         print("FAIL: audit3 paper-side assertions")
         for f in FAILURES:

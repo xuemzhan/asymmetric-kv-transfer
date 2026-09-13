@@ -518,6 +518,29 @@ A4 (state/consumption error budget) is committed and queued by
 `scripts/run_audit3_gpu_queue.sh`. Nothing here should be cited until the
 corresponding `reports/*.json` land and are registered in a section 10.
 
+### A7 — Self-baseline failure taxonomy (optional item, audit3 par.13, CPU)
+
+**Source:** `reports/error_taxonomy_selfdiag.json`, produced by
+`scripts/error_taxonomy_selfdiag.py` from the generations already stored in
+`reports/phaseB_selfdiag_seed0.json` (the `return_gen` change of REVISION_PLAN2
+I-4). Rule-based and deterministic: empty or punct-only, denial phrase, 2-gram
+repeat covering half the tokens, generation at the 16-token decode cap, an
+entity/number that is not the gold answer, or other free text.
+
+| Student | correct | failures | failure classes |
+|---|---|---|---|
+| 0.6B | 51 | 5 | `other_text` 5 |
+| 1.7B | 24 | 32 | `wrong_entity` 32 |
+| 4B | 45 | 11 | `wrong_entity` 11 |
+
+**Effect on the paper.** The 1.7B dip is now characterised rather than merely
+reported: every one of its 32 failures is a well-formed answer naming the wrong
+component, plant, number, or yes/no polarity, and none of the four artefact
+classes (refusal, repetition loop, empty output, truncation at the cap) occurs
+in any student. The Limitations bullet "Unexplained baseline spread" was
+rewritten accordingly. This closes audit3 par.13's request and strengthens the
+audit2 C2 finding without changing any number.
+
 ### Text-only audit3 items landed in the same round
 
 T1 (key-side routing versus value-side consumption, four sites plus the

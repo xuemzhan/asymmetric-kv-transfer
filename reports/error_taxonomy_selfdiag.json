@@ -1,0 +1,378 @@
+{
+  "task": "error_taxonomy_selfdiag",
+  "source": "reports/phaseB_selfdiag_seed0.json",
+  "students": {
+    "0.6B": {
+      "n": 56,
+      "counts": {
+        "correct": 51,
+        "other_text": 5
+      },
+      "self_em": 0.9107142857142857,
+      "n_failures": 5,
+      "raw_fail_norm_pass": 0,
+      "failures": [
+        {
+          "id": "ba805a1594b1",
+          "answer": "no",
+          "gen": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "label": "other_text",
+          "norm_em": false
+        },
+        {
+          "id": "8308197f9302",
+          "answer": "Plant-S-009",
+          "gen": " ___________ (put your answer in the box)\n\nOptions: A. Plant",
+          "label": "other_text",
+          "norm_em": false
+        },
+        {
+          "id": "7fc78fb0ccb3",
+          "answer": "Plant-S-011",
+          "gen": " ___________ (put your answer in the box)\n\nOptions: Plant-S-",
+          "label": "other_text",
+          "norm_em": false
+        },
+        {
+          "id": "f4a6a7b94a0a",
+          "answer": "no",
+          "gen": " Yes\n\nBased on the information provided, what is the range of Proj-P-",
+          "label": "other_text",
+          "norm_em": false
+        },
+        {
+          "id": "73abdb491473",
+          "answer": "Plant-S-013",
+          "gen": " ___________ (put your answer in the box)\n\nOptions: Plant-S-",
+          "label": "other_text",
+          "norm_em": false
+        }
+      ]
+    },
+    "1.7B": {
+      "n": 56,
+      "counts": {
+        "correct": 24,
+        "wrong_entity": 32
+      },
+      "self_em": 0.42857142857142855,
+      "n_failures": 32,
+      "raw_fail_norm_pass": 0,
+      "failures": [
+        {
+          "id": "fe9478714ed9",
+          "answer": "Comp-S-001",
+          "gen": " The component used by Proj-P-015 is Comp-S-00",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "f1b198499ed1",
+          "answer": "Mat-S-001",
+          "gen": " The component Comp-S-001 is made of the material Mat-S-",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "32985e1adb53",
+          "answer": "702",
+          "gen": " The daily output rate of the plant that assembles Comp-S-001",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "ba805a1594b1",
+          "answer": "no",
+          "gen": " Yes, the range of Proj-P-015 is 138",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "823323a50a9a",
+          "answer": "Comp-S-003",
+          "gen": " The component used by Proj-P-016 is Comp-S-00",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "3fec9fdf96f6",
+          "answer": "Plant-S-003",
+          "gen": " The component Comp-S-003 is assembled at Plant-S-00",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "57623d511876",
+          "answer": "Mat-S-003",
+          "gen": " The component Comp-S-003 is made of the material Mat-S-",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "4335b8b204e0",
+          "answer": "Test-S-003",
+          "gen": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "75a5ae4b1687",
+          "answer": "335",
+          "gen": " The daily output rate of the plant that assembles Comp-S-003",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "a0025c1cdff6",
+          "answer": "Comp-S-005",
+          "gen": " The component used by Proj-P-017 is Comp-S-00",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "96554a6b5a80",
+          "answer": "Mat-S-005",
+          "gen": " The component Comp-S-005 is made of the material Mat-S-",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "3feaefbfd1ab",
+          "answer": "325",
+          "gen": " The daily output rate of the plant that assembles Comp-S-005",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "b35a84f029fd",
+          "answer": "Comp-S-007",
+          "gen": " The component used by Proj-P-018 is Comp-S-00",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "04820cdea0a1",
+          "answer": "Mat-S-007",
+          "gen": " The component Comp-S-007 is made of the material Mat-S-",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "959dcd752adc",
+          "answer": "172",
+          "gen": " The daily output rate of the plant that assembles Comp-S-007",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "36d089b69d0f",
+          "answer": "Comp-S-009",
+          "gen": " The component used by Proj-P-019 is Comp-S-01",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "006820e47622",
+          "answer": "Mat-S-009",
+          "gen": " The component Comp-S-009 is made of the material Mat-S-",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "296467b595f4",
+          "answer": "746",
+          "gen": " The daily output rate of the plant that assembles Comp-S-009",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "ebcbe428d4cf",
+          "answer": "Comp-S-011",
+          "gen": " The component used by Proj-P-020 is Comp-S-01",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "479c46653596",
+          "answer": "Mat-S-011",
+          "gen": " The component Comp-S-011 is made of the material Mat-S-",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "b793b8b7476e",
+          "answer": "Test-S-011",
+          "gen": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "2ea4d8558fb5",
+          "answer": "334",
+          "gen": " The daily output rate of the plant that assembles Comp-S-011",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "f4a6a7b94a0a",
+          "answer": "no",
+          "gen": " Yes, the range of Proj-P-020 is 869",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "7f4643fbe110",
+          "answer": "Comp-S-013",
+          "gen": " The component used by Proj-P-021 is Comp-S-01",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "73abdb491473",
+          "answer": "Plant-S-013",
+          "gen": " The component Comp-S-013 is used by Proj-P-02",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "8e0f86f19fd9",
+          "answer": "Mat-S-013",
+          "gen": " The component Comp-S-013 is made of the material Mat-S-",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "317e0647d23b",
+          "answer": "Test-S-013",
+          "gen": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "e1134c22c1bd",
+          "answer": "132",
+          "gen": " The daily output rate of the plant that assembles Comp-S-013",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "2f7df6460cfb",
+          "answer": "Comp-S-015",
+          "gen": " The component used by Proj-P-022 is Comp-S-01",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "4305a73a2f59",
+          "answer": "Mat-S-015",
+          "gen": " The component Comp-S-015 is made of material Mat-S-0",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "54c65bb2e3d3",
+          "answer": "Test-S-015",
+          "gen": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "3a619ed537de",
+          "answer": "172",
+          "gen": " The daily output rate of the plant that assembles Comp-S-015",
+          "label": "wrong_entity",
+          "norm_em": false
+        }
+      ]
+    },
+    "4B": {
+      "n": 56,
+      "counts": {
+        "correct": 45,
+        "wrong_entity": 11
+      },
+      "self_em": 0.8035714285714286,
+      "n_failures": 11,
+      "raw_fail_norm_pass": 0,
+      "failures": [
+        {
+          "id": "f1b198499ed1",
+          "answer": "Mat-S-001",
+          "gen": " The component Comp-S-001 is made of Mat-S-00",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "57623d511876",
+          "answer": "Mat-S-003",
+          "gen": " The component Comp-S-003 is made of Mat-S-00",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "96554a6b5a80",
+          "answer": "Mat-S-005",
+          "gen": " The component Comp-S-005 is made of Mat-S-00",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "3feaefbfd1ab",
+          "answer": "325",
+          "gen": " The daily output rate of Plant-S-005, which assembles Comp",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "04820cdea0a1",
+          "answer": "Mat-S-007",
+          "gen": " The component Comp-S-007 is made of Mat-S-00",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "006820e47622",
+          "answer": "Mat-S-009",
+          "gen": " The component Comp-S-009 is made of Mat-S-00",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "ebcbe428d4cf",
+          "answer": "Comp-S-011",
+          "gen": " The components used by Proj-P-020 are Comp-S-01",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "479c46653596",
+          "answer": "Mat-S-011",
+          "gen": " The component Comp-S-011 is made of Mat-S-01",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "2ea4d8558fb5",
+          "answer": "334",
+          "gen": " The daily output rate of Plant-S-011, which assembles Component",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "8e0f86f19fd9",
+          "answer": "Mat-S-013",
+          "gen": " The component Comp-S-013 is made of Mat-S-01",
+          "label": "wrong_entity",
+          "norm_em": false
+        },
+        {
+          "id": "4305a73a2f59",
+          "answer": "Mat-S-015",
+          "gen": " The component Comp-S-015 is made of Mat-S-01",
+          "label": "wrong_entity",
+          "norm_em": false
+        }
+      ]
+    }
+  }
+}

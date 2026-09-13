@@ -120,7 +120,11 @@ def main() -> int:
     present("C4", tex, "\\textbf{Cross-domain repair.}")
 
     # C2 (reports/phaseB_selfdiag_seed0.json) - par.12, 1.7B Self anomaly.
-    present("C2", tex, "formatting artifact we can see")
+    # audit3 (par.13, tag A7) replaced this sentence with a rule-based taxonomy
+    # of the archived generations; the stronger wording is asserted here and the
+    # per-class counts are pinned in verify_audit3_edits.py.
+    present("C2", tex, "not a formatting or extraction artifact")
+    present("C2", tex, "Classifying the archived")
 
     # Stale-claim sweep: strings that described the superseded reading.
     for stale in ("$0.018$ & $89\\%$",
