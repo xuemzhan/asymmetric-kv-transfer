@@ -51,6 +51,18 @@ from phaseB_common import (
 )
 
 
+def _causal_extra_arms(test, eval_s, mapped_eval, rng):
+    """Wrong-document teacher KV, moment-matched random KV, and zero KV."""
+    from phaseB_controls import wrong_doc_partner, rand_like_from_stats
+    wrong_idx = wrong_doc_partner(test, rng)
+    wrong = [KV(k=mapped_eval[wrong_idx[i]].k, v=mapped_eval[wrong_idx[i]].v)
+             for i in range(len(test))]
+    rand = [rand_like_from_stats(eval_s[i], rng) for i in range(len(test))]
+    zero = [KV(k=np.zeros_like(eval_s[i].k), v=np.zeros_like(eval_s[i].v))
+            for i in range(len(test))]
+    return {"WrongJoint": wrong, "RandKV": rand, "ZeroKV": zero}
+
+
 class AdaptedLinear(nn.Module):
     """base is frozen; adds a zero-initialised low-rank correction."""
 
@@ -120,7 +132,9 @@ def train_adapter(model, tok, samples, doc_states, epochs, lr, seed, adapters,
         print(f"  [{tag}] epoch {ep+1}/{epochs} loss={tot/n:.3f}", flush=True)
 
 
-def eval_arms(model, tok, eval_s, mapped, samples):
+def eval_arms(model, tok, eval_s, mapped, samples, extra_arms=None):
+    """extra_arms: {name: list[KV]} evaluated alongside the four standard arms."""
+    extra_arms = extra_arms or {}
     rows = []
     for i, s in enumerate(samples):
         row = {"id": s["id"]}
@@ -130,6 +144,8 @@ def eval_arms(model, tok, eval_s, mapped, samples):
             "V-only": KV(k=eval_s[i].k, v=mapped[i].v),
             "Joint": KV(k=mapped[i].k, v=mapped[i].v),
         }
+        for name, kvs in extra_arms.items():
+            arms[name] = kvs[i]
         for name, kv in arms.items():
             ll, em = score_arm(model, tok, kv, s)
             row[name] = ll
@@ -140,7 +156,8 @@ def eval_arms(model, tok, eval_s, mapped, samples):
 
 def summarize(rows, tag):
     out = {}
-    for name in ["Self", "K-only", "V-only", "Joint"]:
+    names = [k for k in rows[0] if k != "id" and not k.endswith("_em")]
+    for name in names:
         out[name] = {
             "EM": float(np.mean([r[name + "_em"] for r in rows])),
             "LL": float(np.mean([r[name] for r in rows])),
@@ -150,7 +167,8 @@ def summarize(rows, tag):
     return out
 
 
-def run(pair, seed, rank, epochs, lr, n_calib, n_eval, output, targets):
+def run(pair, seed, rank, epochs, lr, n_calib, n_eval, output, targets,
+        causal=False, conditions=("joint", "self", "shuffled")):
     torch.manual_seed(seed)
     np.random.seed(seed)
     train = load_data(seed, "train")[:n_calib]
@@ -193,14 +211,26 @@ def run(pair, seed, rank, epochs, lr, n_calib, n_eval, output, targets):
     base_rows = eval_arms(student, tok_s, eval_s, mapped_eval, test)
     results["no_adapter"] = summarize(base_rows, "no-adapter")
 
-    for kind, tag in [("Joint", "adapter(joint)"),
-                      ("Self", "adapter(self)"),
-                      ("ShuffledJoint", "adapter(shuffled)")]:
+    causal_extra = None
+    if causal:
+        rng = np.random.RandomState(seed + 999)
+        causal_extra = _causal_extra_arms(test, eval_s, mapped_eval, rng)
+
+    all_conditions = [("Joint", "adapter(joint)", "joint"),
+                      ("Self", "adapter(self)", "self"),
+                      ("ShuffledJoint", "adapter(shuffled)", "shuffled")]
+    for kind, tag, cname in all_conditions:
+        if cname not in conditions:
+            continue
         adapters = install_adapters(student, rank, targets)
         train_adapter(student, tok_s, train, states_for(kind), epochs, lr, seed,
                       adapters, tag=tag)
-        rows = eval_arms(student, tok_s, eval_s, mapped_eval, test)
+        extra = causal_extra if (causal and kind == "Joint") else None
+        rows = eval_arms(student, tok_s, eval_s, mapped_eval, test,
+                         extra_arms=extra)
         results[tag] = summarize(rows, tag)
+        if extra is not None:
+            results["causal"] = summarize(rows, "causal(joint)")
         remove_adapters(student, targets)
 
     report = {"task": "phaseB_adapter", "pair": pair, "seed": seed,
@@ -222,12 +252,18 @@ def main():
     ap.add_argument("--n-eval", type=int, default=56)
     ap.add_argument("--targets", default="o_proj",
                     help="comma-separated modules: q_proj,k_proj,v_proj,o_proj")
+    ap.add_argument("--causal", action="store_true",
+                    help="also evaluate the fixed adapter on wrong/random/zero KV")
+    ap.add_argument("--conditions", default="joint,self,shuffled",
+                    help="which adapter training conditions to run")
     ap.add_argument("--output", default="")
     a = ap.parse_args()
     targets = tuple(t.strip() for t in a.targets.split(",") if t.strip())
     tag = "_".join(targets)
     out = a.output or f"/workspace/v3/reports/phaseB_adapter_{a.pair}_{tag}_seed{a.seed}.json"
-    run(a.pair, a.seed, a.rank, a.epochs, a.lr, a.n_calib, a.n_eval, out, targets)
+    conds = tuple(c.strip() for c in a.conditions.split(",") if c.strip())
+    run(a.pair, a.seed, a.rank, a.epochs, a.lr, a.n_calib, a.n_eval, out, targets,
+        causal=a.causal, conditions=conds)
 
 
 if __name__ == "__main__":

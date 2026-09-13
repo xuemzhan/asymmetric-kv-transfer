@@ -331,14 +331,21 @@ def greedy_answer_fixed(model, tok, cache, query: str, max_new: int = 16) -> str
     return tok.decode(gen, skip_special_tokens=True)
 
 
-def score_arm(student, tok_s, kv: KV, sample: dict, want_em: bool = True):
-    """Fresh cache for LL and for generation; corrected greedy."""
+def score_arm(student, tok_s, kv: KV, sample: dict, want_em: bool = True,
+              return_gen: bool = False):
+    """Fresh cache for LL and for generation; corrected greedy.
+
+    If return_gen, returns (ll, em, gen) with the generated text (I-4).
+    """
     q = query_of(sample)
     ll = answer_loglik(student, tok_s, build_cache(kv), q, sample["answer"])
     em = None
-    if want_em:
+    gen = None
+    if want_em or return_gen:
         gen = greedy_answer_fixed(student, tok_s, build_cache(kv), q)
         em = exact_match(gen, sample["answer"])
+    if return_gen:
+        return ll, em, gen
     return ll, em
 
 
@@ -383,6 +390,13 @@ def summarize_rows(rows: list, keys: list, base: str, seed: int,
             "EM": float(np.mean([r[key + "_em"] for r in rows]))
             if (key + "_em") in rows[0] else None,
         }
+        if (key + "_em") in rows[0]:
+            ems = np.array([float(r[key + "_em"]) for r in rows])
+            emean, elo, ehi = bootstrap_ci95(ems, seed=seed)
+            entry["EM_ci95"] = [float(elo), float(ehi)]
+            if groups is not None:
+                cm2, clo2, chi2 = bootstrap_ci95_clustered(ems, groups, seed=seed)
+                entry["EM_ci95_clustered"] = [float(clo2), float(chi2)]
         if groups is not None:
             cm, clo, chi = bootstrap_ci95_clustered(xs, groups, seed=seed)
             dm, dlo2, dhi2 = bootstrap_ci95_clustered(xs - base_lls, groups, seed=seed)

@@ -1,0 +1,438 @@
+{
+  "task": "phaseB_squad_corrected",
+  "pair": "8B_0.6B",
+  "seed": 0,
+  "v_mapper": "affine",
+  "adapter": true,
+  "calib_domain": "OOD(train_v2)",
+  "eval_domain": "SQuAD",
+  "n_calib": 70,
+  "n_eval": 30,
+  "self_EM": 0.6,
+  "summary": {
+    "K-only": {
+      "LL_mean": -10.845874390337201,
+      "LL_ci95": [
+        -11.957160865170616,
+        -9.701422124433138
+      ],
+      "delta_vs_self": 4.649505922501789,
+      "delta_ci95": [
+        3.581356818741117,
+        5.7490081602018135
+      ],
+      "wilcoxon_p": 1.862645149230957e-09,
+      "cohens_d": 1.4911974655601021,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "V-only": {
+      "LL_mean": -11.659769203170898,
+      "LL_ci95": [
+        -12.917140872565527,
+        -10.322786471642202
+      ],
+      "delta_vs_self": 3.835611109668093,
+      "delta_ci95": [
+        2.577644594096257,
+        5.125992597960773
+      ],
+      "wilcoxon_p": 1.1920928955078125e-06,
+      "cohens_d": 1.04430585154884,
+      "EM": 0.03333333333333333,
+      "EM_ci95": [
+        0.0,
+        0.1
+      ]
+    },
+    "Joint": {
+      "LL_mean": -12.07321046687308,
+      "LL_ci95": [
+        -13.42235875684165,
+        -10.636179640723599
+      ],
+      "delta_vs_self": 3.4221698459659122,
+      "delta_ci95": [
+        2.012578003274129,
+        4.848658812716147
+      ],
+      "wilcoxon_p": 0.00013739429414272308,
+      "cohens_d": 0.8376827775681595,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "novelty_probe_student": {
+    "n": 30,
+    "em": 0.06666666666666667,
+    "mean_ll": -11.518851954340937
+  },
+  "rows": [
+    {
+      "id": "squad_0_0",
+      "answer": "peer tuitions",
+      "Self": -25.103183110555012,
+      "Self_em": 1.0,
+      "K-only": -13.08579190572103,
+      "K-only_em": 0.0,
+      "V-only": -15.550934791564941,
+      "V-only_em": 0.0,
+      "Joint": -16.11107889811198,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_1",
+      "answer": "BBC 1",
+      "Self": -12.295838991800943,
+      "Self_em": 1.0,
+      "K-only": -8.683221737543741,
+      "K-only_em": 0.0,
+      "V-only": -9.288043022155762,
+      "V-only_em": 0.0,
+      "Joint": -7.91438086827596,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_2",
+      "answer": "\"Hymn for the Weekend\"",
+      "Self": -17.022255897521973,
+      "Self_em": 1.0,
+      "K-only": -12.930573395320348,
+      "K-only_em": 0.0,
+      "V-only": -10.341912269592285,
+      "V-only_em": 0.0,
+      "Joint": -10.875416891915458,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_3",
+      "answer": "ctenophores and cnidarians",
+      "Self": -21.33240783214569,
+      "Self_em": 0.0,
+      "K-only": -13.27611756324768,
+      "K-only_em": 0.0,
+      "V-only": -12.141167521476746,
+      "V-only_em": 0.0,
+      "Joint": -14.15990400314331,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_4",
+      "answer": "32.9%",
+      "Self": -13.674638938903808,
+      "Self_em": 1.0,
+      "K-only": -7.37363920211792,
+      "K-only_em": 0.0,
+      "V-only": -8.360115718841552,
+      "V-only_em": 0.0,
+      "Joint": -7.890767788887024,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_5",
+      "answer": "odd prime",
+      "Self": -12.262874126434326,
+      "Self_em": 1.0,
+      "K-only": -11.12141227722168,
+      "K-only_em": 0.0,
+      "V-only": -10.622223854064941,
+      "V-only_em": 0.0,
+      "Joint": -16.37712287902832,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_6",
+      "answer": "unfair",
+      "Self": -11.799060106277466,
+      "Self_em": 0.0,
+      "K-only": -9.74561095237732,
+      "K-only_em": 0.0,
+      "V-only": -12.349055767059326,
+      "V-only_em": 0.0,
+      "Joint": -11.994984149932861,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_7",
+      "answer": "a new entrance building",
+      "Self": -12.722330808639526,
+      "Self_em": 0.0,
+      "K-only": -11.235087394714355,
+      "K-only_em": 0.0,
+      "V-only": -10.59133791923523,
+      "V-only_em": 0.0,
+      "Joint": -12.54054570198059,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_8",
+      "answer": "A → G deamination",
+      "Self": -15.678984260559082,
+      "Self_em": 1.0,
+      "K-only": -8.81555004119873,
+      "K-only_em": 0.0,
+      "V-only": -15.099631118774415,
+      "V-only_em": 0.0,
+      "Joint": -15.885200309753419,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_9",
+      "answer": "blood–brain barrier, blood–cerebrospinal fluid barrier",
+      "Self": -18.085182258061,
+      "Self_em": 1.0,
+      "K-only": -10.830453940800258,
+      "K-only_em": 0.0,
+      "V-only": -13.966604369027275,
+      "V-only_em": 0.0,
+      "Joint": -15.347964763641357,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_10",
+      "answer": "Ted Heath",
+      "Self": -16.31766414642334,
+      "Self_em": 1.0,
+      "K-only": -15.472629070281982,
+      "K-only_em": 0.0,
+      "V-only": -17.005311012268066,
+      "V-only_em": 0.0,
+      "Joint": -16.572940826416016,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_11",
+      "answer": "Jurassic Period",
+      "Self": -16.620283126831055,
+      "Self_em": 1.0,
+      "K-only": -13.782926241556803,
+      "K-only_em": 0.0,
+      "V-only": -16.0724302927653,
+      "V-only_em": 0.0,
+      "Joint": -16.54513994852702,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_12",
+      "answer": "1534",
+      "Self": -10.72054409980774,
+      "Self_em": 1.0,
+      "K-only": -4.121149659156799,
+      "K-only_em": 0.0,
+      "V-only": -2.772292971611023,
+      "V-only_em": 0.0,
+      "Joint": -3.6006014943122864,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_13",
+      "answer": "analog and numerical experiments",
+      "Self": -13.696201133728028,
+      "Self_em": 1.0,
+      "K-only": -8.600759983062744,
+      "K-only_em": 0.0,
+      "V-only": -11.019497680664063,
+      "V-only_em": 0.0,
+      "Joint": -11.440658283233642,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_14",
+      "answer": "impediments and difficulties",
+      "Self": -19.202842903137206,
+      "Self_em": 1.0,
+      "K-only": -11.187684440612793,
+      "K-only_em": 0.0,
+      "V-only": -12.863348007202148,
+      "V-only_em": 0.0,
+      "Joint": -11.43759889602661,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_15",
+      "answer": "seclude himself",
+      "Self": -15.545882860819498,
+      "Self_em": 0.0,
+      "K-only": -10.152698198954264,
+      "K-only_em": 0.0,
+      "V-only": -11.352351506551107,
+      "V-only_em": 0.0,
+      "Joint": -11.444042841593424,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_16",
+      "answer": "1970s",
+      "Self": -5.257703219447285,
+      "Self_em": 0.0,
+      "K-only": -5.2200196266174315,
+      "K-only_em": 0.0,
+      "V-only": -4.076142096519471,
+      "V-only_em": 0.0,
+      "Joint": -4.1125678539276125,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_17",
+      "answer": "aggressiveness",
+      "Self": -21.343867619832356,
+      "Self_em": 0.0,
+      "K-only": -12.731666882832846,
+      "K-only_em": 0.0,
+      "V-only": -12.878628094991049,
+      "V-only_em": 0.0,
+      "Joint": -13.241227467854818,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_18",
+      "answer": "holds Luther accountable",
+      "Self": -16.16620381673177,
+      "Self_em": 0.0,
+      "K-only": -13.957785606384277,
+      "K-only_em": 0.0,
+      "V-only": -15.244423230489096,
+      "V-only_em": 0.0,
+      "Joint": -16.312135060628254,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_19",
+      "answer": "178",
+      "Self": -10.102026303609213,
+      "Self_em": 1.0,
+      "K-only": -4.631955782572429,
+      "K-only_em": 0.0,
+      "V-only": -3.918131152788798,
+      "V-only_em": 1.0,
+      "Joint": -3.5799893538157144,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_20",
+      "answer": "problem instance",
+      "Self": -14.344832420349121,
+      "Self_em": 0.0,
+      "K-only": -9.118325233459473,
+      "K-only_em": 0.0,
+      "V-only": -13.007148742675781,
+      "V-only_em": 0.0,
+      "Joint": -11.606019496917725,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_21",
+      "answer": "Tomingaj",
+      "Self": -27.39195378621419,
+      "Self_em": 1.0,
+      "K-only": -18.0011781056722,
+      "K-only_em": 0.0,
+      "V-only": -14.393942515055338,
+      "V-only_em": 0.0,
+      "Joint": -12.48546282450358,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_22",
+      "answer": "Selznick library",
+      "Self": -23.02559232711792,
+      "Self_em": 1.0,
+      "K-only": -14.463854312896729,
+      "K-only_em": 0.0,
+      "V-only": -15.079471826553345,
+      "V-only_em": 0.0,
+      "Joint": -16.795116424560547,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_23",
+      "answer": "they have two cell membranes",
+      "Self": -13.234391021728516,
+      "Self_em": 0.0,
+      "K-only": -11.342673873901367,
+      "K-only_em": 0.0,
+      "V-only": -10.575666427612305,
+      "V-only_em": 0.0,
+      "Joint": -12.721602439880371,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_24",
+      "answer": "parabolic",
+      "Self": -13.56083059310913,
+      "Self_em": 1.0,
+      "K-only": -12.583852291107178,
+      "K-only_em": 0.0,
+      "V-only": -14.003416538238525,
+      "V-only_em": 0.0,
+      "Joint": -14.353582859039307,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_25",
+      "answer": "rules",
+      "Self": -14.097037315368652,
+      "Self_em": 0.0,
+      "K-only": -13.760956764221191,
+      "K-only_em": 0.0,
+      "V-only": -12.169136047363281,
+      "V-only_em": 0.0,
+      "Joint": -11.61149787902832,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_26",
+      "answer": "healthcare professionals",
+      "Self": -14.443085670471191,
+      "Self_em": 1.0,
+      "K-only": -8.053874969482422,
+      "K-only_em": 0.0,
+      "V-only": -12.842939058939615,
+      "V-only_em": 0.0,
+      "Joint": -12.529314676920572,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_27",
+      "answer": "producers of the show",
+      "Self": -13.552903366088866,
+      "Self_em": 0.0,
+      "K-only": -10.281725788116455,
+      "K-only_em": 0.0,
+      "V-only": -9.388346862792968,
+      "V-only_em": 0.0,
+      "Joint": -9.496202945709229,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_28",
+      "answer": "October 12, 1943",
+      "Self": -13.459521579742432,
+      "Self_em": 1.0,
+      "K-only": -9.35955810546875,
+      "K-only_em": 0.0,
+      "V-only": -7.358567333221435,
+      "V-only_em": 0.0,
+      "Joint": -7.181306672096253,
+      "Joint_em": 0.0
+    },
+    {
+      "id": "squad_0_29",
+      "answer": "rapid combustion",
+      "Self": -12.801285743713379,
+      "Self_em": 0.0,
+      "K-only": -11.453498363494873,
+      "K-only_em": 0.0,
+      "V-only": -15.460858345031738,
+      "V-only_em": 0.0,
+      "Joint": -16.03193950653076,
+      "Joint_em": 0.0
+    }
+  ]
+}

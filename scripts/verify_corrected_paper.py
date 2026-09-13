@@ -69,7 +69,7 @@ check("adapter 8B self-control Joint ~0.107", abs(a8["adapter(self)"]["Joint"]["
 
 # --- tex content -----------------------------------------------------------
 required = ["corrected greedy exact match", "consumption adapter", "0.94/0.94/0.83",
-            "0.79/0.36/0.47", "$W_O$-aware", "top-1 key agreement",
+            "0.79/0.36/0.47", "$W_O$-aware", "top-1 attention agreement",
             "wrong document", "+2.62", "0.94"]
 for r in required:
     check(f"main.tex contains {r!r}", r in TEX)

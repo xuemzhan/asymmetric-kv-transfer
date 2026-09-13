@@ -836,3 +836,25 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
     learned 选择降低且不稳定；所有 map/seed 修正 V EM ≤0.11。
   - 论文相应段落已更新并重新编译；`verify_corrected_paper.py` ALL PASS。
 - **结论**：B1/B2/B3/B4、outaware、adapter、SQuAD 全部 3 seeds（B1 两对均 3 seeds）。
+
+## W20 (2026-09-13): REVISION_PLAN2 GPU 实验
+
+- **触发**：audit2 的 GPU 侧补充实验（`paper/audit/REVISION_PLAN2.md` PART I）。
+- **代码改动**：`phaseB_evalcheck.py`（新）、`phaseB_selfdiag.py`（新）；
+  `phaseB_common.score_arm` 支持返回生成文本、`summarize_rows` 增加 EM 聚类 bootstrap；
+  `phaseB_adapter` 增加 `eval_arms(extra_arms)` / `--causal` / `--conditions`；
+  `phaseB_alignment` 增加 `--mapper outaware`；`phaseB_squad` 增加 `--v-mapper outaware` / `--adapter`。
+- **结果**（全部落 `reports/`）：
+  - **B1 evaluator 验证**（3 students × 56）：归一化 EM 一致率 0.964/0.929/0.982（0.6B/1.7B/4B），
+    token 一致率 0.79/0.80/0.93，首 token logits 最大误差 ≤1.34（bf16 cache-vs-recompute）→ 前提成立（非 bit-exact）。
+  - **B4**：真正的破坏性 control `Shuf_K`/`Shuf_V` EM 全 0（旧 `Shuf_KV` 置换不变，作废）。
+  - **B3**：8B adapted Self = 0.964/0.964/0.893（均值 0.940），K=0.792 的参照系应改为此。
+  - **B2 adapter 内容因果（1.7B）**：correct Joint 0.625 vs wrong 0.000 / random 0.018 / zero 0.000 → 内容特异；8B 较弱（0.304 vs 0.14–0.16）。
+  - **C1 repaired-regime layer scrambling（1.7B）**：OutAware 下 proportional V EM 0.91 → offset 0.21/0.23、permuted 0.11 → **推翻"layer alignment 不重要"**（此前是 affine floor effect）。
+  - **C2**：raw EM == normalized EM（0.6B 0.911 / 1.7B 0.429 / 4B 0.804），1.7B F1 最低 → Self 非单调是真实能力差异，非格式假象。
+  - **C3**：六对主表补 document-clustered EM CI95；仅 8B→4B V-only 聚类 CI 排除 0（[0.375,0.482]，仍 < Self 0.804）。
+  - **C4**：synthetic 训练的 OutAware/adapter 直接在 SQuAD 上 EM 仍 0.000/0.033 → 修复是 task-distribution-specific。
+- **论文**：`main.tex` 与 `METRIC_CORRECTION.md` 需据 C1/B1/B2/B4 更新（见 METRIC_CORRECTION §7）；
+  `scripts/verify_corrected_paper.py` 已对齐 audit2 后的字符串，ALL PASS。
+- **环境**：另一 session 的 `apcs inject-eval` 长时间占用 GPU/CPU，运行极慢；对 numpy/BLAS 限线程
+  （`OMP_NUM_THREADS=8`）后完成；8B 早期一次 OOM 已重跑。

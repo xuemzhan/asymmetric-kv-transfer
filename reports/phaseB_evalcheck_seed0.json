@@ -1,0 +1,1723 @@
+{
+  "task": "phaseB_evalcheck",
+  "seed": 0,
+  "n_eval": 56,
+  "students": [
+    {
+      "student": "0.6B",
+      "n": 56,
+      "token_agreement": 0.7857142857142857,
+      "normalized_em_agreement": 0.9642857142857143,
+      "first_logits_max_abs_err_mean": 0.5952366420200893,
+      "first_logits_max_abs_err_max": 1.34375,
+      "self_em_injected": 0.9107142857142857,
+      "self_em_full": 0.875,
+      "rows": [
+        {
+          "id": "3c2f92eb8f92",
+          "answer": "126",
+          "agree_tokens": true,
+          "gen_injected": " 126\n\nSo, the answer is 126 million.\n",
+          "gen_full": " 126\n\nSo, the answer is 126 million.\n",
+          "first_logits_max_abs_err": 0.578125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "fe9478714ed9",
+          "answer": "Comp-S-001",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-001\n\nSo, the answer is Comp-S-0",
+          "gen_full": " Comp-S-001\n\nSo, the answer is Comp-S-0",
+          "first_logits_max_abs_err": 0.4375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "b11b08ffacd3",
+          "answer": "Plant-S-001",
+          "agree_tokens": false,
+          "gen_injected": " \\boxed{Plant-S-001}\n\nBased on the information provided,",
+          "gen_full": " \\boxed{Plant-S-001}\n\nBased on the information given,",
+          "first_logits_max_abs_err": 0.6875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "f1b198499ed1",
+          "answer": "Mat-S-001",
+          "agree_tokens": true,
+          "gen_injected": " Mat-S-001\n\nAnswer:\nMat-S-001\n\n",
+          "gen_full": " Mat-S-001\n\nAnswer:\nMat-S-001\n\n",
+          "first_logits_max_abs_err": 0.65625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "2eb09ff8e359",
+          "answer": "Test-S-001",
+          "agree_tokens": true,
+          "gen_injected": " A. Test-S-001\nB. Test-S-00",
+          "gen_full": " A. Test-S-001\nB. Test-S-00",
+          "first_logits_max_abs_err": 0.609375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "32985e1adb53",
+          "answer": "702",
+          "agree_tokens": false,
+          "gen_injected": " 702 units per day\n\nSo, what is the answer?\nOptions",
+          "gen_full": " 702 units per day\n\nOkay, let's see. The question",
+          "first_logits_max_abs_err": 0.84375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "ba805a1594b1",
+          "answer": "no",
+          "agree_tokens": true,
+          "gen_injected": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "gen_full": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "first_logits_max_abs_err": 0.55078125,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "548c8ab72be9",
+          "answer": "161",
+          "agree_tokens": true,
+          "gen_injected": " 161\n\nSo, the answer is 161 million.\n",
+          "gen_full": " 161\n\nSo, the answer is 161 million.\n",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "823323a50a9a",
+          "answer": "Comp-S-003",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-003\n\nSo, the answer is Comp-S-0",
+          "gen_full": " Comp-S-003\n\nSo, the answer is Comp-S-0",
+          "first_logits_max_abs_err": 0.4375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "3fec9fdf96f6",
+          "answer": "Plant-S-003",
+          "agree_tokens": false,
+          "gen_injected": " Plant-S-003\n\nSo, the answer is Plant-S-0",
+          "gen_full": " ___________ (put your answer in the box)\n\nOptions: A. Plant",
+          "first_logits_max_abs_err": 0.9140625,
+          "em_injected": true,
+          "em_full": false
+        },
+        {
+          "id": "57623d511876",
+          "answer": "Mat-S-003",
+          "agree_tokens": true,
+          "gen_injected": " Mat-S-003\n\nAnswer:\nMat-S-003\n\n",
+          "gen_full": " Mat-S-003\n\nAnswer:\nMat-S-003\n\n",
+          "first_logits_max_abs_err": 0.390625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "4335b8b204e0",
+          "answer": "Test-S-003",
+          "agree_tokens": true,
+          "gen_injected": " A. Test-S-003\nB. Test-S-00",
+          "gen_full": " A. Test-S-003\nB. Test-S-00",
+          "first_logits_max_abs_err": 0.453125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "75a5ae4b1687",
+          "answer": "335",
+          "agree_tokens": true,
+          "gen_injected": " 335 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "gen_full": " 335 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "first_logits_max_abs_err": 0.609375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "c09e8df91055",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "gen_full": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "e9edcd066d56",
+          "answer": "364",
+          "agree_tokens": false,
+          "gen_injected": " 364\n\nSo, the answer is 364 million.\n",
+          "gen_full": " 364\n\nNow, the project has a budget of 36",
+          "first_logits_max_abs_err": 0.6484375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "a0025c1cdff6",
+          "answer": "Comp-S-005",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-005\n\nSo, the answer is Comp-S-0",
+          "gen_full": " Comp-S-005\n\nSo, the answer is Comp-S-0",
+          "first_logits_max_abs_err": 0.578125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "158de9e2b74b",
+          "answer": "Plant-S-005",
+          "agree_tokens": false,
+          "gen_injected": " Plant-S-005\n\nSo, the answer is Plant-S-0",
+          "gen_full": " Plant-S-005\n\nSo, what is the answer?\nThe answer",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "96554a6b5a80",
+          "answer": "Mat-S-005",
+          "agree_tokens": true,
+          "gen_injected": " Mat-S-005\n\nAnswer:\nMat-S-005\n\n",
+          "gen_full": " Mat-S-005\n\nAnswer:\nMat-S-005\n\n",
+          "first_logits_max_abs_err": 0.515625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "979630c2850f",
+          "answer": "Test-S-005",
+          "agree_tokens": true,
+          "gen_injected": " A. Test-S-005\nB. Test-S-00",
+          "gen_full": " A. Test-S-005\nB. Test-S-00",
+          "first_logits_max_abs_err": 1.34375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "3feaefbfd1ab",
+          "answer": "325",
+          "agree_tokens": true,
+          "gen_injected": " 325 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "gen_full": " 325 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "first_logits_max_abs_err": 0.46875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "eaa1f0224fdc",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "gen_full": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "first_logits_max_abs_err": 0.4384765625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "e8f5e625219f",
+          "answer": "246",
+          "agree_tokens": true,
+          "gen_injected": " 246\n\nSo, the answer is 246 million.\n",
+          "gen_full": " 246\n\nSo, the answer is 246 million.\n",
+          "first_logits_max_abs_err": 0.65625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "b35a84f029fd",
+          "answer": "Comp-S-007",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-007\n\nSo, the answer is Comp-S-0",
+          "gen_full": " Comp-S-007\n\nSo, the answer is Comp-S-0",
+          "first_logits_max_abs_err": 0.59375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "934a613a3d17",
+          "answer": "Plant-S-007",
+          "agree_tokens": false,
+          "gen_injected": " ___________ (Select from: Plant-S-007, Plant-S",
+          "gen_full": " Plant-S-007\n\nSo, the answer is Plant-S-0",
+          "first_logits_max_abs_err": 0.65625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "04820cdea0a1",
+          "answer": "Mat-S-007",
+          "agree_tokens": true,
+          "gen_injected": " Mat-S-007\n\nAnswer:\nMat-S-007\n\n",
+          "gen_full": " Mat-S-007\n\nAnswer:\nMat-S-007\n\n",
+          "first_logits_max_abs_err": 0.46875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "dea3775f3356",
+          "answer": "Test-S-007",
+          "agree_tokens": true,
+          "gen_injected": " A. Test-S-007\nB. Test-S-00",
+          "gen_full": " A. Test-S-007\nB. Test-S-00",
+          "first_logits_max_abs_err": 0.78125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "959dcd752adc",
+          "answer": "172",
+          "agree_tokens": false,
+          "gen_injected": " 172 units per day\n\nOptions: A) 172",
+          "gen_full": " 172 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "first_logits_max_abs_err": 0.59765625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "5d2ac9c327ce",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "gen_full": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "d9db7137df45",
+          "answer": "353",
+          "agree_tokens": true,
+          "gen_injected": " 353\n\nSo, the answer is 353 million.\n",
+          "gen_full": " 353\n\nSo, the answer is 353 million.\n",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "36d089b69d0f",
+          "answer": "Comp-S-009",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-009\n\nSo, the answer is Comp-S-0",
+          "gen_full": " Comp-S-009\n\nSo, the answer is Comp-S-0",
+          "first_logits_max_abs_err": 0.46875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "8308197f9302",
+          "answer": "Plant-S-009",
+          "agree_tokens": true,
+          "gen_injected": " ___________ (put your answer in the box)\n\nOptions: A. Plant",
+          "gen_full": " ___________ (put your answer in the box)\n\nOptions: A. Plant",
+          "first_logits_max_abs_err": 0.40625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "006820e47622",
+          "answer": "Mat-S-009",
+          "agree_tokens": true,
+          "gen_injected": " Mat-S-009\n\nAnswer:\nMat-S-009\n\n",
+          "gen_full": " Mat-S-009\n\nAnswer:\nMat-S-009\n\n",
+          "first_logits_max_abs_err": 0.543212890625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "8394d8690999",
+          "answer": "Test-S-009",
+          "agree_tokens": true,
+          "gen_injected": " A. Test-S-009\nB. Test-S-01",
+          "gen_full": " A. Test-S-009\nB. Test-S-01",
+          "first_logits_max_abs_err": 0.78125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "296467b595f4",
+          "answer": "746",
+          "agree_tokens": true,
+          "gen_injected": " 746 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "gen_full": " 746 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "first_logits_max_abs_err": 0.4765625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "8e7dcbc0ab25",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "gen_full": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "first_logits_max_abs_err": 0.53125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "68723893f56d",
+          "answer": "255",
+          "agree_tokens": true,
+          "gen_injected": " 255\n\nSo, the answer is 255 million.\n",
+          "gen_full": " 255\n\nSo, the answer is 255 million.\n",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "ebcbe428d4cf",
+          "answer": "Comp-S-011",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-011\n\nSo, the answer is Comp-S-0",
+          "gen_full": " Comp-S-011\n\nSo, the answer is Comp-S-0",
+          "first_logits_max_abs_err": 0.34765625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "7fc78fb0ccb3",
+          "answer": "Plant-S-011",
+          "agree_tokens": true,
+          "gen_injected": " ___________ (put your answer in the box)\n\nOptions: Plant-S-",
+          "gen_full": " ___________ (put your answer in the box)\n\nOptions: Plant-S-",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "479c46653596",
+          "answer": "Mat-S-011",
+          "agree_tokens": true,
+          "gen_injected": " A. Mat-S-011\nB. Mat-S-01",
+          "gen_full": " A. Mat-S-011\nB. Mat-S-01",
+          "first_logits_max_abs_err": 0.53125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "b793b8b7476e",
+          "answer": "Test-S-011",
+          "agree_tokens": false,
+          "gen_injected": " A. Test-S-011\nB. Test-S-01",
+          "gen_full": " A. Test-S-011\nAnswer: B. Test-S-",
+          "first_logits_max_abs_err": 0.4296875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "2ea4d8558fb5",
+          "answer": "334",
+          "agree_tokens": false,
+          "gen_injected": " 334 units per day\n\nSo, what is the answer?\nOptions",
+          "gen_full": " 334 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "f4a6a7b94a0a",
+          "answer": "no",
+          "agree_tokens": true,
+          "gen_injected": " Yes\n\nBased on the information provided, what is the range of Proj-P-",
+          "gen_full": " Yes\n\nBased on the information provided, what is the range of Proj-P-",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "6a2e2784b4bf",
+          "answer": "553",
+          "agree_tokens": true,
+          "gen_injected": " 553\n\nSo, the answer is 553 million.\n",
+          "gen_full": " 553\n\nSo, the answer is 553 million.\n",
+          "first_logits_max_abs_err": 0.875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "7f4643fbe110",
+          "answer": "Comp-S-013",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-013\n\nSo, the answer is Comp-S-0",
+          "gen_full": " Comp-S-013\n\nSo, the answer is Comp-S-0",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "73abdb491473",
+          "answer": "Plant-S-013",
+          "agree_tokens": true,
+          "gen_injected": " ___________ (put your answer in the box)\n\nOptions: Plant-S-",
+          "gen_full": " ___________ (put your answer in the box)\n\nOptions: Plant-S-",
+          "first_logits_max_abs_err": 0.453125,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "8e0f86f19fd9",
+          "answer": "Mat-S-013",
+          "agree_tokens": false,
+          "gen_injected": " Mat-S-013\n\nSo, what is the answer?\nThe answer",
+          "gen_full": " A. Mat-S-013\nB. Mat-S-01",
+          "first_logits_max_abs_err": 0.96875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "317e0647d23b",
+          "answer": "Test-S-013",
+          "agree_tokens": true,
+          "gen_injected": " A. Test-S-013\nB. Test-S-01",
+          "gen_full": " A. Test-S-013\nB. Test-S-01",
+          "first_logits_max_abs_err": 1.01953125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "e1134c22c1bd",
+          "answer": "132",
+          "agree_tokens": true,
+          "gen_injected": " 132 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "gen_full": " 132 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "447cc0a3d67a",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "gen_full": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "first_logits_max_abs_err": 0.59375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "1da5bf2b4ab0",
+          "answer": "784",
+          "agree_tokens": true,
+          "gen_injected": " 784\n\nSo, the answer is 784 million.\n",
+          "gen_full": " 784\n\nSo, the answer is 784 million.\n",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "2f7df6460cfb",
+          "answer": "Comp-S-015",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-015\n\nSo, the answer is Comp-S-0",
+          "gen_full": " Comp-S-015\n\nSo, the answer is Comp-S-0",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "9e0a32ee4f0d",
+          "answer": "Plant-S-015",
+          "agree_tokens": false,
+          "gen_injected": " A. Plant-S-015\nB. Plant-S-01",
+          "gen_full": " ___________ (put your answer in the box)\n\nOptions: Plant-S-",
+          "first_logits_max_abs_err": 0.6796875,
+          "em_injected": true,
+          "em_full": false
+        },
+        {
+          "id": "4305a73a2f59",
+          "answer": "Mat-S-015",
+          "agree_tokens": true,
+          "gen_injected": " Mat-S-015\n\nAnswer:\nMat-S-015\n\n",
+          "gen_full": " Mat-S-015\n\nAnswer:\nMat-S-015\n\n",
+          "first_logits_max_abs_err": 0.6953125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "54c65bb2e3d3",
+          "answer": "Test-S-015",
+          "agree_tokens": true,
+          "gen_injected": " A. Test-S-015\nB. Test-S-01",
+          "gen_full": " A. Test-S-015\nB. Test-S-01",
+          "first_logits_max_abs_err": 0.71875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "3a619ed537de",
+          "answer": "172",
+          "agree_tokens": false,
+          "gen_injected": " 172 units per day\n\nSo, what is the answer?\nOptions",
+          "gen_full": " 172 units per day\n\nSo, the answer is 17",
+          "first_logits_max_abs_err": 0.72265625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "0dd7ea58be53",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes\n\nBased on the information provided, what is the range of Proj-P-",
+          "gen_full": " Yes\n\nBased on the information provided, what is the range of Proj-P-",
+          "first_logits_max_abs_err": 0.55078125,
+          "em_injected": true,
+          "em_full": true
+        }
+      ]
+    },
+    {
+      "student": "1.7B",
+      "n": 56,
+      "token_agreement": 0.8035714285714286,
+      "normalized_em_agreement": 0.9285714285714286,
+      "first_logits_max_abs_err_mean": 0.45535714285714285,
+      "first_logits_max_abs_err_max": 0.875,
+      "self_em_injected": 0.42857142857142855,
+      "self_em_full": 0.39285714285714285,
+      "rows": [
+        {
+          "id": "3c2f92eb8f92",
+          "answer": "126",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-015 is 126 million.\n",
+          "gen_full": " The budget of Proj-P-015 is 126 million.\n",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "fe9478714ed9",
+          "answer": "Comp-S-001",
+          "agree_tokens": true,
+          "gen_injected": " The component used by Proj-P-015 is Comp-S-00",
+          "gen_full": " The component used by Proj-P-015 is Comp-S-00",
+          "first_logits_max_abs_err": 0.25,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "b11b08ffacd3",
+          "answer": "Plant-S-001",
+          "agree_tokens": true,
+          "gen_injected": " Plant-S-001\nThe answer is: Plant-S-00",
+          "gen_full": " Plant-S-001\nThe answer is: Plant-S-00",
+          "first_logits_max_abs_err": 0.328125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "f1b198499ed1",
+          "answer": "Mat-S-001",
+          "agree_tokens": false,
+          "gen_injected": " The component Comp-S-001 is made of the material Mat-S-",
+          "gen_full": " The component Comp-S-001 is made of material Mat-S-0",
+          "first_logits_max_abs_err": 0.3515625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "2eb09ff8e359",
+          "answer": "Test-S-001",
+          "agree_tokens": true,
+          "gen_injected": " Test-S-001\nThe answer is: Test-S-00",
+          "gen_full": " Test-S-001\nThe answer is: Test-S-00",
+          "first_logits_max_abs_err": 0.359375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "32985e1adb53",
+          "answer": "702",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of the plant that assembles Comp-S-001",
+          "gen_full": " The daily output rate of the plant that assembles Comp-S-001",
+          "first_logits_max_abs_err": 0.556640625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "ba805a1594b1",
+          "answer": "no",
+          "agree_tokens": true,
+          "gen_injected": " Yes, the range of Proj-P-015 is 138",
+          "gen_full": " Yes, the range of Proj-P-015 is 138",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "548c8ab72be9",
+          "answer": "161",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-016 is 161 million.\n",
+          "gen_full": " The budget of Proj-P-016 is 161 million.\n",
+          "first_logits_max_abs_err": 0.625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "823323a50a9a",
+          "answer": "Comp-S-003",
+          "agree_tokens": true,
+          "gen_injected": " The component used by Proj-P-016 is Comp-S-00",
+          "gen_full": " The component used by Proj-P-016 is Comp-S-00",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "3fec9fdf96f6",
+          "answer": "Plant-S-003",
+          "agree_tokens": false,
+          "gen_injected": " The component Comp-S-003 is assembled at Plant-S-00",
+          "gen_full": " The component Comp-S-003 is used by Proj-P-01",
+          "first_logits_max_abs_err": 0.3828125,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "57623d511876",
+          "answer": "Mat-S-003",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-003 is made of the material Mat-S-",
+          "gen_full": " The component Comp-S-003 is made of the material Mat-S-",
+          "first_logits_max_abs_err": 0.34375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "4335b8b204e0",
+          "answer": "Test-S-003",
+          "agree_tokens": true,
+          "gen_injected": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "gen_full": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "75a5ae4b1687",
+          "answer": "335",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of the plant that assembles Comp-S-003",
+          "gen_full": " The daily output rate of the plant that assembles Comp-S-003",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "c09e8df91055",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes, the range of Proj-P-016 is 175",
+          "gen_full": " Yes, the range of Proj-P-016 is 175",
+          "first_logits_max_abs_err": 0.4453125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "e9edcd066d56",
+          "answer": "364",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-017 is 364 million.\n\n",
+          "gen_full": " The budget of Proj-P-017 is 364 million.\n",
+          "first_logits_max_abs_err": 0.6875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "a0025c1cdff6",
+          "answer": "Comp-S-005",
+          "agree_tokens": true,
+          "gen_injected": " The component used by Proj-P-017 is Comp-S-00",
+          "gen_full": " The component used by Proj-P-017 is Comp-S-00",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "158de9e2b74b",
+          "answer": "Plant-S-005",
+          "agree_tokens": false,
+          "gen_injected": " Plant-S-005\n\nThe reasoning is that the component Comp-S-",
+          "gen_full": " Plant-S-005\n\nThe canteen serves rice and stew on",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "96554a6b5a80",
+          "answer": "Mat-S-005",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-005 is made of the material Mat-S-",
+          "gen_full": " The component Comp-S-005 is made of the material Mat-S-",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "979630c2850f",
+          "answer": "Test-S-005",
+          "agree_tokens": true,
+          "gen_injected": " Test-S-005\nThe answer is: Test-S-00",
+          "gen_full": " Test-S-005\nThe answer is: Test-S-00",
+          "first_logits_max_abs_err": 0.46875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "3feaefbfd1ab",
+          "answer": "325",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of the plant that assembles Comp-S-005",
+          "gen_full": " The daily output rate of the plant that assembles Comp-S-005",
+          "first_logits_max_abs_err": 0.39453125,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "eaa1f0224fdc",
+          "answer": "yes",
+          "agree_tokens": false,
+          "gen_injected": " Yes, the range of Proj-P-017 is 169",
+          "gen_full": " Yes\n\nThe reasoning is that the range of Proj-P-017 is",
+          "first_logits_max_abs_err": 0.609375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "e8f5e625219f",
+          "answer": "246",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-018 is 246 million.\n",
+          "gen_full": " The budget of Proj-P-018 is 246 million.\n",
+          "first_logits_max_abs_err": 0.546875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "b35a84f029fd",
+          "answer": "Comp-S-007",
+          "agree_tokens": true,
+          "gen_injected": " The component used by Proj-P-018 is Comp-S-00",
+          "gen_full": " The component used by Proj-P-018 is Comp-S-00",
+          "first_logits_max_abs_err": 0.28125,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "934a613a3d17",
+          "answer": "Plant-S-007",
+          "agree_tokens": false,
+          "gen_injected": " Plant-S-007\nThe answer is: Plant-S-00",
+          "gen_full": " The component Comp-S-007 is used by Proj-P-01",
+          "first_logits_max_abs_err": 0.39453125,
+          "em_injected": true,
+          "em_full": false
+        },
+        {
+          "id": "04820cdea0a1",
+          "answer": "Mat-S-007",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-007 is made of the material Mat-S-",
+          "gen_full": " The component Comp-S-007 is made of the material Mat-S-",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "dea3775f3356",
+          "answer": "Test-S-007",
+          "agree_tokens": false,
+          "gen_injected": " Test-S-007\nThe answer is: \\boxed{Test-S",
+          "gen_full": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "first_logits_max_abs_err": 0.6171875,
+          "em_injected": true,
+          "em_full": false
+        },
+        {
+          "id": "959dcd752adc",
+          "answer": "172",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of the plant that assembles Comp-S-007",
+          "gen_full": " The daily output rate of the plant that assembles Comp-S-007",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "5d2ac9c327ce",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes, the range of Proj-P-018 is 294",
+          "gen_full": " Yes, the range of Proj-P-018 is 294",
+          "first_logits_max_abs_err": 0.6875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "d9db7137df45",
+          "answer": "353",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-019 is 353 million.\n",
+          "gen_full": " The budget of Proj-P-019 is 353 million.\n",
+          "first_logits_max_abs_err": 0.515625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "36d089b69d0f",
+          "answer": "Comp-S-009",
+          "agree_tokens": true,
+          "gen_injected": " The component used by Proj-P-019 is Comp-S-01",
+          "gen_full": " The component used by Proj-P-019 is Comp-S-01",
+          "first_logits_max_abs_err": 0.3125,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "8308197f9302",
+          "answer": "Plant-S-009",
+          "agree_tokens": false,
+          "gen_injected": " Plant-S-009\nThe reasoning process is as follows: The question",
+          "gen_full": " The component Comp-S-009 is used by Proj-P-01",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": false
+        },
+        {
+          "id": "006820e47622",
+          "answer": "Mat-S-009",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-009 is made of the material Mat-S-",
+          "gen_full": " The component Comp-S-009 is made of the material Mat-S-",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "8394d8690999",
+          "answer": "Test-S-009",
+          "agree_tokens": true,
+          "gen_injected": " Test-S-009\nThe answer is: \\boxed{Test-S",
+          "gen_full": " Test-S-009\nThe answer is: \\boxed{Test-S",
+          "first_logits_max_abs_err": 0.359375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "296467b595f4",
+          "answer": "746",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of the plant that assembles Comp-S-009",
+          "gen_full": " The daily output rate of the plant that assembles Comp-S-009",
+          "first_logits_max_abs_err": 0.31640625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "8e7dcbc0ab25",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes, the range of Proj-P-019 is 280",
+          "gen_full": " Yes, the range of Proj-P-019 is 280",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "68723893f56d",
+          "answer": "255",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-020 is 255 million.\n",
+          "gen_full": " The budget of Proj-P-020 is 255 million.\n",
+          "first_logits_max_abs_err": 0.875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "ebcbe428d4cf",
+          "answer": "Comp-S-011",
+          "agree_tokens": true,
+          "gen_injected": " The component used by Proj-P-020 is Comp-S-01",
+          "gen_full": " The component used by Proj-P-020 is Comp-S-01",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "7fc78fb0ccb3",
+          "answer": "Plant-S-011",
+          "agree_tokens": true,
+          "gen_injected": " Plant-S-011\nThe answer is: Plant-S-01",
+          "gen_full": " Plant-S-011\nThe answer is: Plant-S-01",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "479c46653596",
+          "answer": "Mat-S-011",
+          "agree_tokens": false,
+          "gen_injected": " The component Comp-S-011 is made of the material Mat-S-",
+          "gen_full": " The component Comp-S-011 is made of material Mat-S-0",
+          "first_logits_max_abs_err": 0.40625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "b793b8b7476e",
+          "answer": "Test-S-011",
+          "agree_tokens": true,
+          "gen_injected": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "gen_full": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "2ea4d8558fb5",
+          "answer": "334",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of the plant that assembles Comp-S-011",
+          "gen_full": " The daily output rate of the plant that assembles Comp-S-011",
+          "first_logits_max_abs_err": 0.4375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "f4a6a7b94a0a",
+          "answer": "no",
+          "agree_tokens": true,
+          "gen_injected": " Yes, the range of Proj-P-020 is 869",
+          "gen_full": " Yes, the range of Proj-P-020 is 869",
+          "first_logits_max_abs_err": 0.765625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "6a2e2784b4bf",
+          "answer": "553",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-021 is 553 million.\n",
+          "gen_full": " The budget of Proj-P-021 is 553 million.\n",
+          "first_logits_max_abs_err": 0.625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "7f4643fbe110",
+          "answer": "Comp-S-013",
+          "agree_tokens": true,
+          "gen_injected": " The component used by Proj-P-021 is Comp-S-01",
+          "gen_full": " The component used by Proj-P-021 is Comp-S-01",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "73abdb491473",
+          "answer": "Plant-S-013",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-013 is used by Proj-P-02",
+          "gen_full": " The component Comp-S-013 is used by Proj-P-02",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "8e0f86f19fd9",
+          "answer": "Mat-S-013",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-013 is made of the material Mat-S-",
+          "gen_full": " The component Comp-S-013 is made of the material Mat-S-",
+          "first_logits_max_abs_err": 0.4375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "317e0647d23b",
+          "answer": "Test-S-013",
+          "agree_tokens": true,
+          "gen_injected": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "gen_full": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "first_logits_max_abs_err": 0.46875,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "e1134c22c1bd",
+          "answer": "132",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of the plant that assembles Comp-S-013",
+          "gen_full": " The daily output rate of the plant that assembles Comp-S-013",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "447cc0a3d67a",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes, the range of Proj-P-021 is 282",
+          "gen_full": " Yes, the range of Proj-P-021 is 282",
+          "first_logits_max_abs_err": 0.625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "1da5bf2b4ab0",
+          "answer": "784",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-022 is 784 million.\n",
+          "gen_full": " The budget of Proj-P-022 is 784 million.\n",
+          "first_logits_max_abs_err": 0.421875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "2f7df6460cfb",
+          "answer": "Comp-S-015",
+          "agree_tokens": true,
+          "gen_injected": " The component used by Proj-P-022 is Comp-S-01",
+          "gen_full": " The component used by Proj-P-022 is Comp-S-01",
+          "first_logits_max_abs_err": 0.337890625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "9e0a32ee4f0d",
+          "answer": "Plant-S-015",
+          "agree_tokens": false,
+          "gen_injected": " Plant-S-015\n\nThe reasoning is that the component Comp-S-",
+          "gen_full": " Plant-S-015\nThe component Comp-S-015 is",
+          "first_logits_max_abs_err": 0.4375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "4305a73a2f59",
+          "answer": "Mat-S-015",
+          "agree_tokens": false,
+          "gen_injected": " The component Comp-S-015 is made of material Mat-S-0",
+          "gen_full": " The component Comp-S-015 is made of the material Mat-S-",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "54c65bb2e3d3",
+          "answer": "Test-S-015",
+          "agree_tokens": false,
+          "gen_injected": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "gen_full": " Test-S-015\nThe answer is: \\boxed{Test-S",
+          "first_logits_max_abs_err": 0.390625,
+          "em_injected": false,
+          "em_full": true
+        },
+        {
+          "id": "3a619ed537de",
+          "answer": "172",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of the plant that assembles Comp-S-015",
+          "gen_full": " The daily output rate of the plant that assembles Comp-S-015",
+          "first_logits_max_abs_err": 0.34375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "0dd7ea58be53",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes, the range of Proj-P-022 is 152",
+          "gen_full": " Yes, the range of Proj-P-022 is 152",
+          "first_logits_max_abs_err": 0.53125,
+          "em_injected": true,
+          "em_full": true
+        }
+      ]
+    },
+    {
+      "student": "4B",
+      "n": 56,
+      "token_agreement": 0.9285714285714286,
+      "normalized_em_agreement": 0.9821428571428571,
+      "first_logits_max_abs_err_mean": 0.5696149553571429,
+      "first_logits_max_abs_err_max": 0.96875,
+      "self_em_injected": 0.8035714285714286,
+      "self_em_full": 0.7857142857142857,
+      "rows": [
+        {
+          "id": "3c2f92eb8f92",
+          "answer": "126",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-015 is 126 million.\n\n",
+          "gen_full": " The budget of Proj-P-015 is 126 million.\n\n",
+          "first_logits_max_abs_err": 0.7734375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "fe9478714ed9",
+          "answer": "Comp-S-001",
+          "agree_tokens": false,
+          "gen_injected": " Comp-S-001 and Comp-S-002\n\nQuestion:",
+          "gen_full": " The components used by Proj-P-015 are Comp-S-00",
+          "first_logits_max_abs_err": 0.53125,
+          "em_injected": true,
+          "em_full": false
+        },
+        {
+          "id": "b11b08ffacd3",
+          "answer": "Plant-S-001",
+          "agree_tokens": false,
+          "gen_injected": " Plant-S-001\nThe component Comp-S-001 is",
+          "gen_full": " Plant-S-001\n\nThe answer is correct. The question asks specifically",
+          "first_logits_max_abs_err": 0.625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "f1b198499ed1",
+          "answer": "Mat-S-001",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-001 is made of Mat-S-00",
+          "gen_full": " The component Comp-S-001 is made of Mat-S-00",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "2eb09ff8e359",
+          "answer": "Test-S-001",
+          "agree_tokens": true,
+          "gen_injected": " Test-S-001\n\nThe answer is correct. The project is Proj",
+          "gen_full": " Test-S-001\n\nThe answer is correct. The project is Proj",
+          "first_logits_max_abs_err": 0.625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "32985e1adb53",
+          "answer": "702",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of Plant-S-001 is 702",
+          "gen_full": " The daily output rate of Plant-S-001 is 702",
+          "first_logits_max_abs_err": 0.5703125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "ba805a1594b1",
+          "answer": "no",
+          "agree_tokens": true,
+          "gen_injected": " No, the range is 1385 km, which is less than",
+          "gen_full": " No, the range is 1385 km, which is less than",
+          "first_logits_max_abs_err": 0.578125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "548c8ab72be9",
+          "answer": "161",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-016 is 161 million.\n\n",
+          "gen_full": " The budget of Proj-P-016 is 161 million.\n\n",
+          "first_logits_max_abs_err": 0.96875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "823323a50a9a",
+          "answer": "Comp-S-003",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-003 and Comp-S-004\n\nThe question",
+          "gen_full": " Comp-S-003 and Comp-S-004\n\nThe question",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "3fec9fdf96f6",
+          "answer": "Plant-S-003",
+          "agree_tokens": true,
+          "gen_injected": " Plant-S-003\n\nThe answer is correct. The question asks specifically",
+          "gen_full": " Plant-S-003\n\nThe answer is correct. The question asks specifically",
+          "first_logits_max_abs_err": 0.65625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "57623d511876",
+          "answer": "Mat-S-003",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-003 is made of Mat-S-00",
+          "gen_full": " The component Comp-S-003 is made of Mat-S-00",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "4335b8b204e0",
+          "answer": "Test-S-003",
+          "agree_tokens": true,
+          "gen_injected": " Test-S-003\n\nThe answer is correct. The component Comp-S",
+          "gen_full": " Test-S-003\n\nThe answer is correct. The component Comp-S",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "75a5ae4b1687",
+          "answer": "335",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of Plant-S-003 is 335",
+          "gen_full": " The daily output rate of Plant-S-003 is 335",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "c09e8df91055",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes.\nThe range of Proj-P-016 is 175",
+          "gen_full": " Yes.\nThe range of Proj-P-016 is 175",
+          "first_logits_max_abs_err": 0.537109375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "e9edcd066d56",
+          "answer": "364",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-017 is 364 million.\n\n",
+          "gen_full": " The budget of Proj-P-017 is 364 million.\n\n",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "a0025c1cdff6",
+          "answer": "Comp-S-005",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-005 and Comp-S-006\n\nThe question",
+          "gen_full": " Comp-S-005 and Comp-S-006\n\nThe question",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "158de9e2b74b",
+          "answer": "Plant-S-005",
+          "agree_tokens": true,
+          "gen_injected": " Plant-S-005\n\nThe answer is correct. The question asks specifically",
+          "gen_full": " Plant-S-005\n\nThe answer is correct. The question asks specifically",
+          "first_logits_max_abs_err": 0.53125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "96554a6b5a80",
+          "answer": "Mat-S-005",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-005 is made of Mat-S-00",
+          "gen_full": " The component Comp-S-005 is made of Mat-S-00",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "979630c2850f",
+          "answer": "Test-S-005",
+          "agree_tokens": true,
+          "gen_injected": " Test-S-005\n\nThe answer is correct. The project status report",
+          "gen_full": " Test-S-005\n\nThe answer is correct. The project status report",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "3feaefbfd1ab",
+          "answer": "325",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of Plant-S-005, which assembles Comp",
+          "gen_full": " The daily output rate of Plant-S-005, which assembles Comp",
+          "first_logits_max_abs_err": 0.75,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "eaa1f0224fdc",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes.\nThe range of Proj-P-017 is 169",
+          "gen_full": " Yes.\nThe range of Proj-P-017 is 169",
+          "first_logits_max_abs_err": 0.5234375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "e8f5e625219f",
+          "answer": "246",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-018 is 246 million.\n\n",
+          "gen_full": " The budget of Proj-P-018 is 246 million.\n\n",
+          "first_logits_max_abs_err": 0.625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "b35a84f029fd",
+          "answer": "Comp-S-007",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-007 and Comp-S-008\n\nThe question",
+          "gen_full": " Comp-S-007 and Comp-S-008\n\nThe question",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "934a613a3d17",
+          "answer": "Plant-S-007",
+          "agree_tokens": true,
+          "gen_injected": " Plant-S-007\n\nThe answer is correct. The question asks specifically",
+          "gen_full": " Plant-S-007\n\nThe answer is correct. The question asks specifically",
+          "first_logits_max_abs_err": 0.53125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "04820cdea0a1",
+          "answer": "Mat-S-007",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-007 is made of Mat-S-00",
+          "gen_full": " The component Comp-S-007 is made of Mat-S-00",
+          "first_logits_max_abs_err": 0.53125,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "dea3775f3356",
+          "answer": "Test-S-007",
+          "agree_tokens": true,
+          "gen_injected": " Test-S-007\n\nThe answer is correct. The component Comp-S",
+          "gen_full": " Test-S-007\n\nThe answer is correct. The component Comp-S",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "959dcd752adc",
+          "answer": "172",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of Plant-S-007 is 172",
+          "gen_full": " The daily output rate of Plant-S-007 is 172",
+          "first_logits_max_abs_err": 0.8125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "5d2ac9c327ce",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes.\nThe range of Proj-P-018 is 294",
+          "gen_full": " Yes.\nThe range of Proj-P-018 is 294",
+          "first_logits_max_abs_err": 0.59375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "d9db7137df45",
+          "answer": "353",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-019 is 353 million.\n\n",
+          "gen_full": " The budget of Proj-P-019 is 353 million.\n\n",
+          "first_logits_max_abs_err": 0.7109375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "36d089b69d0f",
+          "answer": "Comp-S-009",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-009 and Comp-S-010\n\nThe question",
+          "gen_full": " Comp-S-009 and Comp-S-010\n\nThe question",
+          "first_logits_max_abs_err": 0.4375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "8308197f9302",
+          "answer": "Plant-S-009",
+          "agree_tokens": true,
+          "gen_injected": " Plant-S-009\n\nThe answer is correct. The question asks specifically",
+          "gen_full": " Plant-S-009\n\nThe answer is correct. The question asks specifically",
+          "first_logits_max_abs_err": 0.625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "006820e47622",
+          "answer": "Mat-S-009",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-009 is made of Mat-S-00",
+          "gen_full": " The component Comp-S-009 is made of Mat-S-00",
+          "first_logits_max_abs_err": 0.625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "8394d8690999",
+          "answer": "Test-S-009",
+          "agree_tokens": true,
+          "gen_injected": " Test-S-009\n\nThe answer is correct. The component Comp-S",
+          "gen_full": " Test-S-009\n\nThe answer is correct. The component Comp-S",
+          "first_logits_max_abs_err": 0.40625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "296467b595f4",
+          "answer": "746",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of Plant-S-009 is 746",
+          "gen_full": " The daily output rate of Plant-S-009 is 746",
+          "first_logits_max_abs_err": 0.53125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "8e7dcbc0ab25",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes.\nThe range of Proj-P-019 is 280",
+          "gen_full": " Yes.\nThe range of Proj-P-019 is 280",
+          "first_logits_max_abs_err": 0.6875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "68723893f56d",
+          "answer": "255",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-020 is 255 million.\n\n",
+          "gen_full": " The budget of Proj-P-020 is 255 million.\n\n",
+          "first_logits_max_abs_err": 0.625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "ebcbe428d4cf",
+          "answer": "Comp-S-011",
+          "agree_tokens": true,
+          "gen_injected": " The components used by Proj-P-020 are Comp-S-01",
+          "gen_full": " The components used by Proj-P-020 are Comp-S-01",
+          "first_logits_max_abs_err": 0.4375,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "7fc78fb0ccb3",
+          "answer": "Plant-S-011",
+          "agree_tokens": true,
+          "gen_injected": " Plant-S-011\n\nThe answer is correct. The question asks specifically",
+          "gen_full": " Plant-S-011\n\nThe answer is correct. The question asks specifically",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "479c46653596",
+          "answer": "Mat-S-011",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-011 is made of Mat-S-01",
+          "gen_full": " The component Comp-S-011 is made of Mat-S-01",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "b793b8b7476e",
+          "answer": "Test-S-011",
+          "agree_tokens": true,
+          "gen_injected": " Test-S-011\n\nThe answer is correct. The component Comp-S",
+          "gen_full": " Test-S-011\n\nThe answer is correct. The component Comp-S",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "2ea4d8558fb5",
+          "answer": "334",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of Plant-S-011, which assembles Component",
+          "gen_full": " The daily output rate of Plant-S-011, which assembles Component",
+          "first_logits_max_abs_err": 0.46875,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "f4a6a7b94a0a",
+          "answer": "no",
+          "agree_tokens": false,
+          "gen_injected": " No, the range is 869 km.\n\nThe answer is correct.",
+          "gen_full": " No, the range is 869 km.\n\nQuestion: What is the",
+          "first_logits_max_abs_err": 0.609375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "6a2e2784b4bf",
+          "answer": "553",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-021 is 553 million.\n\n",
+          "gen_full": " The budget of Proj-P-021 is 553 million.\n\n",
+          "first_logits_max_abs_err": 0.734375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "7f4643fbe110",
+          "answer": "Comp-S-013",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-013 and Comp-S-014\n\nThe question",
+          "gen_full": " Comp-S-013 and Comp-S-014\n\nThe question",
+          "first_logits_max_abs_err": 0.375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "73abdb491473",
+          "answer": "Plant-S-013",
+          "agree_tokens": true,
+          "gen_injected": " Plant-S-013\n\nThe answer is correct. The question asks specifically",
+          "gen_full": " Plant-S-013\n\nThe answer is correct. The question asks specifically",
+          "first_logits_max_abs_err": 0.462890625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "8e0f86f19fd9",
+          "answer": "Mat-S-013",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-013 is made of Mat-S-01",
+          "gen_full": " The component Comp-S-013 is made of Mat-S-01",
+          "first_logits_max_abs_err": 0.46875,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "317e0647d23b",
+          "answer": "Test-S-013",
+          "agree_tokens": true,
+          "gen_injected": " Test-S-013\n\nThe answer is correct. The component Comp-S",
+          "gen_full": " Test-S-013\n\nThe answer is correct. The component Comp-S",
+          "first_logits_max_abs_err": 0.5625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "e1134c22c1bd",
+          "answer": "132",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of Plant-S-013 is 132",
+          "gen_full": " The daily output rate of Plant-S-013 is 132",
+          "first_logits_max_abs_err": 0.9375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "447cc0a3d67a",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes.\nThe range of Proj-P-021 is 282",
+          "gen_full": " Yes.\nThe range of Proj-P-021 is 282",
+          "first_logits_max_abs_err": 0.5703125,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "1da5bf2b4ab0",
+          "answer": "784",
+          "agree_tokens": true,
+          "gen_injected": " The budget of Proj-P-022 is 784 million.\n\n",
+          "gen_full": " The budget of Proj-P-022 is 784 million.\n\n",
+          "first_logits_max_abs_err": 0.6875,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "2f7df6460cfb",
+          "answer": "Comp-S-015",
+          "agree_tokens": true,
+          "gen_injected": " Comp-S-015 and Comp-S-016\n\nThe question",
+          "gen_full": " Comp-S-015 and Comp-S-016\n\nThe question",
+          "first_logits_max_abs_err": 0.5,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "9e0a32ee4f0d",
+          "answer": "Plant-S-015",
+          "agree_tokens": true,
+          "gen_injected": " Plant-S-015\n\nThe answer is correct. The question asks specifically",
+          "gen_full": " Plant-S-015\n\nThe answer is correct. The question asks specifically",
+          "first_logits_max_abs_err": 0.84375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "4305a73a2f59",
+          "answer": "Mat-S-015",
+          "agree_tokens": true,
+          "gen_injected": " The component Comp-S-015 is made of Mat-S-01",
+          "gen_full": " The component Comp-S-015 is made of Mat-S-01",
+          "first_logits_max_abs_err": 0.390625,
+          "em_injected": false,
+          "em_full": false
+        },
+        {
+          "id": "54c65bb2e3d3",
+          "answer": "Test-S-015",
+          "agree_tokens": false,
+          "gen_injected": " Test-S-015\n\nThe answer is correct because the project's component",
+          "gen_full": " Test-S-015\n\nThe answer is correct. The component Comp-S",
+          "first_logits_max_abs_err": 0.4375,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "3a619ed537de",
+          "answer": "172",
+          "agree_tokens": true,
+          "gen_injected": " The daily output rate of Plant-S-015 is 172",
+          "gen_full": " The daily output rate of Plant-S-015 is 172",
+          "first_logits_max_abs_err": 0.765625,
+          "em_injected": true,
+          "em_full": true
+        },
+        {
+          "id": "0dd7ea58be53",
+          "answer": "yes",
+          "agree_tokens": true,
+          "gen_injected": " Yes.\n\nThe range of Proj-P-022 is 152",
+          "gen_full": " Yes.\nThe range of Proj-P-022 is 152",
+          "first_logits_max_abs_err": 0.546875,
+          "em_injected": true,
+          "em_full": true
+        }
+      ]
+    }
+  ]
+}

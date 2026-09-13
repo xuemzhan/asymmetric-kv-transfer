@@ -29,11 +29,15 @@ import time
 import numpy as np
 import torch
 
+from phaseB_mechanism import (apply_output_aware, fit_output_aware_mapper,
+                              get_attn_map)
 from phaseB_common import (
     PAIRS,
     KV,
+    build_cache,
     capture_pair_kv,
     capture_all,
+    de_rope_k,
     fit_mapper,
     layer_map_identity,
     layer_map_learned_topk,
@@ -45,6 +49,7 @@ from phaseB_common import (
     load_data,
     load_pair,
     map_teacher,
+    query_of,
     save,
     score_arm,
     stack_kv,
@@ -78,7 +83,8 @@ def alignment_score(lmap, t_layers: int, s_layers: int) -> float:
     return float(np.mean(v))
 
 
-def run(pair: str, seed: int, n_calib: int, n_eval: int, output: str) -> dict:
+def run(pair: str, seed: int, n_calib: int, n_eval: int, output: str,
+        mapper: str = "affine") -> dict:
     torch.manual_seed(seed)
     np.random.seed(seed)
 
@@ -100,16 +106,37 @@ def run(pair: str, seed: int, n_calib: int, n_eval: int, output: str) -> dict:
 
     maps = build_maps(pair, t_layers, s_layers, ct, cs, seed)
 
+    use_oa = (mapper == "outaware")
+    attn_calib = None
+    if use_oa:
+        print("[B1] calibration attention (outaware V mapper) ...", flush=True)
+        attn_calib = []
+        for i, s in enumerate(train):
+            n_doc = calib_s[i].k.shape[1]
+            attn_calib.append(get_attn_map(
+                student, tok_s,
+                build_cache(KV(k=calib_s[i].k, v=calib_s[i].v)), query_of(s), n_doc))
+
     results = {}
     for name, lmap in maps.items():
         mk = fit_mapper("K", ct, cs, lmap)
-        mv = fit_mapper("V", ct, cs, lmap)
+        if use_oa:
+            Woa, boa = fit_output_aware_mapper(calib_t, calib_s, attn_calib, lmap)
+        else:
+            mv = fit_mapper("V", ct, cs, lmap)
         rows = []
         for i, s in enumerate(test):
             row = {"id": s["id"], "hop": s["hop"], "answer": s["answer"]}
             row["Self"] = self_rows[i][0]
             row["Self_em"] = float(self_rows[i][1])
-            m = map_teacher(mk, mv, eval_t[i], lmap)
+            if use_oa:
+                km = mk.transform(eval_t[i].k, lmap, kv_kind="K",
+                                  positions=np.arange(eval_t[i].k.shape[1], dtype=np.float64),
+                                  de_rope_fn=de_rope_k)
+                m = KV(k=km.astype(np.float32),
+                       v=apply_output_aware(eval_t[i], lmap, Woa, boa).astype(np.float32))
+            else:
+                m = map_teacher(mk, mv, eval_t[i], lmap)
             ll_k, em_k = score_arm(student, tok_s, KV(k=m.k, v=eval_s[i].v), s)
             ll_v, em_v = score_arm(student, tok_s, KV(k=eval_s[i].k, v=m.v), s)
             ll_j, em_j = score_arm(student, tok_s, KV(k=m.k, v=m.v), s)
@@ -154,10 +181,11 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n-calib", type=int, default=70)
     ap.add_argument("--n-eval", type=int, default=56)
+    ap.add_argument("--mapper", default="affine", choices=["affine", "outaware"])
     ap.add_argument("--output", default="")
     a = ap.parse_args()
     out = a.output or f"/workspace/v3/reports/phaseB_alignment_{a.pair}_seed{a.seed}.json"
-    run(a.pair, a.seed, a.n_calib, a.n_eval, out)
+    run(a.pair, a.seed, a.n_calib, a.n_eval, out, mapper=a.mapper)
 
 
 if __name__ == "__main__":

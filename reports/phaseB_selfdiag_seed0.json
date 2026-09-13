@@ -1,0 +1,1554 @@
+{
+  "task": "phaseB_selfdiag",
+  "seed": 0,
+  "students": [
+    {
+      "student": "0.6B",
+      "n": 56,
+      "raw_em": 0.9107142857142857,
+      "norm_em": 0.9107142857142857,
+      "token_f1": 0.303726035868893,
+      "mean_gen_tokens": 7.107142857142857,
+      "raw_fail_norm_pass": 0,
+      "raw_fail_norm_fail": 5,
+      "rows": [
+        {
+          "id": "3c2f92eb8f92",
+          "answer": "126",
+          "gen": " 126\n\nSo, the answer is 126 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "fe9478714ed9",
+          "answer": "Comp-S-001",
+          "gen": " Comp-S-001\n\nSo, the answer is Comp-S-0",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.33333333333333337,
+          "gen_tokens": 6
+        },
+        {
+          "id": "b11b08ffacd3",
+          "answer": "Plant-S-001",
+          "gen": " \\boxed{Plant-S-001}\n\nBased on the information provided,",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.0,
+          "gen_tokens": 6
+        },
+        {
+          "id": "f1b198499ed1",
+          "answer": "Mat-S-001",
+          "gen": " Mat-S-001\n\nAnswer:\nMat-S-001\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 3
+        },
+        {
+          "id": "2eb09ff8e359",
+          "answer": "Test-S-001",
+          "gen": " A. Test-S-001\nB. Test-S-00",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 4
+        },
+        {
+          "id": "32985e1adb53",
+          "answer": "702",
+          "gen": " 702 units per day\n\nSo, what is the answer?\nOptions",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.19999999999999998,
+          "gen_tokens": 10
+        },
+        {
+          "id": "ba805a1594b1",
+          "answer": "no",
+          "gen": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 12
+        },
+        {
+          "id": "548c8ab72be9",
+          "answer": "161",
+          "gen": " 161\n\nSo, the answer is 161 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "823323a50a9a",
+          "answer": "Comp-S-003",
+          "gen": " Comp-S-003\n\nSo, the answer is Comp-S-0",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.33333333333333337,
+          "gen_tokens": 6
+        },
+        {
+          "id": "3fec9fdf96f6",
+          "answer": "Plant-S-003",
+          "gen": " Plant-S-003\n\nSo, the answer is Plant-S-0",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.33333333333333337,
+          "gen_tokens": 6
+        },
+        {
+          "id": "57623d511876",
+          "answer": "Mat-S-003",
+          "gen": " Mat-S-003\n\nAnswer:\nMat-S-003\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 3
+        },
+        {
+          "id": "4335b8b204e0",
+          "answer": "Test-S-003",
+          "gen": " A. Test-S-003\nB. Test-S-00",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 4
+        },
+        {
+          "id": "75a5ae4b1687",
+          "answer": "335",
+          "gen": " 335 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.18181818181818182,
+          "gen_tokens": 11
+        },
+        {
+          "id": "c09e8df91055",
+          "answer": "yes",
+          "gen": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.18181818181818182,
+          "gen_tokens": 12
+        },
+        {
+          "id": "e9edcd066d56",
+          "answer": "364",
+          "gen": " 364\n\nSo, the answer is 364 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "a0025c1cdff6",
+          "answer": "Comp-S-005",
+          "gen": " Comp-S-005\n\nSo, the answer is Comp-S-0",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.33333333333333337,
+          "gen_tokens": 6
+        },
+        {
+          "id": "158de9e2b74b",
+          "answer": "Plant-S-005",
+          "gen": " Plant-S-005\n\nSo, the answer is Plant-S-0",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.33333333333333337,
+          "gen_tokens": 6
+        },
+        {
+          "id": "96554a6b5a80",
+          "answer": "Mat-S-005",
+          "gen": " Mat-S-005\n\nAnswer:\nMat-S-005\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 3
+        },
+        {
+          "id": "979630c2850f",
+          "answer": "Test-S-005",
+          "gen": " A. Test-S-005\nB. Test-S-00",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 4
+        },
+        {
+          "id": "3feaefbfd1ab",
+          "answer": "325",
+          "gen": " 325 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.18181818181818182,
+          "gen_tokens": 11
+        },
+        {
+          "id": "eaa1f0224fdc",
+          "answer": "yes",
+          "gen": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.18181818181818182,
+          "gen_tokens": 12
+        },
+        {
+          "id": "e8f5e625219f",
+          "answer": "246",
+          "gen": " 246\n\nSo, the answer is 246 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "b35a84f029fd",
+          "answer": "Comp-S-007",
+          "gen": " Comp-S-007\n\nSo, the answer is Comp-S-0",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.33333333333333337,
+          "gen_tokens": 6
+        },
+        {
+          "id": "934a613a3d17",
+          "answer": "Plant-S-007",
+          "gen": " ___________ (Select from: Plant-S-007, Plant-S",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "04820cdea0a1",
+          "answer": "Mat-S-007",
+          "gen": " Mat-S-007\n\nAnswer:\nMat-S-007\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 3
+        },
+        {
+          "id": "dea3775f3356",
+          "answer": "Test-S-007",
+          "gen": " A. Test-S-007\nB. Test-S-00",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 4
+        },
+        {
+          "id": "959dcd752adc",
+          "answer": "172",
+          "gen": " 172 units per day\n\nOptions: A) 172",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "5d2ac9c327ce",
+          "answer": "yes",
+          "gen": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.18181818181818182,
+          "gen_tokens": 12
+        },
+        {
+          "id": "d9db7137df45",
+          "answer": "353",
+          "gen": " 353\n\nSo, the answer is 353 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "36d089b69d0f",
+          "answer": "Comp-S-009",
+          "gen": " Comp-S-009\n\nSo, the answer is Comp-S-0",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.33333333333333337,
+          "gen_tokens": 6
+        },
+        {
+          "id": "8308197f9302",
+          "answer": "Plant-S-009",
+          "gen": " ___________ (put your answer in the box)\n\nOptions: A. Plant",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 10
+        },
+        {
+          "id": "006820e47622",
+          "answer": "Mat-S-009",
+          "gen": " Mat-S-009\n\nAnswer:\nMat-S-009\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 3
+        },
+        {
+          "id": "8394d8690999",
+          "answer": "Test-S-009",
+          "gen": " A. Test-S-009\nB. Test-S-01",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 4
+        },
+        {
+          "id": "296467b595f4",
+          "answer": "746",
+          "gen": " 746 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.18181818181818182,
+          "gen_tokens": 11
+        },
+        {
+          "id": "8e7dcbc0ab25",
+          "answer": "yes",
+          "gen": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.18181818181818182,
+          "gen_tokens": 12
+        },
+        {
+          "id": "68723893f56d",
+          "answer": "255",
+          "gen": " 255\n\nSo, the answer is 255 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "ebcbe428d4cf",
+          "answer": "Comp-S-011",
+          "gen": " Comp-S-011\n\nSo, the answer is Comp-S-0",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.33333333333333337,
+          "gen_tokens": 6
+        },
+        {
+          "id": "7fc78fb0ccb3",
+          "answer": "Plant-S-011",
+          "gen": " ___________ (put your answer in the box)\n\nOptions: Plant-S-",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "479c46653596",
+          "answer": "Mat-S-011",
+          "gen": " A. Mat-S-011\nB. Mat-S-01",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 4
+        },
+        {
+          "id": "b793b8b7476e",
+          "answer": "Test-S-011",
+          "gen": " A. Test-S-011\nB. Test-S-01",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 4
+        },
+        {
+          "id": "2ea4d8558fb5",
+          "answer": "334",
+          "gen": " 334 units per day\n\nSo, what is the answer?\nOptions",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.19999999999999998,
+          "gen_tokens": 10
+        },
+        {
+          "id": "f4a6a7b94a0a",
+          "answer": "no",
+          "gen": " Yes\n\nBased on the information provided, what is the range of Proj-P-",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 12
+        },
+        {
+          "id": "6a2e2784b4bf",
+          "answer": "553",
+          "gen": " 553\n\nSo, the answer is 553 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "7f4643fbe110",
+          "answer": "Comp-S-013",
+          "gen": " Comp-S-013\n\nSo, the answer is Comp-S-0",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.33333333333333337,
+          "gen_tokens": 6
+        },
+        {
+          "id": "73abdb491473",
+          "answer": "Plant-S-013",
+          "gen": " ___________ (put your answer in the box)\n\nOptions: Plant-S-",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "8e0f86f19fd9",
+          "answer": "Mat-S-013",
+          "gen": " Mat-S-013\n\nSo, what is the answer?\nThe answer",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 8
+        },
+        {
+          "id": "317e0647d23b",
+          "answer": "Test-S-013",
+          "gen": " A. Test-S-013\nB. Test-S-01",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 4
+        },
+        {
+          "id": "e1134c22c1bd",
+          "answer": "132",
+          "gen": " 132 units per day\n\nAnswer:\nTo determine the daily output rate",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.18181818181818182,
+          "gen_tokens": 11
+        },
+        {
+          "id": "447cc0a3d67a",
+          "answer": "yes",
+          "gen": " Yes\n\nBased on the information provided, what is the correct answer?\n\nOptions:",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.18181818181818182,
+          "gen_tokens": 12
+        },
+        {
+          "id": "1da5bf2b4ab0",
+          "answer": "784",
+          "gen": " 784\n\nSo, the answer is 784 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "2f7df6460cfb",
+          "answer": "Comp-S-015",
+          "gen": " Comp-S-015\n\nSo, the answer is Comp-S-0",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.33333333333333337,
+          "gen_tokens": 6
+        },
+        {
+          "id": "9e0a32ee4f0d",
+          "answer": "Plant-S-015",
+          "gen": " A. Plant-S-015\nB. Plant-S-01",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 4
+        },
+        {
+          "id": "4305a73a2f59",
+          "answer": "Mat-S-015",
+          "gen": " Mat-S-015\n\nAnswer:\nMat-S-015\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 3
+        },
+        {
+          "id": "54c65bb2e3d3",
+          "answer": "Test-S-015",
+          "gen": " A. Test-S-015\nB. Test-S-01",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.5,
+          "gen_tokens": 4
+        },
+        {
+          "id": "3a619ed537de",
+          "answer": "172",
+          "gen": " 172 units per day\n\nSo, what is the answer?\nOptions",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.19999999999999998,
+          "gen_tokens": 10
+        },
+        {
+          "id": "0dd7ea58be53",
+          "answer": "yes",
+          "gen": " Yes\n\nBased on the information provided, what is the range of Proj-P-",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.18181818181818182,
+          "gen_tokens": 12
+        }
+      ]
+    },
+    {
+      "student": "1.7B",
+      "n": 56,
+      "raw_em": 0.42857142857142855,
+      "norm_em": 0.42857142857142855,
+      "token_f1": 0.1360969387755102,
+      "mean_gen_tokens": 7.803571428571429,
+      "raw_fail_norm_pass": 0,
+      "raw_fail_norm_fail": 32,
+      "rows": [
+        {
+          "id": "3c2f92eb8f92",
+          "answer": "126",
+          "gen": " The budget of Proj-P-015 is 126 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "fe9478714ed9",
+          "answer": "Comp-S-001",
+          "gen": " The component used by Proj-P-015 is Comp-S-00",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "b11b08ffacd3",
+          "answer": "Plant-S-001",
+          "gen": " Plant-S-001\nThe answer is: Plant-S-00",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "f1b198499ed1",
+          "answer": "Mat-S-001",
+          "gen": " The component Comp-S-001 is made of the material Mat-S-",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "2eb09ff8e359",
+          "answer": "Test-S-001",
+          "gen": " Test-S-001\nThe answer is: Test-S-00",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "32985e1adb53",
+          "answer": "702",
+          "gen": " The daily output rate of the plant that assembles Comp-S-001",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 10
+        },
+        {
+          "id": "ba805a1594b1",
+          "answer": "no",
+          "gen": " Yes, the range of Proj-P-015 is 138",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "548c8ab72be9",
+          "answer": "161",
+          "gen": " The budget of Proj-P-016 is 161 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "823323a50a9a",
+          "answer": "Comp-S-003",
+          "gen": " The component used by Proj-P-016 is Comp-S-00",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "3fec9fdf96f6",
+          "answer": "Plant-S-003",
+          "gen": " The component Comp-S-003 is assembled at Plant-S-00",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "57623d511876",
+          "answer": "Mat-S-003",
+          "gen": " The component Comp-S-003 is made of the material Mat-S-",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "4335b8b204e0",
+          "answer": "Test-S-003",
+          "gen": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 11
+        },
+        {
+          "id": "75a5ae4b1687",
+          "answer": "335",
+          "gen": " The daily output rate of the plant that assembles Comp-S-003",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 10
+        },
+        {
+          "id": "c09e8df91055",
+          "answer": "yes",
+          "gen": " Yes, the range of Proj-P-016 is 175",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "e9edcd066d56",
+          "answer": "364",
+          "gen": " The budget of Proj-P-017 is 364 million.\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "a0025c1cdff6",
+          "answer": "Comp-S-005",
+          "gen": " The component used by Proj-P-017 is Comp-S-00",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "158de9e2b74b",
+          "answer": "Plant-S-005",
+          "gen": " Plant-S-005\n\nThe reasoning is that the component Comp-S-",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 8
+        },
+        {
+          "id": "96554a6b5a80",
+          "answer": "Mat-S-005",
+          "gen": " The component Comp-S-005 is made of the material Mat-S-",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "979630c2850f",
+          "answer": "Test-S-005",
+          "gen": " Test-S-005\nThe answer is: Test-S-00",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "3feaefbfd1ab",
+          "answer": "325",
+          "gen": " The daily output rate of the plant that assembles Comp-S-005",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 10
+        },
+        {
+          "id": "eaa1f0224fdc",
+          "answer": "yes",
+          "gen": " Yes, the range of Proj-P-017 is 169",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "e8f5e625219f",
+          "answer": "246",
+          "gen": " The budget of Proj-P-018 is 246 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "b35a84f029fd",
+          "answer": "Comp-S-007",
+          "gen": " The component used by Proj-P-018 is Comp-S-00",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "934a613a3d17",
+          "answer": "Plant-S-007",
+          "gen": " Plant-S-007\nThe answer is: Plant-S-00",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "04820cdea0a1",
+          "answer": "Mat-S-007",
+          "gen": " The component Comp-S-007 is made of the material Mat-S-",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "dea3775f3356",
+          "answer": "Test-S-007",
+          "gen": " Test-S-007\nThe answer is: \\boxed{Test-S",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "959dcd752adc",
+          "answer": "172",
+          "gen": " The daily output rate of the plant that assembles Comp-S-007",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 10
+        },
+        {
+          "id": "5d2ac9c327ce",
+          "answer": "yes",
+          "gen": " Yes, the range of Proj-P-018 is 294",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "d9db7137df45",
+          "answer": "353",
+          "gen": " The budget of Proj-P-019 is 353 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "36d089b69d0f",
+          "answer": "Comp-S-009",
+          "gen": " The component used by Proj-P-019 is Comp-S-01",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "8308197f9302",
+          "answer": "Plant-S-009",
+          "gen": " Plant-S-009\nThe reasoning process is as follows: The question",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "006820e47622",
+          "answer": "Mat-S-009",
+          "gen": " The component Comp-S-009 is made of the material Mat-S-",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "8394d8690999",
+          "answer": "Test-S-009",
+          "gen": " Test-S-009\nThe answer is: \\boxed{Test-S",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "296467b595f4",
+          "answer": "746",
+          "gen": " The daily output rate of the plant that assembles Comp-S-009",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 10
+        },
+        {
+          "id": "8e7dcbc0ab25",
+          "answer": "yes",
+          "gen": " Yes, the range of Proj-P-019 is 280",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "68723893f56d",
+          "answer": "255",
+          "gen": " The budget of Proj-P-020 is 255 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "ebcbe428d4cf",
+          "answer": "Comp-S-011",
+          "gen": " The component used by Proj-P-020 is Comp-S-01",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "7fc78fb0ccb3",
+          "answer": "Plant-S-011",
+          "gen": " Plant-S-011\nThe answer is: Plant-S-01",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "479c46653596",
+          "answer": "Mat-S-011",
+          "gen": " The component Comp-S-011 is made of the material Mat-S-",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "b793b8b7476e",
+          "answer": "Test-S-011",
+          "gen": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 11
+        },
+        {
+          "id": "2ea4d8558fb5",
+          "answer": "334",
+          "gen": " The daily output rate of the plant that assembles Comp-S-011",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 10
+        },
+        {
+          "id": "f4a6a7b94a0a",
+          "answer": "no",
+          "gen": " Yes, the range of Proj-P-020 is 869",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "6a2e2784b4bf",
+          "answer": "553",
+          "gen": " The budget of Proj-P-021 is 553 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "7f4643fbe110",
+          "answer": "Comp-S-013",
+          "gen": " The component used by Proj-P-021 is Comp-S-01",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "73abdb491473",
+          "answer": "Plant-S-013",
+          "gen": " The component Comp-S-013 is used by Proj-P-02",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "8e0f86f19fd9",
+          "answer": "Mat-S-013",
+          "gen": " The component Comp-S-013 is made of the material Mat-S-",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "317e0647d23b",
+          "answer": "Test-S-013",
+          "gen": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 11
+        },
+        {
+          "id": "e1134c22c1bd",
+          "answer": "132",
+          "gen": " The daily output rate of the plant that assembles Comp-S-013",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 10
+        },
+        {
+          "id": "447cc0a3d67a",
+          "answer": "yes",
+          "gen": " Yes, the range of Proj-P-021 is 282",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "1da5bf2b4ab0",
+          "answer": "784",
+          "gen": " The budget of Proj-P-022 is 784 million.\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "2f7df6460cfb",
+          "answer": "Comp-S-015",
+          "gen": " The component used by Proj-P-022 is Comp-S-01",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "9e0a32ee4f0d",
+          "answer": "Plant-S-015",
+          "gen": " Plant-S-015\n\nThe reasoning is that the component Comp-S-",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 8
+        },
+        {
+          "id": "4305a73a2f59",
+          "answer": "Mat-S-015",
+          "gen": " The component Comp-S-015 is made of material Mat-S-0",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 8
+        },
+        {
+          "id": "54c65bb2e3d3",
+          "answer": "Test-S-015",
+          "gen": " The tester that certifies quality at the plant that assembles Comp-S-0",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 11
+        },
+        {
+          "id": "3a619ed537de",
+          "answer": "172",
+          "gen": " The daily output rate of the plant that assembles Comp-S-015",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 10
+        },
+        {
+          "id": "0dd7ea58be53",
+          "answer": "yes",
+          "gen": " Yes, the range of Proj-P-022 is 152",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        }
+      ]
+    },
+    {
+      "student": "4B",
+      "n": 56,
+      "raw_em": 0.8035714285714286,
+      "norm_em": 0.8035714285714286,
+      "token_f1": 0.23304988662131518,
+      "mean_gen_tokens": 7.428571428571429,
+      "raw_fail_norm_pass": 0,
+      "raw_fail_norm_fail": 11,
+      "rows": [
+        {
+          "id": "3c2f92eb8f92",
+          "answer": "126",
+          "gen": " The budget of Proj-P-015 is 126 million.\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "fe9478714ed9",
+          "answer": "Comp-S-001",
+          "gen": " Comp-S-001 and Comp-S-002\n\nQuestion:",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 4
+        },
+        {
+          "id": "b11b08ffacd3",
+          "answer": "Plant-S-001",
+          "gen": " Plant-S-001\nThe component Comp-S-001 is",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "f1b198499ed1",
+          "answer": "Mat-S-001",
+          "gen": " The component Comp-S-001 is made of Mat-S-00",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "2eb09ff8e359",
+          "answer": "Test-S-001",
+          "gen": " Test-S-001\n\nThe answer is correct. The project is Proj",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "32985e1adb53",
+          "answer": "702",
+          "gen": " The daily output rate of Plant-S-001 is 702",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 8
+        },
+        {
+          "id": "ba805a1594b1",
+          "answer": "no",
+          "gen": " No, the range is 1385 km, which is less than",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.19999999999999998,
+          "gen_tokens": 10
+        },
+        {
+          "id": "548c8ab72be9",
+          "answer": "161",
+          "gen": " The budget of Proj-P-016 is 161 million.\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "823323a50a9a",
+          "answer": "Comp-S-003",
+          "gen": " Comp-S-003 and Comp-S-004\n\nThe question",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "3fec9fdf96f6",
+          "answer": "Plant-S-003",
+          "gen": " Plant-S-003\n\nThe answer is correct. The question asks specifically",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "57623d511876",
+          "answer": "Mat-S-003",
+          "gen": " The component Comp-S-003 is made of Mat-S-00",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "4335b8b204e0",
+          "answer": "Test-S-003",
+          "gen": " Test-S-003\n\nThe answer is correct. The component Comp-S",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 8
+        },
+        {
+          "id": "75a5ae4b1687",
+          "answer": "335",
+          "gen": " The daily output rate of Plant-S-003 is 335",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 8
+        },
+        {
+          "id": "c09e8df91055",
+          "answer": "yes",
+          "gen": " Yes.\nThe range of Proj-P-016 is 175",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "e9edcd066d56",
+          "answer": "364",
+          "gen": " The budget of Proj-P-017 is 364 million.\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "a0025c1cdff6",
+          "answer": "Comp-S-005",
+          "gen": " Comp-S-005 and Comp-S-006\n\nThe question",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "158de9e2b74b",
+          "answer": "Plant-S-005",
+          "gen": " Plant-S-005\n\nThe answer is correct. The question asks specifically",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "96554a6b5a80",
+          "answer": "Mat-S-005",
+          "gen": " The component Comp-S-005 is made of Mat-S-00",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "979630c2850f",
+          "answer": "Test-S-005",
+          "gen": " Test-S-005\n\nThe answer is correct. The project status report",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "3feaefbfd1ab",
+          "answer": "325",
+          "gen": " The daily output rate of Plant-S-005, which assembles Comp",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "eaa1f0224fdc",
+          "answer": "yes",
+          "gen": " Yes.\nThe range of Proj-P-017 is 169",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "e8f5e625219f",
+          "answer": "246",
+          "gen": " The budget of Proj-P-018 is 246 million.\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "b35a84f029fd",
+          "answer": "Comp-S-007",
+          "gen": " Comp-S-007 and Comp-S-008\n\nThe question",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "934a613a3d17",
+          "answer": "Plant-S-007",
+          "gen": " Plant-S-007\n\nThe answer is correct. The question asks specifically",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "04820cdea0a1",
+          "answer": "Mat-S-007",
+          "gen": " The component Comp-S-007 is made of Mat-S-00",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "dea3775f3356",
+          "answer": "Test-S-007",
+          "gen": " Test-S-007\n\nThe answer is correct. The component Comp-S",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 8
+        },
+        {
+          "id": "959dcd752adc",
+          "answer": "172",
+          "gen": " The daily output rate of Plant-S-007 is 172",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 8
+        },
+        {
+          "id": "5d2ac9c327ce",
+          "answer": "yes",
+          "gen": " Yes.\nThe range of Proj-P-018 is 294",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "d9db7137df45",
+          "answer": "353",
+          "gen": " The budget of Proj-P-019 is 353 million.\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "36d089b69d0f",
+          "answer": "Comp-S-009",
+          "gen": " Comp-S-009 and Comp-S-010\n\nThe question",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "8308197f9302",
+          "answer": "Plant-S-009",
+          "gen": " Plant-S-009\n\nThe answer is correct. The question asks specifically",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "006820e47622",
+          "answer": "Mat-S-009",
+          "gen": " The component Comp-S-009 is made of Mat-S-00",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "8394d8690999",
+          "answer": "Test-S-009",
+          "gen": " Test-S-009\n\nThe answer is correct. The component Comp-S",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 8
+        },
+        {
+          "id": "296467b595f4",
+          "answer": "746",
+          "gen": " The daily output rate of Plant-S-009 is 746",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 8
+        },
+        {
+          "id": "8e7dcbc0ab25",
+          "answer": "yes",
+          "gen": " Yes.\nThe range of Proj-P-019 is 280",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "68723893f56d",
+          "answer": "255",
+          "gen": " The budget of Proj-P-020 is 255 million.\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "ebcbe428d4cf",
+          "answer": "Comp-S-011",
+          "gen": " The components used by Proj-P-020 are Comp-S-01",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "7fc78fb0ccb3",
+          "answer": "Plant-S-011",
+          "gen": " Plant-S-011\n\nThe answer is correct. The question asks specifically",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "479c46653596",
+          "answer": "Mat-S-011",
+          "gen": " The component Comp-S-011 is made of Mat-S-01",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "b793b8b7476e",
+          "answer": "Test-S-011",
+          "gen": " Test-S-011\n\nThe answer is correct. The component Comp-S",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 8
+        },
+        {
+          "id": "2ea4d8558fb5",
+          "answer": "334",
+          "gen": " The daily output rate of Plant-S-011, which assembles Component",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 9
+        },
+        {
+          "id": "f4a6a7b94a0a",
+          "answer": "no",
+          "gen": " No, the range is 869 km.\n\nThe answer is correct.",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2222222222222222,
+          "gen_tokens": 10
+        },
+        {
+          "id": "6a2e2784b4bf",
+          "answer": "553",
+          "gen": " The budget of Proj-P-021 is 553 million.\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "7f4643fbe110",
+          "answer": "Comp-S-013",
+          "gen": " Comp-S-013 and Comp-S-014\n\nThe question",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "73abdb491473",
+          "answer": "Plant-S-013",
+          "gen": " Plant-S-013\n\nThe answer is correct. The question asks specifically",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "8e0f86f19fd9",
+          "answer": "Mat-S-013",
+          "gen": " The component Comp-S-013 is made of Mat-S-01",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "317e0647d23b",
+          "answer": "Test-S-013",
+          "gen": " Test-S-013\n\nThe answer is correct. The component Comp-S",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 8
+        },
+        {
+          "id": "e1134c22c1bd",
+          "answer": "132",
+          "gen": " The daily output rate of Plant-S-013 is 132",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 8
+        },
+        {
+          "id": "447cc0a3d67a",
+          "answer": "yes",
+          "gen": " Yes.\nThe range of Proj-P-021 is 282",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "1da5bf2b4ab0",
+          "answer": "784",
+          "gen": " The budget of Proj-P-022 is 784 million.\n\n",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        },
+        {
+          "id": "2f7df6460cfb",
+          "answer": "Comp-S-015",
+          "gen": " Comp-S-015 and Comp-S-016\n\nThe question",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.4,
+          "gen_tokens": 5
+        },
+        {
+          "id": "9e0a32ee4f0d",
+          "answer": "Plant-S-015",
+          "gen": " Plant-S-015\n\nThe answer is correct. The question asks specifically",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "4305a73a2f59",
+          "answer": "Mat-S-015",
+          "gen": " The component Comp-S-015 is made of Mat-S-01",
+          "raw_em": false,
+          "norm_em": false,
+          "f1": 0.0,
+          "gen_tokens": 7
+        },
+        {
+          "id": "54c65bb2e3d3",
+          "answer": "Test-S-015",
+          "gen": " Test-S-015\n\nThe answer is correct because the project's component",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 9
+        },
+        {
+          "id": "3a619ed537de",
+          "answer": "172",
+          "gen": " The daily output rate of Plant-S-015 is 172",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.25,
+          "gen_tokens": 8
+        },
+        {
+          "id": "0dd7ea58be53",
+          "answer": "yes",
+          "gen": " Yes.\n\nThe range of Proj-P-022 is 152",
+          "raw_em": true,
+          "norm_em": true,
+          "f1": 0.2857142857142857,
+          "gen_tokens": 7
+        }
+      ]
+    }
+  ]
+}

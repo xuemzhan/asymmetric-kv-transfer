@@ -307,3 +307,110 @@ Modules: `phaseB_common.py` (fixed evaluator + harness, learned layer selection)
 `phaseB_layers_heldout.py` (B2), `phaseB_mechanism.py` (B3 + output-aware),
 `phaseB_outaware.py` (W_O-aware + control), `phaseB_fourarm.py` (main table),
 `phaseB_squad.py` (second domain).
+
+---
+
+## 7. Revision-2 GPU results (audit2 / REVISION_PLAN2)
+
+### B1 — Evaluator gold-standard validation (`reports/phaseB_evalcheck_seed0.json`)
+
+Full Self test set (56), injected cache vs full doc+query prefill:
+
+| Student | token agreement | normalized-EM agreement | first-logit mean/max abs err | Self EM injected/full |
+|---|---|---|---|---|
+| 0.6B | 0.786 | 0.964 | 0.595 / 1.344 | 0.911 / 0.875 |
+| 1.7B | 0.804 | 0.929 | 0.455 / 0.875 | 0.429 / 0.393 |
+| 4B | 0.929 | 0.982 | 0.570 / 0.969 | 0.804 / 0.786 |
+
+The two paths are functionally equivalent (normalized EM agrees on 93–98% of
+samples; first-token logits differ only by bf16 cache-vs-recompute noise), but
+not bit-identical, so token-string agreement is 79–93%. Premise holds within
+bf16 tolerance; the paper should report these full numbers instead of a 6-item
+probe and state the residual explicitly.
+
+### B4 — Valid content-breaking control (`phaseB_controls_8B_0.6B_seed{0,1,2}.json`)
+
+The old `Shuf_KV` (same permutation applied to K and V) is permutation-invariant
+and therefore invalid. The correct controls, `Shuf_K` (shuffle K, keep V) and
+`Shuf_V` (keep K, shuffle V), give corrected EM **0.000** in all three seeds
+(vs Self 0.899), while `Shuf_KV` gives 0.86/0.88/0.93. The evaluator is
+therefore sensitive to genuine content corruption.
+
+### B3 — 8B→0.6B adapted Self (`phaseB_adapter_8B_0.6B_o_proj_seed{0,1,2}.json`)
+
+The content-matched adapter's own Self reference is **0.964/0.964/0.893**
+(mean 0.940), not the unadapted 0.899. The K-only recovery to 0.792 must be
+compared against 0.940; conclusions about "recovering most" should use this
+same-condition reference.
+
+### C1 — Repaired-regime layer scrambling (`reports/phaseB_alignment_repaired_1.7B_0.6B_seed0.json`)
+
+With the OutAware value mapper (which raises V-only EM to 0.91 under the
+proportional map), scrambling the layer map **does** hurt:
+
+| Layer map | V-only EM | Joint ΔLL |
+|---|---|---|
+| proportional / identity | **0.91** | −0.90 |
+| offset +3 | 0.21 | +0.34 |
+| offset −3 | 0.23 | +2.82 |
+| random permutation | **0.11** | +0.96 |
+
+This reverses the earlier "layer alignment alone does not explain the failure"
+conclusion: the earlier null result was a floor effect of the affine mapper.
+Under a consumer-aware mapper, V-only EM falls from 0.91 to 0.11–0.23 when the
+alignment is broken.
+
+### C2 — 1.7B Self anomaly is not a formatting artifact (`reports/phaseB_selfdiag_seed0.json`)
+
+| Student | raw EM | normalized EM | token F1 | raw-fail/norm-pass |
+|---|---|---|---|---|
+| 0.6B | 0.911 | 0.911 | 0.304 | 0 |
+| 1.7B | 0.429 | 0.429 | 0.136 | 0 |
+| 4B | 0.804 | 0.804 | 0.233 | 0 |
+
+Raw and normalized EM coincide in every student, and 1.7B has the lowest token
+F1. The non-monotonic Self is genuine, not a metric artifact.
+
+### C3 — Document-clustered EM CI (`reports/phaseB_fourarm_seed0.json`)
+
+Corrected EM with document-clustered bootstrap (8 documents) for the six-pair
+scan: every transfer arm's clustered CI touches 0 (e.g. 8B→0.6B K/V [0,0];
+4B→1.7B K [0.018,0.107]; 1.7B→0.6B K [0,0.089], V [0.018,0.107]). The
+conclusion 0.90 vs 0.00 does not depend on the CI width.
+
+### B2 — Adapter content causality (`reports/phaseB_adapter_causal_1.7B_0.6B_seed0.json`)
+
+With the content-matched adapter held fixed (1.7B→0.6B, seed 0, rank 8,
+10 epochs), injecting different states into the four/test arms gives:
+
+| Injected state | EM |
+|---|---|
+| correct teacher Joint (K/V) | **0.625** |
+| wrong-document teacher Joint | 0.000 |
+| moment-matched random KV | 0.018 |
+| zero KV | 0.000 |
+| (K-only / V-only under same adapter) | 0.857 / 0.821 |
+
+The adapter's benefit requires the correct document content: correct ≫ wrong ≈
+random ≈ zero. This closes the audit2 §6 concern that the adapter might be
+learning the task rather than reading the transferred state.
+
+### B2 (8B) and C4 — completed
+
+**B2 adapter causality, 8B→0.6B** (`reports/phaseB_adapter_causal_8B_0.6B_seed0.json`,
+rank 8, 10 epochs): with the content-matched adapter fixed, correct teacher Joint
+EM is 0.304, wrong-document 0.143, random 0.161, zero 0.161; K-only 0.964,
+V-only 0.232, Self 0.982. Correct > controls but the gap is small, i.e. a
+larger generic teacher-state component on the large-gap pair than at 1.7B
+(correct 0.625 vs controls ≈0). Reported honestly as partial content causality.
+
+**C4 cross-domain repair** (`phaseB_squad_outaware_seed0.json`,
+`phaseB_squad_adapter_seed0.json`): applying the synthetic-trained OutAware
+mapper on SQuAD raises the V-only LL gain to +4.62 but corrected EM stays 0.000;
+the synthetic-trained adapter raises SQuAD Self EM 0.367→0.600 but K/J EM remain
+0.000 and V-only 0.033. The constructive fix does **not** transfer across
+domains; the repair is task-distribution-specific.
+
+**C3 completion** (`phaseB_fourarm_8B_4B_seed0.json`): 8B→4B Self 0.804,
+K 0.143, V 0.429 (clustered CI [0.375,0.482]), Joint 0.018. V-only is the only
+arm whose clustered CI excludes zero, and it remains far below Self.
