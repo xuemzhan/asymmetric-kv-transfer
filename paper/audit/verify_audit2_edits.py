@@ -190,7 +190,7 @@ def main() -> int:
     absent("E6", tex, "$0.165$")
     absent("E6", tex, "$0.245$")
 
-    # E7 (reports/g0_seed{0,1,2}.json + reports/g0_v2_summary.json): the
+    # E7 (reports/archive/g0_seed{0,1,2}.json + reports/g0_v2_summary.json): the
     # pre-registered gate was defined on the 42/14 split and re-run at 70/56.
     present("E7", tex, "on the earlier calibration/evaluation split ($42$/$14$)")
     present("E7", tex, "re-ran its likelihood clause")

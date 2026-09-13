@@ -934,3 +934,29 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
 - **仓库卫生**：`.gitignore` 移除 `reports/*.json`（报告 JSON 是论文数字的溯源记录，
   被忽略会导致 GPU 机器的新产物无法回流）；补提交 27 个历史报告（816 KiB）。
   `verify_audit2_edits.py` 中两条被 audit3 取代的断言（X6/C2）已更新为指向新措辞。
+
+## W23 (2026-09-13): 仓库整理（文件架构重组，无实验/数值改动）
+
+- **目标**：清理历史沉积、重组目录，降低根目录噪声，便于 GPU 回流与写作。
+- **目录重组（`git mv`，保留历史）**：
+  - 根目录 24 个实验脚本移入 `experiments/`（`phase0`–`phase4`/`phase7` +
+    `phaseB_*.py` + `stats_utils.py`）；同目录内裸 import 关系不变；
+  - 2 个测试移入 `tests/`，`sys.path` 与报告输出路径改指 `experiments/`、`reports/`；
+  - 引用同步：`scripts/factorial_analysis.py`（加 `experiments` 到 `sys.path`）、
+    `scripts/run_audit3_gpu_queue.sh`（`python3 experiments/phaseB_*.py`）、
+    14 个脚本内的 usage 字符串。
+- **删除 / 归档（git 历史保留）**：
+  - 删除 9 张 `main.tex` 未引用的旧图（`fig_cca/cost/main/squad/corrected_main/`
+    `exploration/problem/protocol/readouts`）与两个被 `gen_paper_figures.py` 取代的
+    生成器（`gen_figures.py`、`gen_corrected_figures.py`）；
+  - 7 个未被 include 的 v1 草稿移入 `paper/archive/`（`abstract`、`draft0_intro`、
+    `final_intro`、`section2/4/5/6`）；
+  - 删除 `reports/paper_v3_draft.tex`、`reports/phaseB_controls_8B_0.6B_seed0_LEGACY_DO_NOT_USE.json`；
+  - 删除外部评审工具产物 `review_results/`（47 文件，已被 `paper/audit/` 取代）；
+  - v1 报告移入 `reports/archive/`（`g0_seed{0,1,2}`、`phase1/2/3/4` v1、`w0/w1`），
+    `verify_audit2_edits.py` E7 注释同步。
+- **文档**：`AGENTS.md` 的 STRUCTURE / WHERE TO LOOK / COMMANDS / NOTES 按新布局更新。
+- **验证**：`python3 -m py_compile experiments/*.py scripts/*.py tests/*.py data/*.py` 通过；
+  `scripts/verify_corrected_paper.py`、`paper/audit/verify_audit2_edits.py`、
+  `paper/audit/verify_audit3_edits.py`、`tests/test_stats_utils.py` 全部 exit 0。
+- **未改动**：任何实验逻辑、报告数值、论文内容。

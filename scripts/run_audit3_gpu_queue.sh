@@ -44,15 +44,15 @@ run_step() {
 # Evaluator residual: distributional metrics (KL / p95 / top-1), the SQuAD
 # validator, and the attribution probe.
 run_step "A1-evalcheck-synthetic" reports/phaseB_evalcheck_residual_seed0.json \
-  python3 phaseB_evalcheck.py --seed 0 --n-eval 56 --students 0.6B 1.7B 4B \
+  python3 experiments/phaseB_evalcheck.py --seed 0 --n-eval 56 --students 0.6B 1.7B 4B \
     --output reports/phaseB_evalcheck_residual_seed0.json
 
 run_step "A1-evalcheck-squad" reports/phaseB_evalcheck_squad.json \
-  python3 phaseB_evalcheck.py --domain squad --n-eval 30 --students 0.6B \
+  python3 experiments/phaseB_evalcheck.py --domain squad --n-eval 30 --students 0.6B \
     --output reports/phaseB_evalcheck_squad.json
 
 run_step "A1-attribution" reports/phaseB_evalcheck_attrib.json \
-  python3 phaseB_evalcheck.py --attrib --students 0.6B --n-eval 8 \
+  python3 experiments/phaseB_evalcheck.py --attrib --students 0.6B --n-eval 8 \
     --output reports/phaseB_evalcheck_attrib.json
 
 # ---------------------------------------------------------------- A2 --------
@@ -61,7 +61,7 @@ run_step "A1-attribution" reports/phaseB_evalcheck_attrib.json \
 for S in 0 1 2; do
   run_step "A2-causal20-1.7B-seed${S}" \
     "reports/phaseB_adapter_causal20_1.7B_0.6B_seed${S}.json" \
-    python3 phaseB_adapter.py --pair 1.7B_0.6B --seed "$S" --rank 8 \
+    python3 experiments/phaseB_adapter.py --pair 1.7B_0.6B --seed "$S" --rank 8 \
       --epochs 20 --conditions joint --causal --n-calib 70 --n-eval 56 \
       --dump-rows \
       --output "reports/phaseB_adapter_causal20_1.7B_0.6B_seed${S}.json"
@@ -70,7 +70,7 @@ done
 for S in 0 1 2; do
   run_step "A2-causal20-8B-seed${S}" \
     "reports/phaseB_adapter_causal20_8B_0.6B_seed${S}.json" \
-    python3 phaseB_adapter.py --pair 8B_0.6B --seed "$S" --rank 8 \
+    python3 experiments/phaseB_adapter.py --pair 8B_0.6B --seed "$S" --rank 8 \
       --epochs 20 --conditions joint --causal --n-calib 70 --n-eval 56 \
       --dump-rows \
       --output "reports/phaseB_adapter_causal20_8B_0.6B_seed${S}.json"
@@ -82,7 +82,7 @@ done
 for D in 0 1 2; do
   run_step "A3-squad-within-split${D}" \
     "reports/phaseB_squadwithin_split${D}.json" \
-    python3 phaseB_squad_within.py --split-seed "$D" --n-calib 15 --n-eval 15 \
+    python3 experiments/phaseB_squad_within.py --split-seed "$D" --n-calib 15 --n-eval 15 \
       --v-mappers affine,outaware,wo --adapter --epochs 20 --rank 8 \
       --output "reports/phaseB_squadwithin_split${D}.json"
 done
@@ -92,7 +92,7 @@ done
 for S in 0 1 2; do
   run_step "A4-errorbudget-1.7B-seed${S}" \
     "reports/phaseB_errorbudget_1.7B_0.6B_seed${S}.json" \
-    python3 phaseB_errorbudget.py --pair 1.7B_0.6B --seed "$S" \
+    python3 experiments/phaseB_errorbudget.py --pair 1.7B_0.6B --seed "$S" \
       --n-calib 70 --n-eval 56 \
       --output "reports/phaseB_errorbudget_1.7B_0.6B_seed${S}.json"
 done
@@ -100,7 +100,7 @@ done
 for S in 0 1 2; do
   run_step "A4-errorbudget-8B-seed${S}" \
     "reports/phaseB_errorbudget_8B_0.6B_seed${S}.json" \
-    python3 phaseB_errorbudget.py --pair 8B_0.6B --seed "$S" \
+    python3 experiments/phaseB_errorbudget.py --pair 8B_0.6B --seed "$S" \
       --n-calib 70 --n-eval 56 \
       --output "reports/phaseB_errorbudget_8B_0.6B_seed${S}.json"
 done

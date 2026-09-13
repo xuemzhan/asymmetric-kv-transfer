@@ -29,6 +29,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "experiments"))
 from stats_utils import bootstrap_ci95, paired_wilcoxon_test
 
 REPORTS = Path(__file__).resolve().parent.parent / "reports"
