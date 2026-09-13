@@ -21,8 +21,8 @@ references).
 
 ## Title
 
-Cross-Model KV Transfer Needs a Compatible Consumer: Diagnosis and a
-Consumption-Side Fix
+Cross-Model KV Transfer Needs Functional Compatibility: Why Representation
+Alignment Is Not Enough
 
 ## Authors
 

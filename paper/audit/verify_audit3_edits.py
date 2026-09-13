@@ -58,7 +58,10 @@ def main() -> int:
     absent("T1", tex, "where routing diverges more")
     present("T1", tex, "this arm never sees a mapped key")
     present("T1", tex, "a key-side diagnostic")
-    present("T1", tex, "The value arm uses the\n  student's own keys")
+    # REVISION_PLAN4 T2 rewrote contribution 2, so the old wording is gone; the
+    # claim is still pinned here and in the "this arm never sees a mapped key"
+    # assertion above.
+    present("T1", tex, "arm never sees a mapped key, so its failure is not addressing")
     present("T1", tex,
             "\\subsection{Two separate failures: mapped keys perturb routing, "
             "mapped values must be consumable}")
@@ -247,7 +250,8 @@ def main() -> int:
 
     # -------------------------- A4: audit3 par.11 (error budget, five variants)
     present("A4", tex, "\\label{tab:errorbudget}")
-    present("A4", tex, "Rank correlation with EM over the five variants")
+    # REVISION_PLAN4 T7 rewrote the caption to disclose the per-run range.
+    present("A4", tex, "Five variants and six runs are too few for a $p$-value")
     budget = {}
     for pair in ("1.7B_0.6B", "8B_0.6B"):
         for seed in (0, 1, 2):

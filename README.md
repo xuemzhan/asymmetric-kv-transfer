@@ -1,7 +1,7 @@
 # Asymmetric KV Transfer (V3)
 
-Research artifact for the paper **“Cross-Model KV Transfer Needs a Compatible
-Consumer: Diagnosis and a Consumption-Side Fix”** (`paper/main.tex`).
+Research artifact for the paper **“Cross-Model KV Transfer Needs Functional Compatibility:
+Why Representation Alignment Is Not Enough”** (`paper/main.tex`).
 
 We revisit KV-cache transfer between language models within the Qwen3 family
 (0.6B–8B, six teacher–student pairs, three seeds). The artifact contains a
@@ -59,7 +59,7 @@ state.
 │   ├── main.tex          #   canonical, self-contained paper
 │   ├── arxiv_submission/ #   arXiv bundle
 │   ├── figures/          #   active PDFs + gen_paper_figures.py
-│   ├── audit/            #   audit1-3, revision plans, paper-number guards
+│   ├── audit/            #   audit1-4, revision plans, paper-number guards
 │   └── archive/          #   superseded v1 drafts
 ├── tools/                # compile_paper.ps1 (Windows Tectonic wrapper)
 ├── runs/                 # scratch run logs (git-ignored)
@@ -141,15 +141,18 @@ On Windows the bundled Tectonic wrapper is `tools/compile_paper.ps1`
 
 - `ITERATION_LOG.md` is the sole iteration record; `reports/*.json` are the
   provenance for every number that enters `paper/main.tex`.
-- `paper/audit/` holds the review rounds (`audit1-3.md`), the corresponding
+- `paper/audit/` holds the review rounds (`audit1-4.md`), the corresponding
   revision plans, the metric-correction writeup, and guard scripts.
 - Numbers are asserted by `scripts/verify_corrected_paper.py`,
-  `paper/audit/verify_audit2_edits.py`, and `paper/audit/verify_audit3_edits.py`.
+  `paper/audit/verify_audit2_edits.py`, `paper/audit/verify_audit3_edits.py`, and
+  `paper/audit/verify_audit4_edits.py`.
   The pre-correction guard is kept for history only at
   `scripts/archive/verify_paper_numbers_v1_stale.py` (it targets the superseded
   v1 paper and is expected to fail).
 
 ## Status
 
-The paper is an anonymous 14-page draft under review; the author list and
-citation will be filled in before posting.
+The paper is an anonymous draft under review (24 pages with the appendices);
+the author list and citation will be filled in before posting. The pending
+GPU-side work is scheduled in `paper/audit/REVISION_PLAN4.md` (routing-aware key
+mapper, mapper-objective sweep, calibration-volume control).

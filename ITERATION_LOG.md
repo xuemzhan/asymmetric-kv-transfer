@@ -1085,3 +1085,57 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
 - **论文/登记未动**：本轮只跑 GPU 实验与落报告；`METRIC_CORRECTION §9` 登记、
   PART III 的 W1–W9 条件式改写、`verify_audit3_edits.py` 数字断言留待后续
    （用户本轮只要求「需要 GPU 的实验」）。代码改动 4 个文件见 git status。
+
+## W28 (2026-09-13): audit4 本机文本改造（PART I）——框架升级 + 三处事实修正
+
+- **触发**：audit4（独立审稿：**7/10 Accept, confidence 4.5/5**）判定"不应再以补漏洞为
+  主要目标"，建议把论文升级为 *functional compatibility* 框架，并给出 6 项优先级
+  （routing-aware K mapper > 分解小节 > mapper sweep > frontier > cross-family >
+  再加 benchmark）。本轮只落 **REVISION_PLAN4 PART I（零 GPU）**，GPU 项留给 GPU 机器。
+- **计划**：新建 `paper/audit/REVISION_PLAN4.md`（含 audit4 逐条裁量、预登记门禁、
+  条件式改写表、成本估算；成本标尺取 W26 实测：A2 13 min/run、A3 4.4、A4 6.3）。
+- **论文改写（`paper/main.tex` + `arxiv_submission/main.tex` 逐字节同步）**：
+  - **T1 标题**：*Cross-Model KV Transfer Needs Functional Compatibility:
+    Why Representation Alignment Is Not Enough*；同步 `pdftitle`/keywords、
+    `README.md`、`paper/arxiv_metadata.md`（audit3 T4 的悬置项一并收口）；
+  - **T2 贡献四条**：evaluation principle / functional compatibility decomposition /
+    consumer-space alignment / repairability and its boundary；第 1 条按 audit3 §15
+    的归属纪律拆成"通用原则"与"我们自己的实现缺陷"两句；
+  - **T3 新 §3.3 Functional compatibility decomposition**（`eq:decomp`）：
+    $\hat O-O_S=(\hat A-A_S)V_SW_O^S+\hat A(\hat V-V_S)W_O^S$，明确写成扰动恒等式、
+    不主张 EM 可加、不据此判定瓶颈项；
+  - **T4 减法**：factorial 分解（含表）与 cost 段移入正文之后的 Appendix A/B；
+    正文只在 §6.1 留一句指路；
+  - **T5 措辞**：删 "the joint arm is the weakest arm everywhere"（与 Table 1/5 冲突：
+    4B→0.6B Joint 0.006 > K/V 0.000；8B→1.7B Joint 0.012 > 0.000；adapter 后
+    8B→0.6B V-only 0.357 < Joint 0.470），Related Work 的
+    "the standard evaluation can report transfer" 改成"我们自己的 legacy evaluator"；
+  - **T6 命名**：正文启用 *task-conditioned* functional compatibility，并写明限定
+    （单一第二域、15 份 calibration 文档、held-out Self 0.20–0.40、calibration volume
+    未被排除）——A3 若判为体量问题则按 PART III 撤下；
+  - **T7 秩相关披露**：Abstract/§6.3/§7.1/Table 4 表注同时给出 **pooled 与逐 run**
+    数值（raw −0.10 [−0.60,−0.10]；attn −1.00 [−1.00,−0.80]；W_O −0.80
+    [−1.00,−0.80]），并声明 5 个 variant 不足以给 p 值——**audit4 未提出，本机复核发现
+    正文只报了 pooled 值**；
+  - **T9 仓库卫生**：`paper/{BRIEF,project_context,architecture,v3_data_baseline}.md`
+    → `paper/archive/*_v1_stale.md`，各加 STALE 头（这四份仍在陈述 v1 撤回结论，
+    W23 遗漏）；
+  - **T10 交叉引用**：8 处硬编码 `Section~N` 全部改为 `\label`/`\ref`，为插入新小节与
+    搬附录消除编号漂移。
+- **【新发现】cost 参数化与 Method 自相矛盾**（audit4 未提）：§6.6 的 2050 tokens 用的是
+  per-layer `1024×1024`（K+V = 58.78M，来自 `reports/archive/phase3_rate_law_seed0.json`），
+  而 §3.4 定义的是 per-(layer, head) `128×128`（K+V = 7.40M / 28.2 MiB）⇒ 交叉点应约
+  **260 tokens**。附录 B 按当前定义改写，旧数字不再出现在论文里（溯源见
+  `METRIC_CORRECTION §11`）。另核对适配器 ≈0.7M 的前提（28×(1024×8+2048×8)=688,128）
+  与正文一致，说明只有 cost 一处是孤例。
+- **守卫**：新增 `paper/audit/verify_audit4_edits.py`（T1–T10 + 逐 run 秩相关复算 +
+  cost 算术 + label 完备性 + arXiv 包一致性）；被本轮取代的 4 条旧断言（audit2 B3/B4、
+  audit3 T1/A4）重指向当前措辞并注明原因。
+- **验证（本机）**：四个守卫（audit2/audit3/audit4/verify_corrected_paper）与
+  `tests/test_stats_utils.py`（需 `PYTHONIOENCODING=utf-8`）全部 exit 0；
+  WSL 内 `pdflatex` 两遍编译 → **0 error / 0 overfull / 0 underfull，24 页**，
+  `paper/main.pdf` 与 `paper/arxiv_submission/main.pdf` 已同步（两者 gitignore）。
+- **登记**：`METRIC_CORRECTION §11`（T1–T10、cost 复算表、逐 run 秩相关表、验证）。
+- **遗留（GPU 机器）**：PART II 的 A1 routing-aware K mapper（≈45–60 min）、
+  A2 mapper objective sweep（2–3 h）、A3 校准量/分布对照（≈30 min，决定 task-conditioned
+  命名能否保留）；`scripts/run_audit4_gpu_queue.sh` 与三个脚本尚未编写。

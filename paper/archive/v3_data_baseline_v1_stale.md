@@ -1,3 +1,7 @@
+> **STALE (v1).** This document predates the corrected evaluation and is kept
+> for provenance only. Its claims are superseded: see `paper/main.tex` and
+> `paper/audit/METRIC_CORRECTION.md` for the current results.
+
 # V3 Paper — Authoritative Data Baseline (v2, 3-seed)
 **Date:** 2026-08-30 | **Source:** reports/*.json (all regenerable)
 **Use ONLY these numbers in the paper. Do NOT invent or reuse v1 numbers (n=14).**

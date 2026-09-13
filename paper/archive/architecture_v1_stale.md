@@ -1,3 +1,7 @@
+> **STALE (v1).** This document predates the corrected evaluation and is kept
+> for provenance only. Its claims are superseded: see `paper/main.tex` and
+> `paper/audit/METRIC_CORRECTION.md` for the current results.
+
 # Paper Architecture: Addressing Transfers, Content Does Not
 
 ## Section Map

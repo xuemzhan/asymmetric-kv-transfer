@@ -555,7 +555,6 @@ replaced by "closely agrees ... on normalized answer exact match"). Each is
 pinned by `paper/audit/verify_audit3_edits.py`.
 
 ---
-
 ## 10. Revision-3 GPU results, consumed into the paper (W27)
 
 Source: commit `e7d0048` (W26) ran `scripts/run_audit3_gpu_queue.sh` end to end
@@ -661,3 +660,81 @@ Limitations "Partial seed coverage" bullet now lists only the repaired-regime
 layer scrambling and the projection ablation as seed-0 results. All of it is
 pinned by `paper/audit/verify_audit3_edits.py` (tags A1–A4, including report
 cross-checks) and `paper/audit/verify_audit2_edits.py`.
+
+---
+
+## 11. Revision-4 paper-side changes (W28, audit4 / REVISION_PLAN4 PART I)
+
+Audit4 (7/10 Accept) asked for a framing upgrade rather than more experiments.
+PART I of the plan was executed with no GPU work; the ten text items, and the
+three factual corrections audit4 did not raise, are recorded here because this
+file is the provenance record for every paper-side change.
+
+### T4/§0.5 — the cost crossover disagreed with the Method
+
+`main.tex` 6.6 quoted `2050` tokens for a `58.8`M-parameter fp32 mapper
+(`224.2` MB). That figure traces to `experiments/phase3_rate_law.py:50-55,173`
+(`reports/archive/phase3_rate_law_seed0.json`), which counts one
+`1024x1024` map per layer for K and V: `2 x 28 x (1024^2 + 1024) = 58,777,600`
+parameters. The Method defines the mapper actually used in this paper as
+per-(layer, head) affine maps (`fit_mapper` -> `AffineMapper`, `D = 128`;
+`phaseB_errorbudget.apply_oa` indexes `W[(l, h)]` of shape `128x128`).
+Recomputed from that definition:
+
+| quantity | value |
+|---|---|
+| per-head K+V parameters (`2 x 28 x 8 x (128^2+128)`) | `7,397,376` (`7.40`M) |
+| footprint at fp32 | `28.2` MiB |
+| fp16 KV per token (`28 x 2 x 8 x 128 x 2 B`) | `112` KiB |
+| byte crossover | `~260` tokens |
+
+The paragraph was moved to Appendix B with the corrected numbers; the superseded
+figure is not quoted in the paper (the older number was `8x` too large, and the
+two parameterisations are not comparable). The consumption adapter's `~0.7`M
+figure was re-derived the same way (`28 x (1024x8 + 2048x8) = 688,128`) and is
+consistent with the paper.
+
+### T7/§0.1 — the rank correlations were reported only as pooled values
+
+The paper's `-1.00 / -0.80 / -0.10` are computed on means pooled over six runs
+(two pairs, three seeds) and then ranked over five mapper variants. The
+`reports/phaseB_errorbudget_*.json` files carry a run-to-run range the paper did
+not disclose, and the report notes already said "n is too small for a p-value".
+Recomputed per run (tag T7 in `verify_audit4_edits.py`):
+
+| run | `rho(e_raw, EM)` | `rho(e_attn, EM)` | `rho(e_wo, EM)` |
+|---|---|---|---|
+| 1.7B->0.6B s0 | -0.40 | -1.00 | -1.00 |
+| 1.7B->0.6B s1 | -0.60 | -0.90 | -0.90 |
+| 1.7B->0.6B s2 | -0.60 | -0.80 | -0.80 |
+| 8B->0.6B s0 | -0.20 | -0.80 | -0.80 |
+| 8B->0.6B s1 | -0.20 | -0.80 | -0.90 |
+| 8B->0.6B s2 | -0.10 | -0.90 | -0.90 |
+| pooled (paper) | **-0.10** | **-1.00** | **-0.80** |
+
+The Abstract, 6.3, 7.1(ii) and the `tab:errorbudget` caption now report the
+pooled value together with the per-run range and state that five variants cannot
+support a p-value. Direction is unchanged in all six runs; the sweep planned as
+REVISION_PLAN4 A2 is what would turn this into an estimated law.
+
+### The other eight items
+
+| tag | change | sites |
+|---|---|---|
+| T1 | title -> *Cross-Model KV Transfer Needs Functional Compatibility: Why Representation Alignment Is Not Enough* | `main.tex` (title, `pdftitle`, keywords), `arxiv_submission/main.tex`, `README.md`, `arxiv_metadata.md` |
+| T2 | contributions rewritten as four items (evaluation principle / decomposition / consumer-space alignment / repairability and boundary), with the general principle and our own implementation defect kept in separate sentences | Introduction |
+| T3 | new Method 3.3 *Functional compatibility decomposition* (`eq:decomp`), stated as a perturbation identity with the explicit caveat that it does not make EM additive and does not identify the binding term | Method |
+| T4 | factorial decomposition + Table (`tab:factorial`) and the cost heuristic moved to Appendices A/B after the bibliography | 6.1 pointer, Appendix A/B |
+| T5 | "joint arm is the weakest arm everywhere" replaced by the four-pair statement; Related Work no longer blames a "standard evaluation" | 7.1(iv), Related Work |
+| T6 | *task-conditioned* naming introduced with its qualifiers (one second domain, fifteen calibration documents, held-out Self 0.20-0.40, calibration volume not excluded) | Abstract, 5.3, 6.4, 7.2, Limitations |
+| T9 | the four v1 documents (`BRIEF`, `project_context`, `architecture`, `v3_data_baseline`) moved to `paper/archive/*_v1_stale.md` with a STALE header | `paper/archive/` |
+| T10 | all `Section~N` literals replaced by `\label`/`\ref` (8 sites); the guard also checks for undefined and duplicate labels | whole paper |
+
+### Verification
+
+`paper/audit/verify_audit4_edits.py` (new) pins T1-T10 plus the recomputed
+correlations and the cost arithmetic; the four superseded assertions in
+`verify_audit2_edits.py` (B3, B4) and `verify_audit3_edits.py` (T1, A4) were
+repointed at the current wording with a comment naming this plan. `main.tex`
+compiles with 0 errors, 0 overfull and 0 underfull boxes (24 pages), and
+`arxiv_submission/main.tex` is byte-identical to it.

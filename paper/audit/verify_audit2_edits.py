@@ -91,7 +91,10 @@ def main() -> int:
     present("B1", fig, "fig_evalcheck()")
 
     # B4 (reports/phaseB_controls_8B_0.6B_seed{0_fixed,1,2}.json) - par.4.
-    present("B4", tex, "Breaking the key--value correspondence does register")
+    # REVISION_PLAN4 T2 rewrote the Introduction contributions, which is where
+    # this sentence used to sit; the claim now lives in 5.2 only.
+    present("B4", tex, "break the correspondence is informative")
+    present("B4", tex, "the evaluator is not\n  insensitive to content")
     present("B4", tex, "to $0.000$ in all three seeds, and the mirror control")
     present("B4", tex, "Shuffled K (student)")
     present("B4", tex, "Same permutation, K and V (student)")
@@ -100,7 +103,10 @@ def main() -> int:
 
     # B3 (reports/phaseB_adapter_*_o_proj_seed*.json) - par.7, adapted Self frame.
     absent("B3", tex, "the Self column was not retained")
-    present("B3", tex, "measured against an \\emph{adapted} Self of $0.940\\pm0.041$")
+    # REVISION_PLAN4 T2 moved this number into the fourth contribution and
+    # changed its line wrapping; pin the current sites instead of the old one.
+    present("B3", tex, "$0.940\\pm0.041$ rather than the unadapted $0.899$")
+    present("B3", tex, "appropriate ceiling is the \\emph{adapted} Self arm")
     present("B3", tex, "$0.976{\\pm}0.021$")
 
     # B2 (reports/phaseB_adapter_causal_*.json) - par.6, content causality.

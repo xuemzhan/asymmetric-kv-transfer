@@ -23,7 +23,7 @@ V3 is a research project investigating KV cache transfer between teacher and stu
 │   ├── main.tex         # Canonical paper (self-contained)
 │   ├── arxiv_submission/# arXiv bundle (main.tex + figures/)
 │   ├── figures/         # Active vector PDFs + gen_paper_figures.py
-│   ├── audit/           # audit1-3, revision plans, guards
+│   ├── audit/           # audit1-4, revision plans, guards
 │   └── archive/         # Superseded v1 drafts/figures
 ├── ITERATION_LOG.md     # SOLE iteration log (read first every session)
 ├── AGENTS.md

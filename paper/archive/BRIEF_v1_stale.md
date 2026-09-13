@@ -1,3 +1,7 @@
+> **STALE (v1).** This document predates the corrected evaluation and is kept
+> for provenance only. Its claims are superseded: see `paper/main.tex` and
+> `paper/audit/METRIC_CORRECTION.md` for the current results.
+
 # BRIEF — Addressing Transfers, Content Does Not: Asymmetric KV State Transfer Across LLMs
 
 《Addressing Transfers, Content Does Not: Asymmetric KV State Transfer Across LLMs》研究跨大语言模型迁移 KV 缓存状态时的可迁移性规律。核心创新在于把 KV 缓存分解为 K（寻址/注意力路由子空间）与 V（内容/语义子空间）两个独立组件，提出并验证"能力差门控的非对称可迁移性"（gated asymmetric KV transferability）：在 Qwen3 家族 6 组师生模型对（0.6B–8B，3 个随机种子；8B/4B 为 36 层、1.7B/0.6B 为 28 层，均 8 头、头维 128）上，K 状态近乎普适迁移——6 对全部恢复 EM ≥ 0.71、5/6 对答案对数似然 ΔLL 显著为正（+1.04~+8.52），而 V 状态虽在 4/6 对上统计显著，但功能成功仅限师生能力接近的小差距对（8B→4B EM 1.00→0.88、1.7B→0.6B EM 0.43→0.80），在大差距对上失败甚至崩溃（8B→0.6B ΔLL −0.23，ns）——尽管 K 与 V 的线性几何对齐度几乎完全相同（CCA ρ₁ ≈ 0.99）。技术关键节点包括：剥离 RoPE 的仿射映射器拟合（教师到学生的线性变换）、Self/K-only/V-only/Joint 四臂注入消融、层定位分析（V 优势集中于第 8/12 层，选择性注入 ΔLL +2.15 显著优于全层注入 −0.23）、异构重组（教师 K + 学生 V 以 −7.27 同时超越完整教师 −14.77 与完整学生 −9.89）、以及状态/权重传输成本交叉点（约 2050 tokens）。论文已取得的效果是确立"KV 状态迁移在 Qwen3 家族线性映射器下实证不对称"的结论——寻址几何可跨模型组合、内容则受权重绑定；并在第二个域 SQuAD 上复现了该不对称（V-only 注入使 EM 崩溃至 0.03），同时证明高几何对齐（CCA 相关）并不保证功能可迁移，真正的瓶颈在于下游经权重参数化通路的内容消费。
