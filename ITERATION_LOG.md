@@ -891,3 +891,39 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
   K/V 机制混用、20-epoch causality 未覆盖。
 - **待办**（详见 `REVISION_PLAN3.md` §0 优先级表）：T1/T2/T3（本机文本，可立即做）、
   A6（本机统计）、A1（GPU，阻塞项）、A2/A3/A4（GPU）、T4 标题与 A5 文档宽度待决策。
+
+## W22 (2026-09-13): CPU 侧收尾 —— audit3 文本修复 + 全 seed 聚类统计 + GPU 队列交付
+
+- **触发**：audit3 方案（W21）中"本机即可完成"的部分，以及把 GPU 侧工作交付给 GPU 机器。
+- **GPU 侧交付（已 push，`4a119f0`）**：
+  - `phaseB_evalcheck.py` 扩为 A1：logits 误差分布（mean / p95 / max、`|d|>0.5` 占比）、
+    `KL(p_full‖p_cache)`、first-token top-1 一致率；新增 `--domain squad` 第二域 validator
+    与 `--attrib` 归因探针（bf16 回环 / SDPA vs eager / position_ids）；
+  - `phaseB_adapter.py --dump-rows`：adapter 与 causality 补逐样本行（否则无法做聚类区间）；
+  - `phaseB_squad_within.py`（A3，15/15 文档不相交划分 + 预登记门禁）、
+    `phaseB_errorbudget.py`（A4，raw V / A_SV / A_SV_WO 误差 vs EM + Spearman）；
+  - `phaseB_common.load_model_gpu(attn_implementation=)`、`load_data` 支持 `V3_DATA_DIR`；
+  - `scripts/run_audit3_gpu_queue.sh`：A1→A4 依赖顺序、可断点续跑、A1 失败即停。
+  本机仅能验证 `py_compile` 通过，实验本身未在此机器运行。
+- **A6 完成（本机，零 GPU）**：`scripts/cluster_stats_audit3.py` →
+  `reports/cluster_stats_audit3.json`。三个 seed 的 document-clustered EM CI95 全部算出
+  （cluster=document，每 seed 8 个）：8B→4B V-only 0.429/0.446/0.446，
+  区间 `[0.375,0.482]`/`[0.429,0.482]`/`[0.429,0.482]` 均排除 0，而同 seed Self
+  0.804–0.839；1.7B→0.6B 的 consumption-space 修复与 affine 的聚类区间三个 seed 全不相交。
+  **结论方向不变**，但论文原先"聚类区间只有 seed 0"的说法已被证伪并改写。
+- **文本修复（T1/T1b/T2/T3，本机）**：
+  - 删掉"mapped keys 的 addressing perturbation 造成 V-only residual"这一与四臂设计矛盾的
+    解释（V-only = student K + mapped V），§6.3 改题为
+    "Two separate failures: mapped keys perturb routing, mapped values must be consumable"，
+    Abstract / Intro 贡献 2 / Discussion / Conclusion 同步；
+  - Discussion §7.1 按 audit3 §16 重构为 evaluation / value / key / joint 四层；
+  - evaluator 两个 bug 明确归属于**我们自己早先的实现**（不再写 "published evaluation code /
+    released code"），并声明未审计第三方实现；
+  - "end-to-end equivalent to full prefill" → "closely agrees … on normalized answer exact match"。
+- **守卫**：新增 `paper/audit/verify_audit3_edits.py`（T1/T1b/T2/T3/A6 断言 + 与 JSON 交叉核对），
+  并同步 `verify_audit2_edits.py` 中被 audit3 取代的那条断言。两者均 ALL PASS。
+- **论文**：`main.tex` 重新编译（tectonic，0 error / 仅 underfull hbox 警告），
+  `paper/main.pdf` 与 `paper/arxiv_submission/{main.tex,main.pdf}` 同步；
+  `METRIC_CORRECTION.md` 新增 §9（A6 结果 + A1–A5 待跑说明 + 文本修复清单）。
+- **待办**：GPU 机器 `git pull` 后执行 `bash scripts/run_audit3_gpu_queue.sh`；
+  回来后按 REVISION_PLAN3 PART III 的条件式改写（W1–W5、W7）落地并登记 §10。

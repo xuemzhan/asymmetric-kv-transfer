@@ -67,7 +67,13 @@ def main() -> int:
     present("X5", tex, "The practical message separates two levels of compatibility")
     present("X5", tex, "\\emph{state space}, matching raw KV representations is not sufficient")
     present("X5", tex, "\\emph{consumption space}, alignment is what matters")
-    present("X6", tex, "the failure is a compatibility failure, and it is worth separating two")
+    # X6 originally pinned "the failure is a compatibility failure, and it is worth
+    # separating two levels". audit3 (par.16) replaced that sentence with the
+    # four-layer statement, so the guard for the new wording lives in
+    # verify_audit3_edits.py (tag T1b); the state/consumption split it encoded is
+    # still asserted here.
+    present("X6", tex, "\\emph{(ii) Value transfer.}")
+    present("X6", tex, "Alignment in raw representation space is\ninsufficient")
     present("X7", tex, "The failure lies in how the receiving model reads the state")
 
     # ----------------------------------------------------------------- PART II

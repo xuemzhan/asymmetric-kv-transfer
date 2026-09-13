@@ -51,11 +51,12 @@ this claim within the Qwen3 family ($0.6$B--$8$B; six teacher--student pairs;
 three seeds) and report a diagnostic negative result followed by a constructive
 fix.
 
-The standard protocol overstates transfer. Its greedy exact-match (EM) metric is
-computed on a cache that has already been advanced through the query and the gold
-answer, and it re-feeds the final query token as the first generation input; we
-confirm both defects in the published evaluation code, and we validate the
-corrected evaluator against a full-prefill reference on the whole Self test set
+The evaluation protocol we used in earlier versions of this work overstates
+transfer. Its greedy exact-match (EM) metric is computed on a cache that has
+already been advanced through the query and the gold answer, and it re-feeds the
+final query token as the first generation input; both defects are in that
+implementation, and we validate the corrected evaluator against a full-prefill
+reference on the whole Self test set
 (normalized-EM agreement $0.929$--$0.982$; first-token logit error at most
 $1.344$). Under that evaluator, no pair averages more than $0.149$ EM for keys or
 $0.065$ for the joint arm over three seeds (largest single seed $0.161$),
@@ -78,9 +79,11 @@ in representation space, layer alignment looks irrelevant: scrambling the layer
 map costs nothing. Under a mapper fit in consumption space the same scrambling
 collapses V-only EM from $0.91$ to $0.11$--$0.23$, so the earlier null result was
 a floor effect of the mapper and alignment does matter once the consumer reads
-the state correctly. Under mapped teacher keys the student's top-1 attention
-agreement with its own routing is $0.59$--$0.70$. Fitting the value mapper where the student reads
-value raises V-only EM from $0.113$ to $0.90$--$0.94$
+the state correctly. Two failures are kept apart below: under mapped teacher keys
+the student's top-1 attention agreement with its own routing is $0.59$--$0.70$
+(a key-side diagnostic), while the value arm, which never sees a mapped key, is
+limited by how the receiver consumes it. Fitting the value mapper where the
+student reads value raises V-only EM from $0.113$ to $0.90$--$0.94$
 ($1.7$B$\to0.6$B) and from $0.000$ to $0.25$--$0.27$ ($8$B$\to0.6$B), while a
 shuffled-target mapper stays at $0.08/0.07$. A rank-8 correction of the
 student's output projections ($\sim$$0.7$M parameters), trained by next-token
@@ -115,10 +118,11 @@ not.
 This paper argues that this reading rests on two measurement choices that do not
 survive scrutiny, and that once they are corrected the question changes from
 \emph{which component transfers} to \emph{when a consumer can read a transferred
-state}. The first choice is the evaluator: in the published path, the greedy
-exact-match (EM) metric is computed on a cache that has already been advanced
-through the query and the gold answer, and the final query token is re-fed as the
-first generation input. We confirm both defects in the released code. The second
+state}. The first choice is the evaluator: in the path we used in earlier versions
+of this work, the greedy exact-match (EM) metric is computed on a cache that has
+already been advanced through the query and the gold answer, and the final query
+token is re-fed as the first generation input. Both defects are in that
+implementation; we did not audit third-party implementations. The second
 choice is the primary metric itself: teacher-forced answer log-likelihood, which
 is treated as evidence of transfer.
 
@@ -162,12 +166,14 @@ Figure~\ref{fig:setting}). Our contributions are:
   space the same scrambling matters: V-only EM falls from $0.911$ under the
   proportional map to $0.107$--$0.232$ under offsets and permutation, with
   non-overlapping document-clustered intervals. The earlier null result was a
-  floor effect of the mapper. What does change is the consumer's
-  routing: under mapped teacher keys, the student's top-1 attention agreement
-  with its own routing is $0.70$ ($1.7$B$\to0.6$B) and $0.59$
-  ($8$B$\to0.6$B), with routing total-variation $0.167$ and $0.251$ (seed
-  means). Fitting the value mapper where the student reads value recovers most
-  of V-only transfer:
+  floor effect of the mapper. The two arms then fail for different reasons, which
+  we keep separate. Under mapped teacher keys---the key arm and the joint arm---the
+  student's routing moves: top-1 attention agreement with its own routing is
+  $0.70$ ($1.7$B$\to0.6$B) and $0.59$ ($8$B$\to0.6$B), with routing
+  total-variation $0.167$ and $0.251$ (seed means). The value arm uses the
+  student's own keys, so its routing is unchanged and its failure is instead a
+  consumption-space mismatch. Fitting the value mapper where the student reads
+  value recovers most of V-only transfer:
   an attention-output-aware mapper raises EM from $0.113$ to $0.935$
   ($1.7$B$\to0.6$B) and from $0.000$ to $0.250$ ($8$B$\to0.6$B), a
   $W_O$-aware mapper reaches $0.899$ and $0.268$, and a mapper with shuffled
@@ -204,9 +210,9 @@ is not enough, by a small adaptation of the consumer itself. The second level is
 where our evidence is clearest: on the equal-depth pair the consumption-space
 value mapper recovers the value arm without changing a single consumer weight and
 only the residual gap needs the adapter, whereas on the flagship pair the mapper
-alone recovers about a quarter of Self and the adapter is required. The mismatch
-is diagnosable (routing divergence)
-and repairable, and evaluations of cross-model transfer should include content
+alone recovers about a quarter of Self and the adapter is required. The
+key-side mismatch is diagnosable (routing divergence) and the value-side one is
+repairable, and evaluations of cross-model transfer should include content
 controls.
 
 \begin{figure}[t]
@@ -283,12 +289,13 @@ ceiling when it reads its own state. K-only and V-only isolate addressing from
 content; Joint is the full handoff.
 
 \subsection{Corrected evaluation}
-The standard implementation advances a single cache through the query \emph{and
-the gold answer} during scoring, then calls greedy generation on that same
-mutated cache, so the model reproduces an answer it has just been shown. A second
-defect re-feeds the final query token as the first generation input, which
-degrades to punctuation loops once the cache is perturbed. We confirm both
-defects in the released code and use a corrected evaluator in which
+The implementation used in earlier versions of this work advances a single cache
+through the query \emph{and the gold answer} during scoring, then calls greedy
+generation on that same mutated cache, so the model reproduces an answer it has
+just been shown. A second defect re-feeds the final query token as the first
+generation input, which degrades to punctuation loops once the cache is
+perturbed. Both defects are in that implementation, which we audited; we did not
+audit third-party implementations. We use a corrected evaluator in which
 teacher-forced log-likelihood and greedy generation each start from a
 \emph{fresh} cache and the first generated token is taken from the prefill
 logits. We validate the corrected evaluator against a full-prefill reference
@@ -299,8 +306,9 @@ $0.786$, $0.804$, and $0.929$; and the largest absolute error on the first
 generated token's logits is $1.344$, $0.875$, and $0.969$. Greedy tokenization
 therefore diverges on a minority of items without changing the extracted answer,
 and the two paths agree to within two items on Self exact match for every
-student: the corrected path is end-to-end equivalent to full prefill on the
-quantity we report.
+student: the corrected path closely agrees with full prefill on the quantity we
+report, normalized answer exact match, while remaining distinct from it at the
+token level.
 
 \begin{figure}[t]
 \centering
@@ -447,10 +455,13 @@ $8$B$\to4$B. On the flagship $8$B$\to0.6$B pair all three
 teacher arms are $0.000$ in every seed. The single arm above $0.15$ is V-only on
 $8$B$\to4$B, at $0.440 \pm 0.010$---a little over half of that pair's Self
 ($0.815$)---and V-only is $0.000$ on all four unequal-depth pairs. No other
-teacher arm exceeds $0.15$ when averaged over seeds. At seed 0---the only seed for
-which the source archives document-clustered intervals for EM---the best arms of
-that pair carry CI95 $[0.375, 0.482]$ (V-only), $[0.071, 0.214]$ (K-only), and
-$[0.000, 0.054]$ (Joint), all far below Self.
+teacher arm exceeds $0.15$ when averaged over seeds. With documents as the
+resampling unit (eight clusters per seed), that pair's V-only arm carries CI95
+$[0.375, 0.482]$, $[0.429, 0.482]$, and $[0.429, 0.482]$ over the three seeds:
+every interval excludes zero and every one sits far below the same seed's Self
+($0.804$--$0.839$). The same resampling leaves K-only within $[0.071, 0.250]$
+and Joint at or below $0.179$, so clustering widens the intervals without
+changing any arm ordering.
 
 Meanwhile the same injections raise teacher-forced likelihood substantially:
 K-only by up to $+8.52$ ($8$B$\to4$B) and Joint by up to $+8.37$, with the
@@ -465,8 +476,10 @@ questions.
 EM is corrected greedy exact match; $\dll$ is teacher-forced answer
 log-likelihood relative to Self. Values are mean $\pm$ std over seeds.
 A blank std means the source reports no dispersion for that cell; every such
-cell is a $0.000$ arm in all three seeds. Document-clustered CI95 for EM is
-archived for seed 0 only and is quoted in the text for the largest arms.}
+cell is a $0.000$ arm in all three seeds. Document-clustered CI95 for EM
+(clusters $=$ documents, eight per seed) is computed for every seed from the
+archived per-sample rows and is quoted in the text for the arms on which a claim
+depends.}
 \label{tab:main}
 \begin{tabular}{lcccccccc}
 \toprule
@@ -676,7 +689,7 @@ $8$B$\to4$B     & $+8.52{\pm}0.28$ & $+2.52{\pm}0.07$ & $-2.67{\pm}0.09$ \\
 \end{tabular}
 \end{table}
 
-\subsection{Routing diverges, and consumer-space mapping recovers values}
+\subsection{Two separate failures: mapped keys perturb routing, mapped values must be consumable}
 We compare the student's attention maps under its own keys and under mapped
 teacher keys (Figure~\ref{fig:mappers}b). Mean top-1 document-token agreement is
 $0.70$ for $1.7$B$\to0.6$B and $0.59$ for $8$B$\to0.6$B, and the values are
@@ -693,17 +706,25 @@ $1.7$B$\to0.6$B, V-only EM rises from $0.113$ (affine) to $0.935$
 (attention-output-aware) and $0.899$ ($W_O$-aware), against a Self of $0.899$.
 For $8$B$\to0.6$B it rises from $0.000$ to $0.250 \pm 0.018$ and
 $0.268 \pm 0.018$, against a Self of $0.899$: the same objective recovers about a
-quarter of Self on the flagship pair, where routing diverges more. The
+quarter of Self on the flagship pair. The
 shuffled-target control, fit to the same objective with targets from a different
 document, stays near the floor ($0.077$ and $0.065 \pm 0.027$), so the recovery
 is tied to the document's content rather than to a generic transformation of the
 cache.
 
-We read the residual gap as consistent with the routing diagnostic: a value
-mapper cannot repair the addressing perturbation introduced by mapped keys, and
-the pair with larger routing divergence recovers less. This reading is our
-interpretation of two co-varying quantities, not an independently identified
-mechanism.
+The value arm and the key arm fail for different reasons, and the four-arm design
+keeps them separate. In the value arm the student reads its own keys, so its
+routing is the student's routing: the failure is that the mapped value is close
+to $V_S$ in representation space while the quantity the receiver actually
+consumes is $A_S V W_O$. The residual gap on the flagship pair is therefore an
+alignment gap in the receiver's consumption space, not an addressing effect:
+this arm never sees a mapped key. In the key arm, and in the joint arm that
+inherits both, the student is asked to read teacher keys, and its routing does
+move (top-1 agreement $0.70$ on $1.7$B$\to0.6$B and $0.59$ on
+$8$B$\to0.6$B, with attention cosine $0.97$ and $0.93$). We report routing
+divergence as a diagnostic for the key side and consumption-space alignment as
+the operative variable on the value side; neither is identified as a unique
+mechanism by an intervention, and we no longer use one to explain the other.
 
 \begin{table}[t]
 \centering
@@ -956,21 +977,29 @@ Self reference.}
 \section{Discussion}
 
 \subsection{What the diagnosis does and does not establish}
-The evidence supports three statements. First, the standard protocol's task
-metric does not measure whether a transferred state is usable: the two evaluator
-defects are detectable in the released code, and the corrected metric removes the
-reported transfer on all six pairs. Second, teacher-forced likelihood is not a
-transfer metric in this setting, because content-free caches reproduce its gains.
-Third, the failure is a compatibility failure, and it is worth separating two
-levels. \emph{State-space} compatibility---how close the mapped representation is
-to the student's own---is not sufficient: the affine mapper minimises
-representation error and still leaves the state unusable. \emph{Consumption-space}
-compatibility is what tracks task performance, and it can be restored either by
-changing \emph{how the consumer reads} the state (a mapper fit in consumption
-space, which leaves every consumer weight untouched) or, for the residual gap, by
-adapting the consumer itself.
+The evidence supports four statements, and we keep them separate rather than
+folding them into a single claim about compatibility.
+\emph{(i) Evaluation.} Teacher-forced likelihood does not establish functional
+cache reuse: content-free caches (wrong document, moment-matched random,
+all-zero) reproduce $89$--$105\%$ of the K-only likelihood gain while answering
+no question, and the two defects we identify in the implementation we used
+earlier inflated greedy EM in our own measurements. The first point holds
+independently of any implementation detail; the second covers the code we
+audited.
+\emph{(ii) Value transfer.} Alignment in raw representation space is
+insufficient. The affine mapper minimises representation error and leaves the
+value arm unusable, while a mapper fit where the student consumes value recovers
+it (Table~\ref{tab:mappers}); with documents as the resampling unit the recovered
+arm's clustered CI95 is $[0.839, 0.982]$ against $[0.018, 0.107]$ for the affine
+mapper at seed 0, and the two intervals stay disjoint in all three seeds.
+\emph{(iii) Key transfer.} Mapped teacher keys can perturb the receiver's
+routing (top-1 agreement $0.59$--$0.70$ against attention cosine
+$0.93$--$0.97$). This is a diagnostic for the key side; the value arm never sees
+a mapped key and is not explained by it.
+\emph{(iv) Joint handoff.} A full handoff must satisfy both, which is why the
+joint arm is the weakest arm everywhere.
 
-The role of layer alignment depends on which level is in play, and our own earlier
+The role of layer alignment depends on which side is in play, and our own earlier
 reading of it was wrong. In representation space the value arm sits at the floor
 and scrambling the layer map costs nothing, which we took to mean alignment does
 not matter (Section~6.1). In consumption space, where the mapper places value
@@ -982,8 +1011,8 @@ Our evidence does not establish that the recovered information is the teacher's
 document content in full. The shuffled-document adapter control is intermediate,
 not at the floor, so part of the recovery is an adaptation to teacher-like state
 distributions rather than to the specific document. Nor do we identify the
-mechanism that makes a state readable; we measure routing divergence and show it
-co-varies with how much the mapper and adapter recover.
+mechanism that makes a state readable: routing divergence is a diagnostic for the
+key side, and we measure it rather than intervening on it.
 
 \subsection{Implications}
 If cross-model cache reuse is gated by consumer compatibility rather than by the
@@ -1008,12 +1037,14 @@ pair and part of them on the flagship pair.
   document is reused across about seven questions (test: $56$ questions from $8$
   documents). Wrong-document controls are therefore conservative as content
   controls, since two documents differ mainly in the entities they mention. The
-  four-arm EM table reports std over seeds and no interval: document-clustered EM
-  intervals exist only in the seed-0 reports, where the clustering fix landed after
-  seeds 1 and 2 had been written, and we quote those seed-0 intervals in the text
-  rather than mix them into a three-seed table. Its std is therefore likely too
-  narrow given the document clustering, and we do not use it to separate the
-  $8$B$\to4$B arms from zero.
+  four-arm EM table reports std over seeds and no interval, but document-clustered
+  EM intervals (eight clusters per seed) are computed for all three seeds from the
+  archived per-sample rows and are quoted in Section~5.1. They are wider than
+  per-sample intervals and they confirm the ordering rather than overturning
+  it---on $8$B$\to4$B, V-only is $0.43$--$0.45$ with intervals excluding zero,
+  against a Self of $0.80$--$0.84$. The std over seeds remains too narrow to lean
+  on, and the clustered intervals still leave that pair's V-only arm far below
+  Self.
 \item \textbf{Variance.} The $1.7$B adapter's joint arm ranges from $0.55$ to
   $0.96$ across seeds, and several likelihood quantities have large seed-to-seed
   spread (for example $8$B$\to1.7$B K-only $+1.04 \pm 1.53$). Three seeds is a
@@ -1068,19 +1099,21 @@ Qwen$\to$Llama) to test the boundary of the consumption adapter; and (iii)
 systems measurements of mapper and adapter latency against re-prefilling.
 
 \subsection{Conclusion}
-Cross-model KV transfer is a state--consumer compatibility problem. Standard
-linear maps make teacher state predictable and raise teacher-forced likelihood,
-but under a corrected evaluator those states do not answer questions, and
-content-free caches reproduce the likelihood gains that made the transfer look
-real. The failure follows the consumer: routing diverges under mapped keys;
-mappers fit in the consumer's space recover the value arm on the equal-depth pair
-without touching a single consumer weight, and a small rank-8 adaptation of the
-student's output projections recovers most of the K, V, and joint arms there and
-part of them on the flagship pair, though not on a second domain. Layer alignment
-returns to the picture once the consumer reads the state, which the ordinary
-affine mapper hides. Evaluation of cross-model cache reuse should measure task
-performance with content controls, and reuse systems should expect to adapt the
-consumer.
+Cross-model KV transfer is a state--consumer compatibility problem with two sides
+that our four-arm design keeps apart. Mapped teacher keys perturb the receiver's
+routing (the key side), while mapped values stay unusable until the mapper is fit
+where the receiver consumes them, however small their raw representation error is
+(the value side). Standard linear maps make teacher state predictable and raise
+teacher-forced likelihood, but under a corrected evaluator those states do not
+answer questions, and content-free caches reproduce the likelihood gains that
+made the transfer look real. Mappers fit in the consumer's space recover the value
+arm on the equal-depth pair without touching a single consumer weight, and a small
+rank-8 adaptation of the student's output projections recovers most of the K, V,
+and joint arms there and part of them on the flagship pair, though not on a second
+domain. Layer alignment returns to the picture once the consumer reads the state,
+which the ordinary affine mapper hides. Evaluation of cross-model cache reuse
+should measure task performance with content controls, and reuse systems should
+expect to adapt the consumer.
 
 % ============================================================================
 \section{Reproducibility statement}

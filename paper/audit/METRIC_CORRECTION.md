@@ -465,3 +465,65 @@ finding, that the superseded strings are absent and the replacements present,
 including one assertion per new number above. It distinguishes PART I (W19b,
 edit-only findings) from PART II (W20b, findings that needed new GPU runs) and
 runs clean.
+
+---
+
+## 9. Revision-3 results (audit3 / REVISION_PLAN3)
+
+### A6 — Document-clustered EM for every seed, computed on the CPU (W22)
+
+**Source:** `reports/cluster_stats_audit3.json`, produced by
+`scripts/cluster_stats_audit3.py` from the archived reports plus
+`data/test_v2_seed{0,1,2}.json`. Cluster unit = document; 8 clusters per seed;
+10,000 cluster-bootstrap resamples. No GPU and no re-run were needed: the
+four-arm reports carry `doc_id` on every row for all three seeds, and the
+control and mapper reports carry `id`, which joins to the dataset.
+
+**Why this was a plan item.** The paper asserted that "document-clustered EM
+intervals exist only in the seed-0 reports, where the clustering fix landed
+after seeds 1 and 2 had been written". That was true when written and is now
+false. audit3 (par.10) asked for all-seed clustered inference; the archived rows
+already contained what it needed.
+
+**Key numbers** (also quoted in Sections 5.1 and 7.3 of the paper):
+
+| Pair, arm | seed 0 | seed 1 | seed 2 | clustered CI95 (per seed) |
+|---|---|---|---|---|
+| 8B→4B V-only | 0.429 | 0.446 | 0.446 | `[0.375,0.482]`, `[0.429,0.482]`, `[0.429,0.482]` |
+| 8B→4B K-only | 0.143 | 0.161 | 0.143 | `[0.071,0.214]`, `[0.089,0.250]`, `[0.089,0.196]` |
+| 8B→4B Joint | 0.018 | 0.054 | 0.125 | `[0.000,0.054]`, `[0.018,0.107]`, `[0.071,0.179]` |
+| 8B→4B Self | 0.804 | 0.839 | 0.804 | `[0.732,0.857]` to `[0.750,0.839]` |
+| 1.7B→0.6B V-only (affine) | 0.054 | 0.143 | 0.143 | `[0.018,0.107]`, `[0.071,0.214]`, `[0.071,0.214]` |
+| 1.7B→0.6B V-only (attention-output-aware) | 0.911 | 0.929 | 0.964 | `[0.839,0.982]`, `[0.857,0.982]`, `[0.911,1.000]` |
+
+**Effect on the paper.** No arm ordering changes. Clustered intervals are wider
+than per-sample ones, every 8B→4B V-only interval excludes zero while remaining
+far below the same seed's Self, and the affine-versus-consumption-space value
+intervals stay disjoint in all three seeds. The Limitations bullet "Corpus
+effects" and the Table 1 caption were rewritten accordingly; the superseded
+sentences are asserted absent by `paper/audit/verify_audit3_edits.py`.
+
+**Deliberately not available.** Adapter and causality reports carry no
+per-sample rows, so those results cannot receive clustered intervals from the
+archive. `phaseB_adapter.py --dump-rows` was added and the A2 runs regenerate
+them with rows; the same script picks them up automatically
+(`adapter_causality` section of the JSON currently reports
+"regenerated without --dump-rows" for the two archived single-seed runs).
+
+### A1–A5 — pending GPU runs
+
+The GPU-side code for A1 (evaluator residual and attribution probe), A2
+(20-epoch causality, three seeds, `--dump-rows`), A3 (within-SQuAD repair) and
+A4 (state/consumption error budget) is committed and queued by
+`scripts/run_audit3_gpu_queue.sh`. Nothing here should be cited until the
+corresponding `reports/*.json` land and are registered in a section 10.
+
+### Text-only audit3 items landed in the same round
+
+T1 (key-side routing versus value-side consumption, four sites plus the
+Analysis 6.3 subsection title), T1b (Discussion 7.1 restructured into the four
+layers of audit3 par.16), T2 (the two evaluator defects are attributed to our
+own earlier implementation, with an explicit statement that third-party
+implementations were not audited), T3 ("end-to-end equivalent to full prefill"
+replaced by "closely agrees ... on normalized answer exact match"). Each is
+pinned by `paper/audit/verify_audit3_edits.py`.

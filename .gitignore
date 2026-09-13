@@ -1,5 +1,7 @@
 # Experiment data artifacts (regenerable)
-reports/*.json
+# reports/*.json is deliberately NOT ignored: the JSON reports are the
+# provenance record for every number in the paper (they are required before a
+# number enters main.tex, and the cluster/statistics scripts read them back).
 data/*.json
 
 # Python

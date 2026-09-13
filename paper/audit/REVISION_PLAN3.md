@@ -36,6 +36,15 @@ audit3 §19 明确"解决前三个技术问题 → 7/10 Accept"）
 
 **优先级与依赖**
 
+**执行状态（2026-09-13，W22）**
+
+| 条目 | 状态 | 证据 |
+|---|---|---|
+| T1 / T1b / T2 / T3 | **已完成**（本机文本） | `paper/main.tex`；守卫 `verify_audit3_edits.py` ALL PASS |
+| A6 | **已完成**（本机统计，零 GPU） | `reports/cluster_stats_audit3.json`、`scripts/cluster_stats_audit3.py`；论文 §5.1 + Table 1 表注 + Limitations 已改写 |
+| A1–A4 | **已排队**（GPU） | 代码 + `scripts/run_audit3_gpu_queue.sh` 已推送；等待 `reports/*.json` |
+| T4（标题）、A5（文档宽度） | 待决策 | 见下 |
+
 | 优先级 | 条目 | 依赖 | 阻塞谁 |
 |---|---|---|---|
 | P0 | T1 / T2 / T3（本机文本） | 无 | 不阻塞；使审稿意见 #2 当场关闭 |

@@ -106,6 +106,6 @@ for S in 0 1 2; do
 done
 
 echo "== audit3 GPU queue finished $(date -Is) =="
-echo "Next: commit reports/*.json, then run on the editing machine:"
+echo "Next: git add reports/ && git commit, then on the editing machine:"
 echo "  python scripts/cluster_stats_audit3.py"
 echo "  python paper/audit/verify_audit3_edits.py"
