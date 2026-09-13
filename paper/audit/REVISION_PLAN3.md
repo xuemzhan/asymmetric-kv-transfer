@@ -42,8 +42,17 @@ audit3 §19 明确"解决前三个技术问题 → 7/10 Accept"）
 |---|---|---|
 | T1 / T1b / T2 / T3 | **已完成**（本机文本） | `paper/main.tex`；守卫 `verify_audit3_edits.py` ALL PASS |
 | A6 | **已完成**（本机统计，零 GPU） | `reports/cluster_stats_audit3.json`、`scripts/cluster_stats_audit3.py`；论文 §5.1 + Table 1 表注 + Limitations 已改写 |
-| A1–A4 | **已排队**（GPU） | 代码 + `scripts/run_audit3_gpu_queue.sh` 已推送；等待 `reports/*.json` |
+| A1–A4 | **已完成并进正文**（GPU 结果 W26，整合 W27） | 18 份报告；论文 Abstract / §3.3 / §5.3 / §6.3+新表 / §6.4+Table 5,7 / §7.1 / Limitations / Conclusion；登记 `METRIC_CORRECTION.md §10` |
 | T4（标题）、A5（文档宽度） | 待决策 | 见下 |
+
+**W27 结果与门禁判定（详见 METRIC_CORRECTION.md §10）**
+
+| 项 | 结果 | 门禁判定 |
+|---|---|---|
+| A1 | top-1 0.929–0.982、KL 中位数 0.001–0.005 nats、残差 100% 来自 attention kernel path（回环与 position 精确为 0） | 字面 "top-1 = 1.000" 未满足；按停止条件的**诊断意图**（实现缺陷）排除 → 书面修正门禁措辞，前提成立，禁止写 "equivalent" |
+| A2 | 1.7B margin +0.738（3 seed 全部排除 0）；8B margin +0.071 < 0.10 | equal-depth **established**；flagship **unresolved**（不得升级） |
+| A3 | 三个 split 的所有迁移臂 EM = 0.000（含域内重训） | **更强负结果**：compatibility 绑定任务分布 |
+| A4 | e_raw 与 EM Spearman −0.10；e_attn / e_WO −1.00 / −0.80 | 核心机制 claim **无需降级**，shuffled 例外如实写 |
 
 | 优先级 | 条目 | 依赖 | 阻塞谁 |
 |---|---|---|---|

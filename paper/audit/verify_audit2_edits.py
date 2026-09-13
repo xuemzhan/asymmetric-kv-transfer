@@ -82,7 +82,10 @@ def main() -> int:
     absent("B1", tex, "was not retained")
     present("B1", tex, "normalized-EM agreement $0.929$--$0.982$")
     present("B1", tex, "complete $56$-item Self test set of three student sizes")
-    present("B1", tex, "logits is $1.344$, $0.875$, and $0.969$")
+    # audit3/A1 rewrote the validator paragraph and kept the same three numbers
+    # with different wording; the A1 assertions in verify_audit3_edits.py pin
+    # them against the residual report.
+    present("B1", tex, "the largest absolute logit error is $1.344$, $0.875$,")
     present("B1", tex, "\\label{fig:evalcheck}")
     present("B1", fig, "def fig_evalcheck():")
     present("B1", fig, "fig_evalcheck()")
@@ -102,8 +105,10 @@ def main() -> int:
 
     # B2 (reports/phaseB_adapter_causal_*.json) - par.6, content causality.
     present("B2", tex, "\\label{tab:causal}")
-    present("B2", tex, "we report the flagship causality as")
-    present("B2", tex, "$0.304$ for correct KV against $0.143$--$0.161$")
+    # audit3/A2 replaced the 10-epoch single-seed causality with the 20-epoch
+    # three-seed frozen-adapter test; the current numbers and the "unresolved"
+    # verdict are pinned by tag A2 in verify_audit3_edits.py.
+    absent("B2", tex, "Both causality runs use a shorter schedule")
 
     # C1 (reports/phaseB_alignment_repaired_1.7B_0.6B_seed0.json) - par.9.
     absent("C1", tex, "Layer alignment alone does not explain the failure")
@@ -117,7 +122,9 @@ def main() -> int:
     # C4 (reports/phaseB_squad_{outaware,adapter}_seed0.json) - par.13.
     present("C4", tex, "\\label{tab:squadrepair}")
     present("C4", tex, "V-only, and joint EM at $0.000$ and $0.033$")
-    present("C4", tex, "\\textbf{Cross-domain repair.}")
+    # audit3/A3 merged the cross-domain bullet into the task-distribution
+    # limitation and added the within-domain SQuAD result (tag A3).
+    present("C4", tex, "compatibility being bound to the task distribution")
 
     # C2 (reports/phaseB_selfdiag_seed0.json) - par.12, 1.7B Self anomaly.
     # audit3 (par.13, tag A7) replaced this sentence with a rule-based taxonomy

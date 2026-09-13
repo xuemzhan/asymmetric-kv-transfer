@@ -93,9 +93,11 @@ def main() -> int:
     present("T2", tex, "both defects are in that\nimplementation")
 
     # --------------------------------------------------------- T3: audit3 par.3
+    # The wording fix stands; the validator paragraph itself was rewritten again
+    # when the A1 attribution landed, so the pins are on the current sentences.
     absent("T3", tex, "end-to-end equivalent to full prefill")
-    present("T3", tex, "closely agrees with full prefill on the quantity we")
-    present("T3", tex, "remaining distinct from it at the\ntoken level")
+    present("T3", tex, "We attribute that residual rather than only reporting it")
+    present("T3", tex, "near-ties resolved differently at bf16")
 
     # ---------------------------------------------- A6: audit3 par.9/10/11 (CPU)
     absent("A6", tex, "document-clustered EM intervals exist only in the seed-0 reports")
@@ -156,6 +158,115 @@ def main() -> int:
             if counts.get(bad):
                 FAILURES.append("A7: 1.7B failures include %s=%d"
                                 % (bad, counts[bad]))
+
+    # ------------------------------- A1: audit3 par.3 (GPU-verified validator)
+    present("A1", tex, "first-token top-1 agreement $0.929$--$0.982$")
+    present("A1", tex, "$0.001$--$0.005$ nats")
+    present("A1", tex, "reproduces the reference bit for bit")
+    present("A1", tex, "attention kernel path")
+    present("A1", tex, "The same\nvalidator holds on the second domain")
+    present("A1", tex, "first-token top-1\nagreement is $0.933$")
+    absent("A1", tex, "end-to-end equivalent to full prefill")
+
+    def load_report(name: str) -> dict:
+        return json.load(io.open(os.path.join(ROOT, "reports", name), encoding="utf-8"))
+
+    res = load_report("phaseB_evalcheck_residual_seed0.json")["students"]
+    want = {"0.6B": (0.929, 0.0047, 1.344), "1.7B": (0.929, 0.0015, 0.875),
+            "4B": (0.982, 0.0010, 0.969)}
+    for entry in res:
+        top1, kl, mx = want[entry["student"]]
+        if not close(entry["first_top1_agreement"], top1, 0.001):
+            FAILURES.append("A1: %s top-1 agreement changed (%.4f)"
+                            % (entry["student"], entry["first_top1_agreement"]))
+        if not close(entry["kl_median"], kl, 0.0002):
+            FAILURES.append("A1: %s median KL changed (%.5f)"
+                            % (entry["student"], entry["kl_median"]))
+        if not close(entry["first_logits_max_abs_err_max"], mx, 0.001):
+            FAILURES.append("A1: %s max logit error changed (%.4f)"
+                            % (entry["student"], entry["first_logits_max_abs_err_max"]))
+    attrib = load_report("phaseB_evalcheck_attrib.json")
+    for key in ("roundtrip", "position_ids"):
+        blk = attrib["default_attn"][key]
+        if blk["max_abs_logit_err_max"] > 1e-6 or blk["kl_median"] > 1e-9:
+            FAILURES.append("A1: attribution %s is no longer exact (%s)"
+                            % (key, blk))
+    squad = load_report("phaseB_evalcheck_squad.json")["students"][0]
+    if not close(squad["first_top1_agreement"], 0.933, 0.002):
+        FAILURES.append("A1: SQuAD validator top-1 changed (%.4f)"
+                        % squad["first_top1_agreement"])
+
+    # ------------- A2: audit3 par.6/7 (20-epoch adapter, three seeds, row dumps)
+    absent("A2", tex, "Both causality runs use a shorter schedule")
+    present("A2", tex, "$\\mathbf{0.905{\\pm}0.083}$")
+    present("A2", tex, "$\\mathbf{0.321{\\pm}0.129}$")
+    present("A2", tex, "the mean margin $+0.071$ falls below the $0.10$ our")
+    present("A2", tex, "\\textbf{Adapter training variance.}")
+    causal = {"1.7B_0.6B": (0.857, 0.857, 1.000), "8B_0.6B": (0.429, 0.357, 0.179)}
+    for pair, expected in causal.items():
+        margins = []
+        for seed in (0, 1, 2):
+            rep = load_report(f"phaseB_adapter_causal20_{pair}_seed{seed}.json")
+            if rep.get("epochs") != 20:
+                FAILURES.append("A2: %s seed%d is not a 20-epoch run"
+                                % (pair, seed))
+            rows = rep["rows_by_condition"].get("adapter(joint)")
+            if not rows:
+                FAILURES.append("A2: %s seed%d has no adapter rows" % (pair, seed))
+                continue
+            mean = lambda a: sum(x[a + "_em"] for x in rows) / len(rows)
+            if not close(mean("Joint"), expected[seed], 0.01):
+                FAILURES.append("A2: %s seed%d correct-KV EM changed (%.4f)"
+                                % (pair, seed, mean("Joint")))
+            margins.append(mean("Joint") - max(mean("WrongJoint"),
+                                              mean("RandKV"), mean("ZeroKV")))
+        if len(margins) == 3:
+            avg = sum(margins) / 3
+            bound = (0.75, 0.10)[pair == "8B_0.6B"]
+            if pair == "1.7B_0.6B" and avg < bound:
+                FAILURES.append("A2: equal-depth margin dropped to %+.3f" % avg)
+            if pair == "8B_0.6B" and avg >= bound:
+                FAILURES.append("A2: flagship margin %+.3f now passes the 0.10 "
+                                "gate but the paper still reports it as "
+                                "unresolved" % avg)
+
+    # ------------------- A3: audit3 par.8 (within-domain second-domain repair)
+    present("A3", tex, "Mapper retrained on SQuAD")
+    present("A3", tex, "Adapter retrained on SQuAD")
+    present("A3", tex, "every\ntransfer arm---K-only, V-only under each mapper objective, and joint---answers")
+    for split in (0, 1, 2):
+        rep = load_report(f"phaseB_squadwithin_split{split}.json")
+        for arm, block in rep["summary"].items():
+            if arm != "Self" and block["EM"] > 0:
+                FAILURES.append("A3: split%d arm %s is no longer zero (%.3f)"
+                                % (split, arm, block["EM"]))
+        for arm, block in (rep.get("summary_adapted") or {}).items():
+            if arm != "adapted_Self" and block["EM"] > 0:
+                FAILURES.append("A3: split%d adapted arm %s is no longer zero"
+                                % (split, arm))
+
+    # -------------------------- A4: audit3 par.11 (error budget, five variants)
+    present("A4", tex, "\\label{tab:errorbudget}")
+    present("A4", tex, "Rank correlation with EM over the five variants")
+    budget = {}
+    for pair in ("1.7B_0.6B", "8B_0.6B"):
+        for seed in (0, 1, 2):
+            rep = load_report(f"phaseB_errorbudget_{pair}_seed{seed}.json")
+            for name, block in rep["summary"].items():
+                budget.setdefault(name, []).append(block)
+    if len(budget) != 5:
+        FAILURES.append("A4: expected five mapper variants, found %d" % len(budget))
+    else:
+        means = {n: {k: sum(b[k] for b in v) / len(v)
+                     for k in ("e_raw_mean", "e_attn_mean", "EM")}
+                 for n, v in budget.items()}
+        if not (means["affine"]["e_raw_mean"] < means["outaware"]["e_raw_mean"]
+                and means["affine"]["EM"] < means["outaware"]["EM"]):
+            FAILURES.append("A4: the raw/consumption contrast no longer holds: %s"
+                            % means)
+        if means["outaware"]["e_attn_mean"] > 0.2:
+            FAILURES.append("A4: outaware attention-output error rose to %.3f"
+                            % means["outaware"]["e_attn_mean"])
 
     if FAILURES:
         print("FAIL: audit3 paper-side assertions")

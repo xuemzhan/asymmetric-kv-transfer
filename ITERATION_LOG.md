@@ -998,6 +998,39 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
   `scripts/error_taxonomy_selfdiag.py`、三个论文守卫（`verify_corrected_paper.py`、
   `verify_audit2_edits.py`、`verify_audit3_edits.py`）全部通过。
 - **未改动**：任何实验逻辑、报告数值、论文结论。
+
+## W27 (2026-09-13): 消费 GPU 结果，按 audit3 更新论文
+
+- **触发**：拉取 W26（GPU 队列 A1–A4 实跑，18 份报告 + 队列日志），把结果按
+  `REVISION_PLAN3` PART III 的条件式改写落进论文。所有数字先在本机从报告独立复算，
+  再进正文。
+- **本机复算发现的两处要点**：
+  - A1 的归因探针把残差完全定位到 attention kernel path（重复 capture 逐位相同、
+    bf16 回环 0.0、显式 position_ids 0.0，eager 下同量级）——是实现无关的低精度数值差异，
+    但预登记门禁字面要求 "top-1 = 1.000" 未满足。**按"不降低阈值、只修正措辞"处理**：
+    在 `METRIC_CORRECTION.md §10` 写明门禁未字面满足、按停止条件的诊断意图排除、
+    全文禁用 "equivalent to full prefill"。
+  - A2 的 8B margin 均值 +0.071 < 0.10 且 seed2 聚类区间含 0 → 保持 unresolved；
+    另记录同 seed 训练方差（0.679 vs 0.429），写入新的 Limitations 条目。
+- **论文改写（`paper/main.tex`）**：
+  - Abstract：验证器句改为 top-1/KL + 归因结论；新增误差预算句；因果句改为 20-epoch
+    三 seed（0.905±0.083 / +0.071 unresolved）；跨域句升级为"域内也不复制"。
+  - §3.3 + Fig.2 图注：完整写出 top-1、KL、均值/p95/max 误差与归因探针三路证据；
+    §5.3 增加 SQuAD validator 句。
+  - §6.3 新增误差预算表（Table 6）与段落：e_raw 不追踪 EM（−0.10）、e_attn/e_WO 追踪
+    （−1.00/−0.80），shuffled 例外如实写。
+  - §6.4 + Table 5：改用最终 20-epoch adapter、三 seed、冻结状态的四臂因果数字
+    （含聚类区间与训练方差说明）；Table 7 增加 within-domain 两块（SQuAD 重训仍全 0）。
+  - §7.1(ii)、Limitations（Evaluator provenance / Task distribution / Partial seed coverage
+    收缩为两条 / Flagship causality / 新增 Adapter training variance）、Conclusion、
+    复现声明报告清单同步。
+- **守卫**：`verify_audit3_edits.py` 新增 A1–A4 断言（含与 `reports/*.json` 的交叉核对：
+    验证器数值、归因精确性、causal20 每 seed correct EM 与 epochs、squadwithin 全 0、
+    errorbudget 对比方向）；`verify_audit2_edits.py` 中 4 条被取代的断言改为指向新措辞。
+- **构建**：tectonic 编译通过（0 error、0 undefined、无 overfull），
+  `paper/main.pdf` 与 `paper/arxiv_submission/` 同步；三个守卫 ALL PASS。
+- **登记**：`METRIC_CORRECTION.md §10`（A1 门禁裁决 + A2/A3/A4 表格与落点）。
+- **遗留**：标题（T4）待决策；A5 宽文档扩展（可选）。
 ## W26 (2026-09-13): audit3 GPU 队列实跑（A1–A4，含容器内存看门狗适配）
 
 - **触发**：执行 `REVISION_PLAN3` PART II 的 GPU 项，命令载体

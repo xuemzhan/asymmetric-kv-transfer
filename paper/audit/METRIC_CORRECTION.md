@@ -553,3 +553,111 @@ own earlier implementation, with an explicit statement that third-party
 implementations were not audited), T3 ("end-to-end equivalent to full prefill"
 replaced by "closely agrees ... on normalized answer exact match"). Each is
 pinned by `paper/audit/verify_audit3_edits.py`.
+
+---
+
+## 10. Revision-3 GPU results, consumed into the paper (W27)
+
+Source: commit `e7d0048` (W26) ran `scripts/run_audit3_gpu_queue.sh` end to end
+(18 reports plus the queue log) and fixed two runtime blockers
+(`phaseB_errorbudget` compared `d @ Wq` with an untransposed `o_proj` slice, and
+the container's cgroup watchdog killed the 8B load until
+`low_cpu_mem_usage=True` + `device_map={"": 0}` streamed the weights; the change
+was verified numerically identical, max abs logit diff `0.0`). Every number below
+was recomputed here from the archived reports before it entered `main.tex`.
+
+### A1 — evaluator residual, attributed (audit3 par.3; paper: Abstract, 3.3, 5.3, Limitations)
+
+| student | top-1 agreement | median KL (nats) | max \|Δ logit\| | normalized-EM agreement |
+|---|---|---|---|---|
+| 0.6B | 0.929 | 0.0047 | 1.344 | 0.964 |
+| 1.7B | 0.929 | 0.0015 | 0.875 | 0.929 |
+| 4B | 0.982 | 0.0010 | 0.969 | 0.982 |
+| SQuAD 0.6B | 0.933 | 0.0052 | — | 0.933 |
+
+Attribution probe (`phaseB_evalcheck_attrib.json`): repeated capture is
+bit-identical (0.0), the numpy cache round-trip is exact (max |Δ| = 0.0, top-1
+1.000), explicit `position_ids` are exact (0.0), and the entire residual sits on
+the attention kernel path (max |Δ| = 0.844, median KL = 0.005) which does not
+shrink under eager attention (max 0.9375, top-1 0.875 on the 8-item probe).
+
+**Pre-registered gate, adjudicated in writing rather than relaxed.** The gate
+said row 1 requires "top-1 agreement 1.000 and median KL ≤ 0.01", and row 2
+triggers the stop rule on "top-1 disagreement or median KL > 0.1". Top-1
+agreement is 0.929–0.982, so row 1 is not literally met, and row 2's trigger
+literally fires on the disagreement. Row 2's stated diagnostic intent, however,
+is a residual *implementation* discrepancy, and that is excluded three ways: the
+median KL is 20–100× below the 0.1 stop threshold, the attribution probe explains
+the flips (cache construction and position handling are exact; the difference is
+the one-token-versus-full-sequence kernel path), and the same magnitude appears
+under eager attention, i.e. it is a bf16 numerical effect rather than our logic.
+We therefore (a) record the gate as not literally satisfied, (b) state the
+amended reading explicitly here and in the paper's Limitations, and (c) keep the
+paper away from any "equivalent to full prefill" wording: the claim is agreement
+on the extracted answer plus top-1 agreement and KL on the first-token
+distribution. Nothing in the paper was changed by lowering a threshold.
+
+### A2 — causality with the final 20-epoch adapter (audit3 par.6/7; paper: `tab:causal`, 6.4, Abstract, Limitations)
+
+| injected state | 1.7B→0.6B (3 seeds) | 8B→0.6B (3 seeds) |
+|---|---|---|
+| Correct teacher KV (joint) | **0.905 ± 0.083** | **0.321 ± 0.129** |
+| Wrong-document teacher KV | 0.131 ± 0.021 | 0.131 ± 0.041 |
+| Moment-matched random KV | 0.095 ± 0.055 | 0.125 ± 0.018 |
+| Zero KV | 0.107 ± 0.071 | 0.214 ± 0.095 |
+| Self (own cache, adapted) | 0.952 ± 0.054 | 0.929 ± 0.095 |
+
+Per-seed margins (correct − worst destroyed): 1.7B `+0.714 / +0.643 / +0.857`
+(document-clustered CI95 excludes zero in all three seeds); 8B
+`+0.107 / +0.071 / +0.036`, mean `+0.071`, with seed 2's clustered interval
+`[-0.036, +0.107]` containing zero. Gate verdict: **established on the
+equal-depth pair, unresolved on the flagship pair** — the paper says exactly
+that and does not upgrade it. Caveat carried into the paper: repeating the 8B
+training at a fixed seed gave 0.679 and 0.429 on the correct arm, so the margin
+is comparable to adapter training variance.
+
+### A3 — within-domain repair on the second domain (audit3 par.8; paper: `tab:squadrepair`, 5.3, 6.4, Abstract, Limitations)
+
+Fifteen SQuAD calibration documents and fifteen held-out documents, three
+document splits: held-out Self `0.333 / 0.200 / 0.400`, and **every** transfer
+arm (K-only, V-only under affine / output-aware / $W_O$-aware, joint, and the
+same set with a within-domain adapter) answers `0.000`. Adapted Self rises to
+`0.667 / 0.400 / 0.400`, i.e. the adapter improves the student's reading of its
+own state without making the transferred state usable. Gate verdict: the
+**stronger negative** branch — consumer compatibility is bound to the task
+distribution, not merely non-transferable across domains. Caveats recorded in
+the paper: 15 calibration documents only, and a held-out Self ceiling of
+0.20–0.40.
+
+### A4 — state-space versus consumption-space error budget (audit3 par.11; paper: `tab:errorbudget`, 6.3, 7.1, Abstract)
+
+Pooled over both pairs and three seeds (`phaseB_errorbudget_*.json`),
+with rank correlation against V-only EM over the five variants:
+
+| mapper | $e_{raw}$ | $e_{attn}$ | $e_{W_O}$ | V-only EM |
+|---|---|---|---|---|
+| raw layer selection | 3.73 | 3.72 | 3.65 | 0.000 |
+| affine | **0.267** | 3.20 | 3.75 | 0.057 |
+| attention-output-aware | 0.772 | 0.073 | 0.082 | **0.592** |
+| shuffled target | 5.58 | 0.903 | 1.09 | 0.071 |
+| $W_O$-aware | 0.699 | **0.076** | **0.081** | 0.586 |
+
+Spearman with EM: `-0.10` (raw), `-1.00` (attention output), `-0.80`
+($o$-projection space). Gate verdict: the paper's central claim needs **no
+downgrade** — raw representation error does not rank the mappers, and error in
+the receiver's consumption space does. The shuffled-target mapper is reported in
+the paper as the explicit exception (low attention-output error against the wrong
+document's targets, floor EM).
+
+### Where each result landed
+
+W1 (Abstract + 3.3 + Fig. 2 caption + Limitations "Evaluator provenance"), W2
+(5.3 validator sentence, 6.4 within-domain paragraph, `tab:squadrepair`), W3
+(`tab:causal` and the 6.4 causality paragraph, Abstract, Introduction,
+Limitations "Flagship causality" and the new "Adapter training variance" bullet),
+W4 (a new 6.3 paragraph, `tab:errorbudget`, Discussion 7.1(ii), Conclusion),
+W5/W6 unchanged. The
+Limitations "Partial seed coverage" bullet now lists only the repaired-regime
+layer scrambling and the projection ablation as seed-0 results. All of it is
+pinned by `paper/audit/verify_audit3_edits.py` (tags A1–A4, including report
+cross-checks) and `paper/audit/verify_audit2_edits.py`.
