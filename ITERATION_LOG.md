@@ -1236,3 +1236,59 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
 - **未做**：`REVISION_PLAN4` PART II 的 A1/A2/A3（需 GPU，且 `phaseB_routingkey.py`、
   `phaseB_mappersweep.py`、`scripts/run_audit4_gpu_queue.sh` 尚不存在）。
   `phase4_scaling_law_v2.py` 的逐样本 rows 也需 GPU 重跑才能填充 `six_pair_per_sample`。
+
+## W30 (2026-09-19): audit4 GPU 三件套（A1/A2/A3）——环境重建 + 实验落地
+
+- **触发**：W29 遗留的 `REVISION_PLAN4` PART II GPU 项（A1/A2/A3），脚本与队列
+  此前不存在。本机 GPU 空闲，执行并落盘。
+- **环境重建（本容器为全新快照）**：
+  - `/workspace/apcs` 重新软链到 `/workspace/KVCache`（含 `apcs/mapper/math.py`、
+    `apcs/rope/runner.py`）；`data/*_v2_seed*.json`、`squad_test_seed0.json` 均在仓库内。
+  - 从 ModelScope 下载 Qwen3-0.6B/1.7B/8B 到 `/workspace/models/`，并把
+    `/root/.cache/modelscope/models/Qwen--Qwen3-*` 软链到对应目录，使脚本默认路径可用。
+    4B 未下载（A1–A3 只用 1.7B→0.6B 与 8B→0.6B）。网络约 0.7–2 MB/s，8B（5 shard，
+    16.4GB）并行下载耗时约 2h。
+- **新增/修改文件**（均已 `py_compile`）：
+  - `experiments/phaseB_routingkey.py`（A1）：加权岭回归 K mapper，权重=学生自注意力
+    在文档位置上的注意力质量；`w≡1` 自洽复现 `AffineMapper`（实测 max|Δ|=3e-11/0）。
+    四臂：affine / routing / routing-shuf（按 **文档** 换目标，非按样本——合成集每
+    doc 重复约 7 次，按样本 +1 会退化为 no-op）/ raw。
+  - `experiments/phaseB_mappersweep.py`（A2）：目标 `(1-a)‖MV_T−V_S‖²+a‖A_SMV_T−A_SV_S‖²`
+    的 α×λ sweep；α=0 精确复现 affine、α=1 精确复现 outaware（端点自洽单测通过）；
+    配置级 bootstrap；`--aggregate` 汇总六个 run。
+  - `experiments/phaseB_squad_within.py`：新增 `--calib-mix {squad,synthetic,squad+synthetic}`
+    与 `--n-synth`（A3），默认行为/文件名对 C1 保持不变。
+  - `scripts/run_audit4_gpu_queue.sh`：A1→A2→A3，可续跑。
+- **A1 结果（3 seeds，routing TV 相对 affine）**：
+  - 1.7B→0.6B：TV 0.1667→0.1385（下降 **17%**，未过 30% 门）；K-routing dLL +3.79 但
+    shuff 也 +3.85、EM 0.000；affine dLL −0.82（复现旧报告）。
+  - 8B→0.6B：TV 0.2542→0.1527（下降 **38–43%**，过下降门）；K-routing EM 0.030，
+    shuff EM 0.042（对照不低于真 mapper），Self≈0.90。
+  - **门禁判定**：按预登记取第二支——"routing gap 收窄但任务臂仍在 floor"。
+    routing-space 对齐能降 routing 散度，但任务臂没有内容特异的提升，故"只对齐
+    routing 不足以修复 K 臂"（负向干预，而非 rescue）。
+- **A2 结果（198 配置点）**：
+  - 1.7B→0.6B pooled 99 点：ρ_raw=`+0.916` [+0.874,+0.942]、ρ_attn=`−0.964`、
+    ρ_wo=`−0.962`，区间完全不相交。
+  - 8B→0.6B 逐 seed：raw `+0.868/+0.891/+0.934`，attn `−0.893/−0.912/−0.947`。
+  - 全 6 run pooled 198 点：ρ_raw=`−0.269` [−0.372,−0.147]、ρ_attn=`−0.796`、
+    ρ_wo=`−0.820`（区间不相交）。
+  - **门禁判定**：strong statement preserved。逐 run 内 raw 误差与 EM 正相关
+    （即不按任务表现排序 mapper）；消费空间误差强负相关且区间与 raw 不相交。pooled
+    ρ_raw 的弱负值是 pair 间量纲差（8B 误差大、EM 低）造成的伪相关，已如实登记。
+    A4 的 5 点结论被 198 点 sweep 取代。
+- **A3 结果（3 split/格）**：
+  - C1（15 SQuAD）迁移臂 max EM=0.000，held-out Self=0.311，adapted_Self=0.489；
+  - C2（15 合成，体量对照）max EM=0.000，adapted_Self=0.556；
+  - C3（15 SQuAD+70 合成=85 文档）max EM=0.067（单题），adapted_Self=0.422。
+  - **门禁判定**：C2 同 floor ⇒ 体量不是主因；C3 用 5.7× 数据仍失败 ⇒ 分布是主因。
+    **task-conditioned compatibility（T6）命名成立**，保留单一第二域、held-out Self
+    0.20–0.40 的限定。
+- **落盘**：`reports/phaseB_routingkey_{1.7B,8B}_0.6B_seed{0,1,2}.json`（6）、
+  `reports/phaseB_mappersweep_{1.7B,8B}_0.6B_seed{0,1,2}.json`（6）、
+  `reports/phaseB_mappersweep_aggregate.json`、
+  `reports/phaseB_squadwithin_synthetic_split{0,1,2}.json`、
+  `reports/phaseB_squadwithin_squad_synthetic_split{0,1,2}.json`。
+- **登记**：`paper/audit/METRIC_CORRECTION.md §13`（全部数字与门禁判定）。
+- **未做（后续）**：PART III 的条件式正文改写 + 守卫数字断言（`verify_audit4_edits.py`
+  的 A1/A2/A3 占位）、paper/main.tex 更新与编译。本轮只做 GPU 实验与落报告/登记。

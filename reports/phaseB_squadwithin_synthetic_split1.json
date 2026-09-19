@@ -1,0 +1,1022 @@
+{
+  "task": "phaseB_squad_within",
+  "pair": "8B_0.6B",
+  "split_seed": 1,
+  "v_mappers": [
+    "affine",
+    "outaware",
+    "wo"
+  ],
+  "adapter": true,
+  "rank": 8,
+  "epochs": 20,
+  "calib_mix": "synthetic",
+  "n_calib_squad": 0,
+  "n_calib_synth": 70,
+  "calib_domain": "synthetic",
+  "eval_domain": "SQuAD (held-out documents)",
+  "n_calib": 70,
+  "n_eval": 15,
+  "calib_ids": [
+    "a4eec5a27976",
+    "adc94ac4e9cb",
+    "34153b151b83",
+    "1dd52bdb4e62",
+    "1ed184df1bf5",
+    "9a423454a274",
+    "2b327b17dc3b",
+    "b948a72994d4",
+    "45312ca60a69",
+    "4228c4c96cb5",
+    "7ebf2e7ccb35",
+    "a237590a3674",
+    "b91f890edb3b",
+    "9acf42b517d1",
+    "5326808c39d5",
+    "2b0a8372ec83",
+    "dafb22b36b74",
+    "1b0b6c798b93",
+    "f38b3f7b42ab",
+    "108b75e41b4f",
+    "8039d6c57516",
+    "c5186d99b951",
+    "c3376b98cd7d",
+    "9df1caa8e716",
+    "9b8cb8d9c8de",
+    "242943e58ccd",
+    "d5d70296fc53",
+    "7b0d46b9279c",
+    "a97d677b0e63",
+    "ffac708723b9",
+    "c2a246144b2d",
+    "af7c5678cf3f",
+    "90ecdb7fe7ed",
+    "9c03292ca264",
+    "dc49079401ce",
+    "66030e50a824",
+    "86609c47ef20",
+    "14e57e639a98",
+    "c322e54cb181",
+    "1807dc47ee99",
+    "217c858f0a5e",
+    "591f79e270c6",
+    "dfcde1162bdb",
+    "602294d6c600",
+    "260745de3488",
+    "d755b24b6f71",
+    "741c3ee1294e",
+    "c45ffba0c038",
+    "99472cd41e9b",
+    "f174f5af89fd",
+    "692ae403c2ac",
+    "f6a82c144b23",
+    "3174af0649df",
+    "59215ab92e8d",
+    "555ece88de52",
+    "26229aec356a",
+    "ad361e46077d",
+    "cb806e8b57e3",
+    "2e9294b63b22",
+    "bbc61a2721af",
+    "fba616331334",
+    "e5606c51b169",
+    "f9dc93717c32",
+    "10972547d0bd",
+    "46383b4753c8",
+    "be5a983aea48",
+    "477456aa7920",
+    "4cd3c50d01d4",
+    "5eb8999ec38c",
+    "4b99fdc1b73c"
+  ],
+  "eval_ids": [
+    "squad_0_0",
+    "squad_0_1",
+    "squad_0_5",
+    "squad_0_7",
+    "squad_0_8",
+    "squad_0_9",
+    "squad_0_11",
+    "squad_0_12",
+    "squad_0_13",
+    "squad_0_15",
+    "squad_0_16",
+    "squad_0_18",
+    "squad_0_27",
+    "squad_0_28",
+    "squad_0_29"
+  ],
+  "self_EM": 0.2,
+  "summary": {
+    "Self": {
+      "LL_mean": -13.956205573148198,
+      "LL_ci95": [
+        -16.184136493457686,
+        -11.797387996685174
+      ],
+      "delta_vs_self": 0.0,
+      "delta_ci95": [
+        0.0,
+        0.0
+      ],
+      "wilcoxon_p": 1.0,
+      "cohens_d": 0.0,
+      "EM": 0.2,
+      "EM_ci95": [
+        0.0,
+        0.4
+      ]
+    },
+    "K-only": {
+      "LL_mean": -9.604397033547599,
+      "LL_ci95": [
+        -11.300141058155113,
+        -7.82888282333894
+      ],
+      "delta_vs_self": 4.351808539600599,
+      "delta_ci95": [
+        2.491384190537981,
+        6.245866507536243
+      ],
+      "wilcoxon_p": 0.0006103515625,
+      "cohens_d": 1.1332828890064235,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "V-only-affine": {
+      "LL_mean": -13.264656906600983,
+      "LL_ci95": [
+        -16.12466667161054,
+        -10.334598314438074
+      ],
+      "delta_vs_self": 0.6915486665472154,
+      "delta_ci95": [
+        -0.6573323398944403,
+        2.0569147613173917
+      ],
+      "wilcoxon_p": 0.42120361328125,
+      "cohens_d": 0.24877468401338743,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "Joint-affine": {
+      "LL_mean": -11.45838404678636,
+      "LL_ci95": [
+        -13.907511227309707,
+        -8.940618022249806
+      ],
+      "delta_vs_self": 2.4978215263618364,
+      "delta_ci95": [
+        0.5271835985564524,
+        4.327958397845425
+      ],
+      "wilcoxon_p": 0.0301513671875,
+      "cohens_d": 0.637605880174497,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "V-only-outaware": {
+      "LL_mean": -10.147709684334105,
+      "LL_ci95": [
+        -11.605347290998415,
+        -8.585959361447228
+      ],
+      "delta_vs_self": 3.8084958888140936,
+      "delta_ci95": [
+        2.6007675726654984,
+        5.143692559957739
+      ],
+      "wilcoxon_p": 6.103515625e-05,
+      "cohens_d": 1.4668985072771965,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "V-only-outaware-shuf": {
+      "LL_mean": -9.911856585305836,
+      "LL_ci95": [
+        -11.369552697904528,
+        -8.382471113733832
+      ],
+      "delta_vs_self": 4.044348987842363,
+      "delta_ci95": [
+        2.857108645838168,
+        5.268832956760412
+      ],
+      "wilcoxon_p": 0.0001220703125,
+      "cohens_d": 1.6528163697476441,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "V-only-woaware": {
+      "LL_mean": -10.24161962615119,
+      "LL_ci95": [
+        -11.681949573172462,
+        -8.715275626195801
+      ],
+      "delta_vs_self": 3.7145859469970066,
+      "delta_ci95": [
+        2.7808552755514784,
+        4.76252473951876
+      ],
+      "wilcoxon_p": 0.0001220703125,
+      "cohens_d": 1.858548505588585,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "Joint-woaware": {
+      "LL_mean": -10.637531153242739,
+      "LL_ci95": [
+        -12.980251881947476,
+        -8.304340179014064
+      ],
+      "delta_vs_self": 3.3186744199054576,
+      "delta_ci95": [
+        1.5554409059332241,
+        4.91996374848343
+      ],
+      "wilcoxon_p": 0.00335693359375,
+      "cohens_d": 0.9513166263420819,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "summary_adapted": {
+    "adapted_Self": {
+      "LL_mean": -14.159282881188252,
+      "LL_ci95": [
+        -16.282362158154683,
+        -12.106335671715174
+      ],
+      "delta_vs_self": 0.0,
+      "delta_ci95": [
+        0.0,
+        0.0
+      ],
+      "wilcoxon_p": 1.0,
+      "cohens_d": 0.0,
+      "EM": 0.5333333333333333,
+      "EM_ci95": [
+        0.26666666666666666,
+        0.8
+      ]
+    },
+    "adapted_K-only": {
+      "LL_mean": -10.202955698493925,
+      "LL_ci95": [
+        -11.773616191924564,
+        -8.529071758984573
+      ],
+      "delta_vs_self": 3.956327182694323,
+      "delta_ci95": [
+        2.49805431851724,
+        5.435087170377522
+      ],
+      "wilcoxon_p": 0.00030517578125,
+      "cohens_d": 1.318108955189098,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_V-only-affine": {
+      "LL_mean": -11.45311112846647,
+      "LL_ci95": [
+        -13.188585884953302,
+        -9.51430818900608
+      ],
+      "delta_vs_self": 2.706171752721781,
+      "delta_ci95": [
+        0.9570500393781279,
+        4.502739031586617
+      ],
+      "wilcoxon_p": 0.01806640625,
+      "cohens_d": 0.7442003162673022,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_Joint-affine": {
+      "LL_mean": -12.206772732658992,
+      "LL_ci95": [
+        -14.134510412185907,
+        -10.116132782712816
+      ],
+      "delta_vs_self": 1.9525101485292586,
+      "delta_ci95": [
+        0.11905701269091135,
+        3.7671180618962645
+      ],
+      "wilcoxon_p": 0.072998046875,
+      "cohens_d": 0.5239328709051196,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_V-only-outaware": {
+      "LL_mean": -11.222136554415265,
+      "LL_ci95": [
+        -12.693993580784115,
+        -9.603677617735334
+      ],
+      "delta_vs_self": 2.9371463267729867,
+      "delta_ci95": [
+        1.2145920783260629,
+        4.745070181403664
+      ],
+      "wilcoxon_p": 0.00537109375,
+      "cohens_d": 0.8178980133798948,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_V-only-outaware-shuf": {
+      "LL_mean": -11.436326648432109,
+      "LL_ci95": [
+        -12.969083337367527,
+        -10.075890745971884
+      ],
+      "delta_vs_self": 2.7229562327561405,
+      "delta_ci95": [
+        1.292169629479123,
+        4.088977856756113
+      ],
+      "wilcoxon_p": 0.00537109375,
+      "cohens_d": 0.9357847305045021,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_V-only-woaware": {
+      "LL_mean": -11.107788379646482,
+      "LL_ci95": [
+        -12.340108676664414,
+        -9.727950849162207
+      ],
+      "delta_vs_self": 3.051494501541768,
+      "delta_ci95": [
+        1.4424041122847957,
+        4.653021963510397
+      ],
+      "wilcoxon_p": 0.0042724609375,
+      "cohens_d": 0.9315066795341633,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "adapted_Joint-woaware": {
+      "LL_mean": -12.011037589254833,
+      "LL_ci95": [
+        -13.632817630692132,
+        -10.211161007788446
+      ],
+      "delta_vs_self": 2.1482452919334167,
+      "delta_ci95": [
+        0.22128952245227965,
+        4.109379654995889
+      ],
+      "wilcoxon_p": 0.072998046875,
+      "cohens_d": 0.5411331899697595,
+      "EM": 0.0,
+      "EM_ci95": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "rows": [
+    {
+      "id": "squad_0_0",
+      "answer": "peer tuitions",
+      "Self": -23.325015385945637,
+      "Self_em": 1.0,
+      "K-only": -14.239526430765787,
+      "K-only_em": 0.0,
+      "V-only-affine": -23.834943135579426,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -16.616031964619953,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -13.191592852274576,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -14.205800374348959,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -14.334346771240234,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -19.80889828999837,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_1",
+      "answer": "BBC 1",
+      "Self": -9.511252721150717,
+      "Self_em": 0.0,
+      "K-only": -6.199199279149373,
+      "K-only_em": 0.0,
+      "V-only-affine": -8.18481731414795,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -7.39021364847819,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -7.016915241877238,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -8.555942217508951,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -6.55651068687439,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -3.821856019397577,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_5",
+      "answer": "odd prime",
+      "Self": -11.672873497009277,
+      "Self_em": 0.0,
+      "K-only": -13.960090160369873,
+      "K-only_em": 0.0,
+      "V-only-affine": -12.266421794891357,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -12.467376232147217,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -9.477597713470459,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -9.42802906036377,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -9.979580402374268,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -16.527696132659912,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_7",
+      "answer": "a new entrance building",
+      "Self": -12.028445482254028,
+      "Self_em": 1.0,
+      "K-only": -11.297164678573608,
+      "K-only_em": 0.0,
+      "V-only-affine": -11.58398962020874,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -13.231454610824585,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -11.177453756332397,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -8.107588529586792,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -9.877291560173035,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -10.563924171030521,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_8",
+      "answer": "A → G deamination",
+      "Self": -15.827020835876464,
+      "Self_em": 0.0,
+      "K-only": -12.718802452087402,
+      "K-only_em": 0.0,
+      "V-only-affine": -16.548807525634764,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -11.287697505950927,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -11.448609924316406,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -10.119024658203125,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -11.421022605895995,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -10.016520309448243,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_9",
+      "answer": "blood–brain barrier, blood–cerebrospinal fluid barrier",
+      "Self": -19.070361137390137,
+      "Self_em": 0.0,
+      "K-only": -10.567019990512303,
+      "K-only_em": 0.0,
+      "V-only-affine": -16.445027010781423,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -10.756047248840332,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -13.895550898143224,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -14.07874505860465,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -15.140560150146484,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -13.881778921399798,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_11",
+      "answer": "Jurassic Period",
+      "Self": -15.686006546020508,
+      "Self_em": 1.0,
+      "K-only": -11.214404424031576,
+      "K-only_em": 0.0,
+      "V-only-affine": -17.378531455993652,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -15.29975159962972,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -13.773143927256266,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -13.168383598327637,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -12.92439333597819,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -12.392325401306152,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_12",
+      "answer": "1534",
+      "Self": -7.679559350013733,
+      "Self_em": 0.0,
+      "K-only": -4.146346271038055,
+      "K-only_em": 0.0,
+      "V-only-affine": -2.8589724004268646,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -1.6242483705282211,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -4.386218369007111,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -3.486243784427643,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -4.5110615491867065,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -3.262624867260456,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_13",
+      "answer": "analog and numerical experiments",
+      "Self": -13.793638229370117,
+      "Self_em": 0.0,
+      "K-only": -9.447770474851131,
+      "K-only_em": 0.0,
+      "V-only-affine": -13.605534553527832,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -12.129633522033691,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -9.717868232727051,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -10.383190059661866,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -10.079663467407226,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -7.785303056240082,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_15",
+      "answer": "seclude himself",
+      "Self": -17.14552625020345,
+      "Self_em": 0.0,
+      "K-only": -8.135395685831705,
+      "K-only_em": 0.0,
+      "V-only-affine": -15.401261965433756,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -11.930863698323568,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -10.625266075134277,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -9.647828737894693,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -11.767587025960287,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -8.004937489827475,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_16",
+      "answer": "1970s",
+      "Self": -5.532260975241661,
+      "Self_em": 0.0,
+      "K-only": -7.189371192455292,
+      "K-only_em": 0.0,
+      "V-only-affine": -4.848609793186188,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -5.50787992477417,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -5.3967523097991945,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -5.976231813430786,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -5.659959316253662,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -5.967582005262375,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_18",
+      "answer": "holds Luther accountable",
+      "Self": -15.985390345255533,
+      "Self_em": 0.0,
+      "K-only": -13.60107390085856,
+      "K-only_em": 0.0,
+      "V-only-affine": -18.809102376302082,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -22.495367685953777,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -10.96280320485433,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -11.722960154215494,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -11.757385889689127,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -15.67909304300944,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_27",
+      "answer": "producers of the show",
+      "Self": -14.41570224761963,
+      "Self_em": 0.0,
+      "K-only": -4.260262715816498,
+      "K-only_em": 0.0,
+      "V-only-affine": -10.008596897125244,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -9.795313358306885,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -10.749035358428955,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -8.913951873779297,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -10.577553367614746,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -7.7079708814620975,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_28",
+      "answer": "October 12, 1943",
+      "Self": -12.581157207489014,
+      "Self_em": 0.0,
+      "K-only": -5.148813964426518,
+      "K-only_em": 0.0,
+      "V-only-affine": -7.4336735010147095,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -6.5366785153746605,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -6.417745757102966,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -7.816053950786591,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -7.666362476348877,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -9.604359328746796,
+      "Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_29",
+      "answer": "rapid combustion",
+      "Self": -15.088873386383057,
+      "Self_em": 0.0,
+      "K-only": -11.940713882446289,
+      "K-only_em": 0.0,
+      "V-only-affine": -19.761564254760742,
+      "V-only-affine_em": 0.0,
+      "Joint-affine": -14.807202816009521,
+      "Joint-affine_em": 0.0,
+      "V-only-outaware": -13.97909164428711,
+      "V-only-outaware_em": 0.0,
+      "V-only-outaware-shuf": -13.067874908447266,
+      "V-only-outaware-shuf_em": 0.0,
+      "V-only-woaware": -11.371015787124634,
+      "V-only-woaware_em": 0.0,
+      "Joint-woaware": -14.538097381591797,
+      "Joint-woaware_em": 0.0
+    }
+  ],
+  "rows_adapted": [
+    {
+      "id": "squad_0_0",
+      "answer": "peer tuitions",
+      "adapted_Self": -23.230784098307293,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -16.572664260864258,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -14.650888442993164,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -15.720941543579102,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -12.608457565307617,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -16.319031079610188,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -13.607794125874838,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -15.061285018920898,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_1",
+      "answer": "BBC 1",
+      "adapted_Self": -13.345870653788248,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -10.909196853637695,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -8.683564980824789,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -8.178686459859213,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -9.71524715423584,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -9.889239152272543,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -9.83852767944336,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -10.817509492238363,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_5",
+      "answer": "odd prime",
+      "adapted_Self": -10.684850931167603,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -10.987146854400635,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -11.433892726898193,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -15.424156188964844,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -11.662638187408447,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -8.829277038574219,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -11.057165145874023,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -14.71632432937622,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_7",
+      "answer": "a new entrance building",
+      "adapted_Self": -14.38172721862793,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -11.957175731658936,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -11.587131023406982,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -14.772550344467163,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -12.16100811958313,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -9.292951822280884,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -10.60295569896698,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -10.329091787338257,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_8",
+      "answer": "A → G deamination",
+      "adapted_Self": -14.138043022155761,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -10.403850412368774,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -14.811696815490723,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -15.51865348815918,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -13.128184700012207,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -10.70118227005005,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -12.771169281005859,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -13.014492607116699,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_9",
+      "answer": "blood–brain barrier, blood–cerebrospinal fluid barrier",
+      "adapted_Self": -20.063498156411306,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -11.023810011999947,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -14.18066678728376,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -15.787272317068917,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -13.994702747889928,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -13.393169709614344,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -13.514877898352486,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -14.784783738000053,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_11",
+      "answer": "Jurassic Period",
+      "adapted_Self": -17.191514015197754,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -11.234076817830404,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -15.942098299662272,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -16.65478006998698,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -17.120370864868164,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -17.760805130004883,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -13.38247044881185,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -16.146762530008953,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_12",
+      "answer": "1534",
+      "adapted_Self": -11.662993907928467,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -3.2994155287742615,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -3.952147424221039,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -6.189165115356445,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -5.220750093460083,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -8.9265456199646,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -7.438513875007629,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -5.0978535413742065,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_13",
+      "answer": "analog and numerical experiments",
+      "adapted_Self": -14.836943626403809,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -9.476683139801025,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -13.306944465637207,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -11.852195930480956,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -10.492724990844726,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -11.816606521606445,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -10.454068088531494,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -12.13333568572998,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_15",
+      "answer": "seclude himself",
+      "adapted_Self": -13.167902310689291,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -8.295404434204102,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -11.558820724487305,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -10.596981366475424,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -11.841906229654947,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -11.686179478963217,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -14.632670720418295,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -15.462178548177084,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_16",
+      "answer": "1970s",
+      "adapted_Self": -4.848132041469216,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -4.784188675880432,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -5.3056323528289795,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -3.978348207473755,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -5.397623300552368,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -6.827188050746917,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -4.8765902638435366,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -6.367372226715088,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_18",
+      "answer": "holds Luther accountable",
+      "adapted_Self": -15.133693059285482,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -14.300031979878744,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -15.320418357849121,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -17.193991978963215,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -12.403709411621094,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -12.238485018412272,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -11.462485313415527,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -13.40564219156901,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_27",
+      "answer": "producers of the show",
+      "adapted_Self": -13.708340263366699,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -9.841800117492676,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -9.697607612609863,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -9.246256065368652,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -10.541839027404786,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -10.533203983306885,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -9.879634284973145,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -11.13095474243164,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_28",
+      "answer": "October 12, 1943",
+      "adapted_Self": -15.310608959197998,
+      "adapted_Self_em": 1.0,
+      "adapted_K-only": -9.35684226155281,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -7.374636435508728,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -8.45921769142151,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -8.212879323959351,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -9.544025135040282,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -9.401440715789795,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -6.957531309127807,
+      "adapted_Joint-woaware_em": 0.0
+    },
+    {
+      "id": "squad_0_29",
+      "answer": "rapid combustion",
+      "adapted_Self": -10.684340953826904,
+      "adapted_Self_em": 0.0,
+      "adapted_K-only": -10.602048397064209,
+      "adapted_K-only_em": 0.0,
+      "adapted_V-only-affine": -13.990520477294922,
+      "adapted_V-only-affine_em": 0.0,
+      "adapted_Joint-affine": -13.528394222259521,
+      "adapted_Joint-affine_em": 0.0,
+      "adapted_V-only-outaware": -13.83000659942627,
+      "adapted_V-only-outaware_em": 0.0,
+      "adapted_V-only-outaware-shuf": -13.787009716033936,
+      "adapted_V-only-outaware-shuf_em": 0.0,
+      "adapted_V-only-woaware": -13.696462154388428,
+      "adapted_V-only-woaware_em": 0.0,
+      "adapted_Joint-woaware": -14.740446090698242,
+      "adapted_Joint-woaware_em": 0.0
+    }
+  ]
+}

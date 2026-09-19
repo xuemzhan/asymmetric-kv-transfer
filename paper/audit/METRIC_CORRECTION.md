@@ -779,3 +779,82 @@ the Abstract and the Limitations entry were corrected;
 `paper/audit/verify_audit3_edits.py` now pins the per-seed margins and both means
 so the numbers cannot drift again, and fails if the flagship mean reaches `0.10`
 while the paper still reports it as unresolved.
+
+## 13. Revision-4 GPU results (audit4 / REVISION_PLAN4 PART II, W30)
+
+Environment rebuilt from scratch on the RTX 4090 host: `/workspace/apcs` relinked
+to `/workspace/KVCache` (the apcs source), Qwen3-0.6B/1.7B/8B downloaded from
+ModelScope into `/workspace/models/` and exposed at the path the scripts expect
+(`/root/.cache/modelscope/models/Qwen--Qwen3-*/snapshots/master`). New scripts:
+`experiments/phaseB_routingkey.py` (A1), `experiments/phaseB_mappersweep.py` (A2),
+`--calib-mix` in `experiments/phaseB_squad_within.py` (A3), and
+`scripts/run_audit4_gpu_queue.sh`. All reports are in `reports/`.
+
+### A1 routing-aware K mapper (2 pairs × 3 seeds)
+
+For each (student layer, KV head) the key map is a weighted ridge
+`w_j = sum_q sum_i A_S[q,i,j]` in the same de-RoPE convention as `AffineMapper`;
+`w_j == 1` reproduces the affine K fit (max abs diff `3.0e-11` on the smoke,
+`0.0` on the full runs). Arms: affine K, routing-aware K, routing-aware K with
+shuffled-document targets, raw layer selection.
+
+| pair | mapper | dLL vs Self | EM | routing TV | top-1 |
+|---|---|---|---|---|---|
+| 1.7B->0.6B | K-affine | `-0.819` | 0.030 | 0.1667 | 0.700 |
+| 1.7B->0.6B | K-routing | `+3.794` | 0.000 | 0.1385 | 0.872 |
+| 1.7B->0.6B | K-routing-shuf | `+3.846` | 0.006 | 0.2052 | 0.842 |
+| 1.7B->0.6B | K-raw | `+0.315` | 0.030 | 0.1701 | 0.745 |
+| 8B->0.6B | K-affine | `+2.619` | 0.000 | 0.2542 | 0.581 |
+| 8B->0.6B | K-routing | `+2.260` | 0.030 | 0.1527 | 0.839 |
+| 8B->0.6B | K-routing-shuf | `+1.352` | 0.042 | 0.2136 | 0.813 |
+| 8B->0.6B | K-raw | `-0.982` | 0.000 | 0.7733 | 0.032 |
+
+Routing-TV drop relative to affine: `0.17` on 1.7B->0.6B (below the pre-registered
+`0.30` gate) and `0.383`-`0.426` on 8B->0.6B (passes the drop half of the gate).
+K-only EM is at the floor everywhere (`<=0.054` vs Self `0.90`), the 1.7B dLL gain
+is fully reproduced by the shuffled-target control, and on 8B the shuffled control
+is not below the real mapper. **Gate verdict:** the literal 8B branch is "routing
+gap closed but the task arm is still at the floor" (the plan's second branch).
+Mechanistically: routing-space alignment does shrink routing divergence, but the
+task arm does not move in a content-specific way, so closing the routing gap
+alone is not sufficient for the key arm. This is a negative intervention for
+"K is repairable in routing space", not a rescue.
+
+### A2 mapper objective sweep (2 pairs × 3 seeds × 33 configs = 198 points)
+
+Objective `(1-a)||MV_T-V_S||^2 + a||A_SMV_T - A_SV_S||^2`; `a=0` reproduces the
+affine V mapper and `a=1` the output-aware mapper (both endpoints exact). Sweep
+`a in {0,0.1,...,1}`, ridge `lam in {1e-4,1e-3,1e-2}`. Per-config `e_raw`,
+`e_attn`, `e_wo` and corrected V-only EM; config-level bootstrap (`n_boot=10000`).
+
+| scope | rho(e_raw, EM) | rho(e_attn, EM) | rho(e_wo, EM) |
+|---|---|---|---|
+| 1.7B->0.6B, pooled 3 seeds (99 pts) | `+0.916` `[+0.874,+0.942]` | `-0.964` `[-0.982,-0.922]` | `-0.962` `[-0.979,-0.921]` |
+| 8B->0.6B per seed | `+0.868`/`+0.891`/`+0.934` | `-0.893`/`-0.912`/`-0.947` | `-0.894`/`-0.913`/`-0.947` |
+| all six runs pooled (198 pts) | `-0.269` `[-0.372,-0.147]` | `-0.796` `[-0.843,-0.739]` | `-0.820` `[-0.863,-0.768]` |
+
+**Gate verdict:** "strong statement preserved" (per-run and pooled). Within every
+run the raw error is positively related to EM, i.e. it does not rank mapper
+variants by task performance; consumption-space error is strongly negative and
+its bootstrap interval is disjoint from the raw interval in every case. The
+pooled `rho_raw=-0.269` is a between-pair scale artifact (8B has larger errors and
+lower EM) and is still far weaker than `e_attn`/`e_wo`. The five-point A4 result
+is thereby replaced by 198 configurations.
+
+### A3 calibration-volume / distribution control (3 splits each)
+
+`--calib-mix`: C1 = 15 SQuAD docs (archived), C2 = 15 synthetic docs (volume
+control), C3 = 15 SQuAD + 70 synthetic docs (distribution control). Same
+held-out SQuAD documents, same scoring path.
+
+| cell | held-out Self | max transfer-arm EM | adapted Self |
+|---|---|---|---|
+| C1 squad-only | 0.311 | 0.000 | 0.489 |
+| C2 synthetic-only | 0.311 | 0.000 | 0.556 |
+| C3 squad+synthetic (85 docs) | 0.311 | 0.067 | 0.422 |
+
+**Gate verdict:** C2 fails at the same floor as C1, so calibration *volume* is not
+the binding factor; C3 still fails with ~5.7x the calibration data, so the
+binding factor is the *distribution*. The "task-conditioned compatibility"
+naming (T6) is therefore supported, with the standing caveat that the evidence
+comes from a single second domain and held-out Self is only 0.20-0.40.

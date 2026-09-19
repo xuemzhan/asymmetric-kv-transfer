@@ -23,6 +23,11 @@ Pre-registered gate (REVISION_PLAN3 II.A3):
 Usage:
   python3 experiments/phaseB_squad_within.py --split-seed 0 --n-calib 15 --n-eval 15 \
     --v-mappers affine,outaware,wo --adapter
+
+A3 calibration-mix control (REVISION_PLAN4 II.A3):
+  --calib-mix squad            (default) 15 SQuAD docs
+  --calib-mix synthetic        15 synthetic docs (volume control)
+  --calib-mix squad+synthetic  15 SQuAD + 70 synthetic docs (distribution control)
 """
 from __future__ import annotations
 
@@ -42,6 +47,7 @@ from phaseB_common import (
     de_rope_k,
     doc_groups,
     fit_mapper,
+    load_data,
     pos_of,
     layer_map_proportional,
     load_student,
@@ -81,6 +87,13 @@ def main():
     ap.add_argument("--split-seed", type=int, default=0)
     ap.add_argument("--n-calib", type=int, default=15)
     ap.add_argument("--n-eval", type=int, default=15)
+    ap.add_argument("--calib-mix", default="squad",
+                    choices=("squad", "synthetic", "squad+synthetic"),
+                    help="A3 calibration-volume/distribution control: which "
+                         "documents the mappers/adapter are fit on")
+    ap.add_argument("--n-synth", type=int, default=70,
+                    help="number of synthetic calibration docs for the "
+                         "synthetic / squad+synthetic mixes")
     ap.add_argument("--v-mappers", default="affine,outaware,wo",
                     help="comma-separated: affine,outaware,wo")
     ap.add_argument("--adapter", action="store_true",
@@ -103,8 +116,22 @@ def main():
     eval_docs = {s["doc"] for s in eval_set}
     assert not (calib_docs & eval_docs), "calibration and held-out documents overlap"
 
-    print(f"[within] split {a.split_seed}: calib={len(calib)} docs, "
-          f"held-out={len(eval_set)} docs (disjoint)", flush=True)
+    n_calib_squad = len(calib)
+    n_calib_synth = 0
+    if a.calib_mix in ("synthetic", "squad+synthetic"):
+        synth = load_data(a.split_seed, "train")[: a.n_synth]
+        n_calib_synth = len(synth)
+        if a.calib_mix == "synthetic":
+            calib = synth
+            n_calib_squad = 0
+        else:
+            calib = calib + synth
+        synth_docs = {s["doc"] for s in synth}
+        assert not (synth_docs & eval_docs), "synthetic calib leaks into eval docs"
+
+    print(f"[within] split {a.split_seed}: mix={a.calib_mix} "
+          f"calib={len(calib)} ({n_calib_squad} SQuAD + {n_calib_synth} synth), "
+          f"held-out={len(eval_set)} SQuAD docs (disjoint)", flush=True)
     teacher, tok_t, t_layers = load_teacher(a.pair)
     calib_t = capture_all(teacher, tok_t, calib)
     eval_t = capture_all(teacher, tok_t, eval_set)
@@ -242,7 +269,10 @@ def main():
         "v_mappers": list(v_mappers),
         "adapter": bool(a.adapter),
         "rank": a.rank, "epochs": a.epochs,
-        "calib_domain": "SQuAD", "eval_domain": "SQuAD (held-out documents)",
+        "calib_mix": a.calib_mix,
+        "n_calib_squad": n_calib_squad,
+        "n_calib_synth": n_calib_synth,
+        "calib_domain": a.calib_mix, "eval_domain": "SQuAD (held-out documents)",
         "n_calib": len(calib), "n_eval": len(eval_set),
         "calib_ids": [s["id"] for s in calib],
         "eval_ids": [s["id"] for s in eval_set],
@@ -252,7 +282,9 @@ def main():
         "rows": rows_no,
         "rows_adapted": rows_ad,
     }
-    out = a.output or (f"{REPORT_DIR}/phaseB_squadwithin_split{a.split_seed}.json")
+    mix_tag = "" if a.calib_mix == "squad" else "_" + a.calib_mix.replace("+", "-")
+    out = a.output or (f"{REPORT_DIR}/phaseB_squadwithin{mix_tag}"
+                       f"_split{a.split_seed}.json")
     with open(out, "w") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
     print(f"[within] saved: {out}")
