@@ -25,11 +25,20 @@ state.
   (+2.61 vs +2.62), a moment-matched random Gaussian key (+2.33), and an
   all-zero cache (+2.75) reproduce 89–105% of the K-only LL gain while each
   yields EM ≈ 0.
-- **Two separate failures.** Mapped teacher keys perturb routing (top-1
-  attention agreement 0.59–0.70); the value arm is limited by how the receiver
-  consumes it. Consumption-space (output-aware / W_O-aware) value mappers raise
-  V-only EM from 0.113 to 0.90–0.94 (1.7B→0.6B) and from 0.000 to 0.25–0.27
-  (8B→0.6B), while a shuffled-target mapper stays at 0.08/0.07.
+- **Two separate failures.** Mapped teacher keys perturb routing (top-1 attention
+  agreement 0.59–0.70) and a routing-aware key mapper that shrinks that divergence
+  by 17–43% still leaves K-only EM at the floor (at most 0.089 against a Self of
+  0.899), with its shuffled-target control not worse; the value arm is limited by
+  how the receiver consumes it. Consumption-space (output-aware / W_O-aware) value
+  mappers raise V-only EM from 0.113 to 0.90–0.94 (1.7B→0.6B) and from 0.000 to
+  0.25–0.27 (8B→0.6B), while a shuffled-target mapper stays at 0.08/0.07.
+- **The error that predicts transfer is consumption-space error.** A sweep of the
+  mapper objective (33 configurations per run, 198 points over two pairs and three
+  seeds) shows raw representation error *positively* related to EM within every run
+  (+0.890 to +0.944 on 8B→0.6B, +0.934 to +0.989 on 1.7B→0.6B), while
+  attention-output and o-projection error are strongly negatively related with
+  bootstrap intervals disjoint from the raw interval in every run; the only
+  negative pooled raw value (−0.267) is a between-pair scale artifact.
 - **A small adapter restores transfer.** A rank-8 correction of the student's
   output projections (~0.7M params), trained by next-token cross-entropy under
   injected teacher KV, restores K/V/Joint EM to 0.94/0.94/0.83 (1.7B→0.6B) and
@@ -40,9 +49,11 @@ state.
   where the mean margin is +0.095 against a pre-registered 0.10 gate and two of
   the three seeds' clustered intervals reach zero. It is reported as unresolved
   rather than by lowering the bar.
-- **The repair is bound to the task distribution.** Retrained inside SQuAD, every
-  transfer arm still answers 0.000 of the held-out questions across three
-  document splits, so the paper names the phenomenon *task-conditioned*
+- **The repair is bound to the task distribution, not to the amount of data.**
+  Retrained inside SQuAD, every transfer arm still answers 0.000 of the held-out
+  questions across three document splits; a calibration set of the same size drawn
+  from the other domain fails identically, and 85 documents mixing both still fail
+  (best arm 0.067), so the paper names the phenomenon *task-conditioned*
   functional compatibility.
 - **Scope.** Within-Qwen3, synthetic OOD domain plus a SQuAD second domain
   (which replicates the negative result).

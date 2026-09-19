@@ -20,13 +20,16 @@ Every number below is transcribed from this project's own result summaries:
   ROUTING  <- paper/audit/METRIC_CORRECTION.md 3c ; ITERATION_LOG.md W18
   ADAPTER  <- paper/audit/METRIC_CORRECTION.md 3e ; ITERATION_LOG.md W18
   LAYERS   <- paper/audit/METRIC_CORRECTION.md 3b/3c ; ITERATION_LOG.md W18
+  SWEEP    <- reports/phaseB_mappersweep_*.json (W30); METRIC_CORRECTION.md 13
 Where a value has no reported dispersion, no error bar is drawn (noted in captions).
 No number is invented, and none is rounded beyond the precision of those sources.
 """
 from __future__ import annotations
 
+import json
 import logging
 import os
+import sys
 
 # House style names Helvetica/Arial first; on machines without them matplotlib
 # falls back through the stack. Keep the stack, silence the findfont log spam.
@@ -39,6 +42,16 @@ import numpy as np
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+# Portable repo root, the same pattern scripts/recompute_rank_correlations.py uses:
+# explicit env override, then the known GPU path, then this file's grandparent.
+ROOT = (os.environ.get("V3_ROOT")
+        or ("/workspace/v3"
+            if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+            else os.path.dirname(os.path.dirname(HERE))))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(ROOT, "reports"))
+sys.path.insert(0, os.path.join(ROOT, "experiments"))
+from stats_utils import spearman  # noqa: E402  (project average-rank Spearman)
 
 # --- house style ------------------------------------------------------------
 PALETTE = {
@@ -484,6 +497,131 @@ def fig_evalcheck():
     finalize(fig, "fig_evalcheck")
 
 
+# --- W30 mapper-objective sweep (2 pairs x 3 seeds x 33 configs = 198 points) --
+SWEEP_PAIRS = ("1.7B_0.6B", "8B_0.6B")
+SWEEP_ERRORS = ("e_raw", "e_attn", "e_wo")
+SWEEP_LABELS = {"1.7B_0.6B": "1.7B$\\to$0.6B", "8B_0.6B": "8B$\\to$0.6B"}
+
+
+def _load_sweep():
+    """Read the six W30 sweep reports into per-key lists of 198 points each.
+
+    No model, no torch, no re-run: the archived configs are the data.
+    """
+    pts = {k: [] for k in SWEEP_ERRORS}
+    pts["EM"] = []
+    pts["pair"] = []
+    for pair in SWEEP_PAIRS:
+        for seed in (0, 1, 2):
+            path = os.path.join(REPORT_DIR, f"phaseB_mappersweep_{pair}_seed{seed}.json")
+            with open(path, encoding="utf-8") as fh:
+                rep = json.load(fh)
+            if rep["pair"] != pair or rep["seed"] != seed or len(rep["configs"]) != 33:
+                raise ValueError(f"unexpected sweep report: {path}")
+            for c in rep["configs"]:
+                for k in SWEEP_ERRORS:
+                    pts[k].append(c[k])
+                pts["EM"].append(c["EM"])
+                pts["pair"].append(pair)
+    return pts
+
+
+def _sweep_rhos(pts):
+    """Spearman rho per scope: 1.7B->0.6B (99), 8B->0.6B (99), pooled (198)."""
+    rhos = {}
+    for pair in SWEEP_PAIRS:
+        idx = [i for i, q in enumerate(pts["pair"]) if q == pair]
+        for k in SWEEP_ERRORS:
+            rhos[(pair, k)] = spearman([pts[k][i] for i in idx], [pts["EM"][i] for i in idx])
+    for k in SWEEP_ERRORS:
+        rhos[("pooled", k)] = spearman(pts[k], pts["EM"])
+    return rhos
+
+
+def _sweep_selfcheck(pts, rhos):
+    """Refuse to plot unless the numbers reproduce the archived ones.
+
+    (i) the 198-point values must equal ``rho_pooled`` in the aggregate report to
+    within 1e-9; (ii) every 99-point value must survive a second, independent read
+    of the three per-pair reports and an independent (scipy) rank implementation.
+    """
+    from scipy.stats import spearmanr
+
+    with open(os.path.join(REPORT_DIR, "phaseB_mappersweep_aggregate.json"),
+              encoding="utf-8") as fh:
+        agg = json.load(fh)
+    if len(pts["EM"]) != agg["n_points"] != 198:
+        raise ValueError(f"sweep point count {len(pts['EM'])} != 198")
+    for k in SWEEP_ERRORS:
+        got, ref = rhos[("pooled", k)], agg["rho_pooled"][k]
+        if got is None or abs(got - ref) > 1e-9:
+            raise ValueError(f"pooled rho({k}) = {got} != archived {ref}")
+    fresh = _load_sweep()  # independent re-read of the same six reports
+    for pair in SWEEP_PAIRS:
+        idx = [i for i, q in enumerate(fresh["pair"]) if q == pair]
+        for k in SWEEP_ERRORS:
+            again = spearman([fresh[k][i] for i in idx], [fresh["EM"][i] for i in idx])
+            if again is None or abs(again - rhos[(pair, k)]) > 1e-9:
+                raise ValueError(f"{pair} rho({k}) not reproducible: {again}")
+            scipy_rho = float(spearmanr([fresh[k][i] for i in idx],
+                                        [fresh["EM"][i] for i in idx]).statistic)
+            if abs(scipy_rho - again) > 1e-9:
+                raise ValueError(f"{pair} rho({k}): scipy {scipy_rho} != project {again}")
+    print("sweep self-check OK")
+
+
+def fig_sweep():
+    pts = _load_sweep()
+    rhos = _sweep_rhos(pts)
+    _sweep_selfcheck(pts, rhos)
+    for scope in SWEEP_PAIRS + ("pooled",):
+        n = 99 if scope in SWEEP_PAIRS else 198
+        print(f"sweep rho {scope:<9} ({n} pts)  "
+              + "  ".join(f"{k}={rhos[(scope, k)]:+.4f}" for k in SWEEP_ERRORS))
+
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.4))
+    shapes = (("1.7B_0.6B", "o"), ("8B_0.6B", "^"))
+
+    # (a) raw representation error: the pair-wise trend is positive, the pool is not
+    ax = axes[0]
+    for pair, marker, color in (("1.7B_0.6B", "o", PALETTE["blue_main"]),
+                                ("8B_0.6B", "^", PALETTE["red_strong"])):
+        sel = [i for i, q in enumerate(pts["pair"]) if q == pair]
+        ax.scatter([pts["e_raw"][i] for i in sel], [pts["EM"][i] for i in sel],
+                   s=8, marker=marker, color=color, alpha=0.55, linewidths=0,
+                   label=SWEEP_LABELS[pair])
+    ax.text(0.975, 0.965, f"$\\rho$ = {rhos[('pooled', 'e_raw')]:.2f} (198 pts)",
+            transform=ax.transAxes, ha="right", va="top", fontsize=6.8)
+    ax.set_xlabel(r"relative $e_{\mathrm{raw}}$")
+    ax.set_ylabel("corrected V-only exact match")
+    ax.set_title("(a) Error in state space")
+    ax.legend(fontsize=6.8, handlelength=1.0, loc="center right")
+
+    # (b) error in the consumer's space: the association is monotone and strong
+    ax = axes[1]
+    for key, color, ename in (("e_attn", PALETTE["violet"], "$e_{\\mathrm{attn}}$"),
+                              ("e_wo", PALETTE["teal"], "$e_{W_O}$")):
+        for pair, marker in shapes:
+            sel = [i for i, q in enumerate(pts["pair"]) if q == pair]
+            ax.scatter([pts[key][i] for i in sel], [pts["EM"][i] for i in sel],
+                       s=8, marker=marker, color=color, alpha=0.55, linewidths=0,
+                       label=f"{SWEEP_LABELS[pair]}, {ename}")
+    ax.text(0.975, 0.965,
+            f"$e_{{\\mathrm{{attn}}}}$: $\\rho$ = {rhos[('pooled', 'e_attn')]:.2f}\n"
+            f"$e_{{W_O}}$: $\\rho$ = {rhos[('pooled', 'e_wo')]:.2f}\n(198 pts)",
+            transform=ax.transAxes, ha="right", va="top", fontsize=6.8)
+    ax.set_xlabel(r"relative $e_{\mathrm{attn}}$, $e_{W_O}$")
+    ax.set_title("(b) Error in consumption space")
+    ax.legend(fontsize=6.8, handlelength=1.0, loc="center right", labelspacing=0.4)
+
+    for ax, xlim, ticks in zip(axes, ((0.15, 1.3), (0.05, 5.5)),
+                               ([0.2, 0.3, 0.5, 1.0], [0.1, 0.3, 1.0, 3.0])):
+        ax.set_xscale("log"); ax.set_xlim(*xlim)
+        ax.set_ylim(0, 1.05); ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0])
+        ax.set_xticks(ticks); ax.set_xticklabels([f"{t:g}" for t in ticks])
+    finalize(fig, "fig_sweep")
+
+
 if __name__ == "__main__":
     fig_setting()
     fig_fourarm()
@@ -492,4 +630,5 @@ if __name__ == "__main__":
     fig_adapter()
     fig_layers()
     fig_evalcheck()
+    fig_sweep()
     print("done")

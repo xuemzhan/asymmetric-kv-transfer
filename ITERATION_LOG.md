@@ -1349,3 +1349,76 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
   `recompute_rank_correlations.py --dry-run` 二次运行零变化。
 - **留给 GPU 机器**：若在 GPU 机器重跑 A2，`phaseB_mappersweep.py --aggregate`
   应执行一次以确认新聚合值（本轮用同一算法、同一份逐 run 点在本机重生成）。
+
+## W32 (2026-09-19): PART III 落地 —— A1/A2/A3 从登记写进论文
+
+- **触发**：W31 完成后与 audit4 逐条对应核对，结论是"证据已在手、正文未落地"
+  （`main.tex` 中 `sweep`/`198`/`alpha` 命中数均为 0；`routing-aware` 只出现在
+  Future Work；Limitations 仍在让"校准量未被排除"这条已被 A3 排除的 confound）。
+  本轮把 `REVISION_PLAN4` PART III 的条件式改写落完，并把 T8 的
+  `TODO(audit4)` 占位换成真断言。
+- **A1 → §6.2 新段落 + 新表 `tab:routingkey` + 贡献 2 + Abstract**：把 routing-aware
+  key mapper 写成**干预**而非诊断：routing TV `0.167→0.139`（1.7B→0.6B，17%）、
+  `0.254→0.153`（8B→0.6B，逐 seed 38–43%），top-1 `0.700→0.872`/`0.581→0.839`，
+  但任务臂不动（routing 臂 EM 逐 run ≤`0.054`、四臂合计 ≤`0.089`，对 Self
+  `0.899`），打乱目标对照不更差（8B `0.042` vs `0.030`）且在 1.7B 复现 likelihood
+  增益（`+3.85` vs `+3.79`）；单位权重自洽 `max|Δ|=0`。措辞取计划预登记第二支
+  "necessary and not sufficient"，明确写成 negative intervention。正文中"我们只测量
+  不干预"的旧句已删并被守卫断言为 absent。
+- **A2 → §6.3 sweep 段落 + 新表 `tab:sweep` + 新图 `fig_sweep` + 贡献 3 + Abstract**：
+  五点结论保留在 Table 4，规则改由 sweep 表述（33 配置/run、198 点，`α∈{0..1}`、
+  `λ∈{1e-4,1e-3,1e-2}`，两端点精确复现 affine 与 outaware）。逐 run **raw 误差与 EM
+  正相关**（8B `+0.890…+0.944`、1.7B `+0.934…+0.989`），消费空间强负相关（逐对
+  pooled `−0.964`/`−0.962`、`−0.919`/`−0.918`；198 点 `−0.799`/`−0.823`，区间全
+  部与 raw 区间不相交）；唯一为负的 198 点 pooled raw `−0.267` 在正文里被明确写成
+  **pair 间量纲伪相关**，不再当 law。
+- **A3 → §6.3 校准混合段落 + 贡献 4 + Limitations + Abstract**：撤下"校准量未被
+  排除"的让步 —— C2（15 份合成，同体量异分布）迁移臂同样全 `0.000`；C3（85 份）
+  最好臂仍只有 `0.067`（1/15 题，三个 split 中两次、且来自不同臂，第三次为 0；均值
+  `0.044`），而 adapted Self 升到 `0.556`/`0.422` 对 `0.489`。保留的边界只有"单一
+  第二域 + held-out Self 0.20–0.40"。
+- **其它同步改动**：Future Work 不再提议 routing-aware K mapper（已做），改为"改变
+  receiver routing 而非只重加权 fit 的 key-side 修复"；Limitations 的 Mapper family
+  条目补上"线性族 + 已在第二域变过校准量"；Discussion (iii) 与"不干预"句改写；
+  Reproducibility 报告清单补 4 个新报告族；Table 4 表注指向 `tab:sweep`/`fig:sweep`。
+- **新图**：`paper/figures/gen_paper_figures.py` 新增 `fig_sweep()`（198 点，
+  左 raw vs EM、右 e_attn/e_wo vs EM，log 横轴，按 pair 编码 marker 形状，标注 pooled
+  ρ；生成时自检 198 点 ρ 与 `phaseB_mappersweep_aggregate.json` 一致），输出
+  `paper/figures/fig_sweep.pdf` 与 arXiv 副本目录同名文件。
+- **守卫**：`verify_audit4_edits.py` 新增 W32 段 —— A1 八行表值（dLL/EM/TV/top-1）、
+  两个 EM 地板界、单位权重自洽、8B 打乱对照不更差；A2 逐对与 198 点共 8 个 ρ、点数
+  198、逐 run raw ρ 必须为正；A3 三格（held-out Self、adapted Self、最佳迁移臂、
+  C3 的 split 均值）；以及 `absent("we measure it rather than intervening on it")`。
+  T6/T7 两条被取代的旧断言按惯例重指向新措辞并注明原因。
+- **登记**：`METRIC_CORRECTION §15`（本轮落点 + 三处与计划的偏离 + 被取代的断言）。
+- **验证（全部本机）**：`verify_audit4_edits.py`、`verify_audit2/3_edits.py`、
+  `verify_corrected_paper.py`、`tests/test_stats_utils.py` 全部 exit 0；Tectonic 编译
+  两处 `main.tex`（页数/错误见提交说明）；`main.tex` 与 `arxiv_submission/main.tex`
+  逐字节一致。
+- **仍未做（如实记录）**：audit4 §六 的 compatibility frontier（D0–D5）仍是
+  `REVISION_PLAN4` 里降级的 Future Work 设计，未跑；cross-family 与公开 benchmark
+  大表按计划不做。
+
+### W32 复查（提交前）
+
+把本轮改动过的文件互相对读后，发现并修掉四处漂移（均登记在 `METRIC_CORRECTION §15`）：
+
+1. **表号位移**：新增两表使误差预算表从 Table 4 变为 **Table 5**（sweep 表成为 Table 4）。
+   正文全部用 label，不受影响；但 `audit4.md`/`REVISION_PLAN4.md`/`METRIC_CORRECTION §14`
+   里的 "Table 4" 指的是旧的误差预算表 —— §14/§15 已改为 label 引用并记下映射关系。
+2. **`arxiv_metadata.md` 漂移**：它的 ASCII 摘要镜像仍是 W32 之前的句子、图清单缺
+   `fig_sweep.pdf`、Comments 字段仍写 "24 pages, 9 tables, 7 figures"。已全部同步为
+   26 页 / 11 表 / 8 图，并把"空目录独立编译"的复验记录更新到 W32（26 页、0 error、
+   0 undefined references/citations）。
+3. **C3 的 adapted Self 表述误导**：原句读起来像"合成对照与混合对照都提高了学生自身
+   SQuAD 读数"，实测只有合成对照（`0.556`）高于 SQuAD-only（`0.489`），混合对照 `0.422`
+   反而更低。已改为如实列出三个值，并说明"adapter 自身读数跟随校准混合，而任何迁移臂
+   都没离开地板"。
+4. **三项新分析未列入协议分类**：A1/A2/A3 是 `REVISION_PLAN4` PART II 的预登记项（带门禁），
+   已补进论文 §4.5 的 "Confirmatory" 句，与其他计划内实验并列。
+
+同轮还做了两件事：修掉守卫里 W28 遗留的一行重复断言；新增 `META` 断言（arXiv 摘要三句、
+图清单、以及 Comments 里的表/图计数必须与 `main.tex` 的实际计数一致）以防此类漂移再发生。
+另外做了一次"替换尾行残留"的**全量审计**（本轮我的范围替换又出现两次：Table 4 表注、
+`arxiv_metadata` 的 `.bbl` 句，均已修正），六个改动文件均无残留重复行，`main.tex` 的
+table/figure/tabular 环境与花括号、`$` 全部配平。

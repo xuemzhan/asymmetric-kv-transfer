@@ -183,7 +183,6 @@ def main() -> int:
                         "bibliography")
     elif tex.index("\\appendix") < tex.index("\\end{thebibliography}"):
         FAILURES.append("T4: the appendix block must follow the bibliography")
-        FAILURES.append("T4: the appendix block must follow the bibliography")
     # Recompute the heuristic from the per-(layer, head) mapper definition.
     params = 2 * 28 * 8 * (128 * 128 + 128)          # K + V, 28 layers, 8 heads
     mib = params * 4 / 1024 / 1024                   # fp32
@@ -209,12 +208,17 @@ def main() -> int:
     # ------------------------------------------------ T6: naming discipline
     present("T6", tex, "\\emph{task-conditioned} functional compatibility")
     present("T6", tex, "task-conditioned rather than a property of the model pair")
-    present("T6", tex, "SQuAD supplies only fifteen calibration")
+    # W32: the "fifteen calibration documents" concession is superseded by the
+    # calibration-mix control, which excludes volume as the binding factor.
+    present("T6", tex, "Fifteen synthetic documents")
     present("T6", tex, "calibration volume")
 
     # ------------------------------------------- T7: correlation disclosure
     present("T7", tex, "per-run range")
-    present("T7", tex, "pooled over five variants and six")
+    # W32: the pooled-only phrasing moved behind the sweep; the five-variant
+    # numbers are still printed in the Table 4 caption and in the Discussion.
+    present("T7", tex, "five mapper variants and six")
+    present("T7", tex, "$-0.267$")
     present("T7", tex, "$[-0.60,+0.05]$")
     present("T7", tex, "$[-1.00,-0.80]$")
     budget = {}
@@ -248,6 +252,147 @@ def main() -> int:
             if not close(min(runs), want_lo, 0.005) or not close(max(runs), want_hi, 0.005):
                 FAILURES.append("T7: per-run rho range for %s changed (%s)"
                                 % (key, [round(r, 2) for r in runs]))
+
+    # --------------------- W32: PART II experiments in the paper (A1/A2/A3)
+    # REVISION_PLAN4 left these as TODO(audit4) placeholders until the GPU data
+    # existed; every GPU number the paper now cites is recomputed here from
+    # reports/ and compared with what the paper prints.
+    present("A1", tex, "routing-aware")
+    present("A1", tex, "\\label{tab:routingkey}")
+    absent("A1", tex, "we measure it rather than intervening on it")
+    present("A2", tex, "\\label{tab:sweep}")
+    present("A2", tex, "figures/fig_sweep.pdf")
+    present("A2", tex, "$198$")
+    present("A3", tex, "calibration-mix control that holds the held-out documents")
+    present("A3", tex, "Fifteen synthetic documents")
+
+    routing = {}
+    for pair in ("1.7B_0.6B", "8B_0.6B"):
+        for seed in (0, 1, 2):
+            rep = load_report("phaseB_routingkey_%s_seed%d.json" % (pair, seed))
+            if rep:
+                routing[(pair, seed)] = rep
+    if len(routing) != 6:
+        FAILURES.append("A1: expected six routingkey reports, found %d" % len(routing))
+    else:
+        table = {("1.7B_0.6B", "K-affine"): (-0.82, 0.030, 0.167, 0.700),
+                 ("1.7B_0.6B", "K-routing"): (3.79, 0.000, 0.139, 0.872),
+                 ("1.7B_0.6B", "K-routing-shuf"): (3.85, 0.006, 0.205, 0.842),
+                 ("1.7B_0.6B", "K-raw"): (0.31, 0.030, 0.170, 0.745),
+                 ("8B_0.6B", "K-affine"): (2.62, 0.000, 0.254, 0.581),
+                 ("8B_0.6B", "K-routing"): (2.26, 0.030, 0.153, 0.839),
+                 ("8B_0.6B", "K-routing-shuf"): (1.35, 0.042, 0.214, 0.813),
+                 ("8B_0.6B", "K-raw"): (-0.98, 0.000, 0.773, 0.032)}
+        for (pair, arm), (w_dll, w_em, w_tv, w_top1) in table.items():
+            reps = [routing[(pair, s)] for s in (0, 1, 2)]
+            got = (sum(r["summary"][arm]["delta_vs_self"] for r in reps) / 3.0,
+                   sum(r["summary"][arm]["EM"] for r in reps) / 3.0,
+                   sum(r["routing"][arm]["tv_mean"] for r in reps) / 3.0,
+                   sum(r["routing"][arm]["top1_mean"] for r in reps) / 3.0)
+            for name, g, w, tol in (("dLL", got[0], w_dll, 0.005),
+                                    ("EM", got[1], w_em, 0.0005),
+                                    ("routing TV", got[2], w_tv, 0.0005),
+                                    ("top-1", got[3], w_top1, 0.0005)):
+                if not close(g, w, tol):
+                    FAILURES.append("A1: %s %s %s is %.4f, the paper prints %.4f"
+                                    % (pair, arm, name, g, w))
+        for pair, want_routing, want_any in (("1.7B_0.6B", 0.0000, 0.0357),
+                                             ("8B_0.6B", 0.0536, 0.0893)):
+            reps = [routing[(pair, s)] for s in (0, 1, 2)]
+            mx_routing = max(r["summary"]["K-routing"]["EM"] for r in reps)
+            mx_any = max(r["summary"][a]["EM"] for r in reps
+                         for a in r["summary"] if a != "Self")
+            if not close(mx_routing, want_routing, 0.0002):
+                FAILURES.append("A1: %s worst routing-arm EM is %.4f, the paper's "
+                                "floor bound says %.4f" % (pair, mx_routing, want_routing))
+            if not close(mx_any, want_any, 0.0002):
+                FAILURES.append("A1: %s worst key-arm EM is %.4f, the paper says %.4f"
+                                % (pair, mx_any, want_any))
+        shuf = sum(routing[("8B_0.6B", s)]["summary"]["K-routing-shuf"]["EM"]
+                   for s in (0, 1, 2)) / 3.0
+        real = sum(routing[("8B_0.6B", s)]["summary"]["K-routing"]["EM"]
+                   for s in (0, 1, 2)) / 3.0
+        if shuf < real:
+            FAILURES.append("A1: the 8B shuffled control (%.4f) is now below the "
+                            "routing mapper (%.4f), breaking the paper's "
+                            "\"not worse\" claim" % (shuf, real))
+        for (pair, seed), rep in routing.items():
+            if abs(rep.get("selfcheck_max_abs_diff_w1_vs_affine", 1.0)) > 1e-9:
+                FAILURES.append("A1: %s seed %d unit-weight self-check is not exact"
+                                % (pair, seed))
+
+    sweep = {}
+    for pair in ("1.7B_0.6B", "8B_0.6B"):
+        for seed in (0, 1, 2):
+            rep = load_report("phaseB_mappersweep_%s_seed%d.json" % (pair, seed))
+            if rep:
+                sweep[(pair, seed)] = rep
+    if len(sweep) != 6:
+        FAILURES.append("A2: expected six mappersweep reports, found %d" % len(sweep))
+    else:
+        for pair, want in (("1.7B_0.6B", (0.918, -0.964, -0.962)),
+                           ("8B_0.6B", (0.877, -0.919, -0.918))):
+            pts = {k: [c[k] for s in (0, 1, 2) for c in sweep[(pair, s)]["configs"]]
+                   for k in ("e_raw", "e_attn", "e_wo")}
+            em = [c["EM"] for s in (0, 1, 2) for c in sweep[(pair, s)]["configs"]]
+            for k, w in zip(("e_raw", "e_attn", "e_wo"), want):
+                got = spearman(pts[k], em)
+                if not close(got, w, 0.001):
+                    FAILURES.append("A2: %s pooled-99 rho(%s) is %.4f, the paper "
+                                    "prints %.3f" % (pair, k, got, w))
+        pts = {k: [c[k] for (pair, s) in sweep for c in sweep[(pair, s)]["configs"]]
+               for k in ("e_raw", "e_attn", "e_wo")}
+        em = [c["EM"] for (pair, s) in sweep for c in sweep[(pair, s)]["configs"]]
+        if len(em) != 198:
+            FAILURES.append("A2: pooled point count is %d, the paper says 198" % len(em))
+        for k, w in (("e_raw", -0.267), ("e_attn", -0.799), ("e_wo", -0.823)):
+            got = spearman(pts[k], em)
+            if not close(got, w, 0.001):
+                FAILURES.append("A2: pooled-198 rho(%s) is %.4f, the paper prints %.3f"
+                                % (k, got, w))
+        for (pair, seed), rep in sweep.items():
+            got = spearman([c["e_raw"] for c in rep["configs"]],
+                           [c["EM"] for c in rep["configs"]])
+            if got is None or got <= 0.0:
+                FAILURES.append("A2: %s seed %d raw rho is %r, so the paper's "
+                                "'positively related within every run' claim fails"
+                                % (pair, seed, got))
+
+    for cell, (pat, want_max_em, want_adapted) in (
+            ("C1", ("phaseB_squadwithin_split%d.json", 0.000, 0.489)),
+            ("C2", ("phaseB_squadwithin_synthetic_split%d.json", 0.000, 0.556)),
+            ("C3", ("phaseB_squadwithin_squad_synthetic_split%d.json", 0.067, 0.422))):
+        reps = [load_report(pat % s) for s in (0, 1, 2)]
+        if not all(reps):
+            FAILURES.append("A3: %s reports missing" % cell)
+            continue
+        held = [r["summary"]["Self"]["EM"] for r in reps]
+        if not close(sum(held) / 3.0, 0.311, 0.001):
+            FAILURES.append("A3: %s held-out Self is %.4f, the paper says 0.311"
+                            % (cell, sum(held) / 3.0))
+        adapted = [r["summary_adapted"]["adapted_Self"]["EM"] for r in reps]
+        if not close(sum(adapted) / 3.0, want_adapted, 0.001):
+            FAILURES.append("A3: %s adapted Self is %.4f, the paper prints %.3f"
+                            % (cell, sum(adapted) / 3.0, want_adapted))
+        per_split = [max(v["EM"] for k, v in r["summary"].items() if k != "Self")
+                     for r in reps]
+        if not close(max(per_split), want_max_em, 0.001):
+            FAILURES.append("A3: %s best transfer-arm EM per split %s, the paper "
+                            "prints %.3f"
+                            % (cell, [round(x, 3) for x in per_split], want_max_em))
+        if cell == "C3" and not close(sum(per_split) / 3.0, 0.044, 0.001):
+            FAILURES.append("A3: C3 mean-over-splits EM is %.4f, the paper says 0.044"
+                            % (sum(per_split) / 3.0))
+
+    # W32 re-check: the arXiv metadata mirror must follow the paper -- abstract
+    # sentences, the figure list, and the table/figure counts of the comments field.
+    present("META", meta, "routing-aware key mapper that shrinks routing divergence")
+    present("META", meta, "figures/fig_sweep.pdf")
+    present("META", meta, "85 documents mixing both still fail")
+    present("META", meta, "Sweeping the mapper")
+    present("META", meta, "over 198 configurations")
+    present("META", meta, "%d tables, %d figures" % (tex.count("\\begin{table}"),
+                                                      tex.count("\\begin{figure}")))
 
     # ------------------- W31: rank method, A2 report integrity (PART II A2/A4)
     # The stored A2 correlations must be average-rank values recomputed from the

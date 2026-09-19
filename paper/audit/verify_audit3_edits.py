@@ -79,12 +79,18 @@ def main() -> int:
     # REVISION_PLAN4 T2 rewrote contribution 2, so the old wording is gone; the
     # claim is still pinned here and in the "this arm never sees a mapped key"
     # assertion above.
-    present("T1", tex, "arm never sees a mapped key, so its failure is not addressing")
+    # W32: contribution 2 was re-wrapped (wording unchanged), so the pinned phrase
+    # now straddles a line break; pin its two halves instead.
+    present("T1", tex, "never sees a mapped key")
+    present("T1", tex, "its failure is not addressing")
     present("T1", tex,
             "\\subsection{Two separate failures: mapped keys perturb routing, "
             "mapped values must be consumable}")
     present("T1", tex, "divergence as a diagnostic for the key side")
-    present("T1", tex, "key-side mismatch is diagnosable (routing divergence)")
+    # W32: the key side is now intervened on, so "diagnosable (routing divergence)"
+    # became "diagnosable and, on our evidence, not repairable".
+    present("T1", tex, "key-side mismatch is diagnosable and, on our evidence, not repairable")
+    absent("T1", tex, "diagnosable (routing divergence) and the value-side one is")
 
     # ------------------------------------------------------ T1b: audit3 par.16
     absent("T1b", tex, "The evidence supports three statements")
@@ -94,7 +100,10 @@ def main() -> int:
     present("T1b", tex, "\\emph{(iii) Key transfer.}")
     present("T1b", tex, "\\emph{(iv) Joint handoff.}")
     present("T1b", tex, "depends on which side is in play")
-    present("T1b", tex, "routing divergence is a diagnostic for the\nkey side")
+    # W32: the "we measure it rather than intervening on it" clause was withdrawn
+    # when A1 intervened on the key side; the replacement sentence is pinned here.
+    absent("T1b", tex, "we measure it rather than intervening on it")
+    present("T1b", tex, "On the key side we can move the diagnostic")
 
     # -------------------------------------------------------- T2: audit3 par.15
     # The two evaluator defects are in our own implementation; the paper must

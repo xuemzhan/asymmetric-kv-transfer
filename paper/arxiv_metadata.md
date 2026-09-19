@@ -13,12 +13,13 @@ figures/fig_controls.pdf
 figures/fig_mappers.pdf
 figures/fig_adapter.pdf
 figures/fig_layers.pdf
+figures/fig_sweep.pdf
 ```
 
 No `.bbl` is required: the bibliography is inline (`thebibliography`, 18
 entries). The bundle compiles standalone from an empty directory with no other
-repository files present (re-verified in W29 with Tectonic 0.17.0: 0 errors, 0
-undefined references).
+repository files present (re-verified in W32 with Tectonic 0.17.0: 26 pages, 0
+errors, 0 undefined references or citations).
 
 ## Title
 
@@ -43,7 +44,7 @@ be updated.
 
 ## Comments field
 
-Suggested: `24 pages, 9 tables, 7 figures. Code and result summaries accompanying the paper.`
+Suggested: `26 pages, 11 tables, 8 figures. Code and result summaries accompanying the paper.`
 
 **OPEN:** no repository URL is cited anywhere in the paper. The git remote for
 this working copy is `https://github.com/xuemzhan/asymmetric-kv-transfer`. Add
@@ -96,14 +97,19 @@ collapses V-only EM from 0.91 to 0.11-0.23, so the earlier null result was a flo
 effect of the mapper and alignment does matter once the consumer reads the state
 correctly. Two failures are kept apart below: under mapped teacher keys the
 student's top-1 attention agreement with its own routing is 0.59-0.70 (a key-side
-diagnostic), while the value arm, which never sees a mapped key, is limited by how
-the receiver consumes it. Fitting the value mapper where the student reads value
+diagnostic), and a routing-aware key mapper that shrinks routing divergence by
+17-43% still leaves the key arm at the floor, so closing the routing gap is
+necessary but not sufficient; the value arm, which never sees a mapped key, is
+limited by how the receiver consumes it. Fitting the value mapper where the
+student reads value
 raises V-only EM from 0.113 to 0.90-0.94 (1.7B->0.6B) and from 0.000 to 0.25-0.27
-(8B->0.6B), while a shuffled-target mapper stays at 0.08/0.07. Raw representation
-error does not rank these variants (rank correlation -0.10 pooled over five
-variants and six runs, per-run range [-0.60,+0.05]), whereas error measured after
-the student's attention output and after its o-projection does (-1.00 and -0.80,
-range [-1.00,-0.80] in every run). A rank-8 correction of the student's output
+(8B->0.6B), while a shuffled-target mapper stays at 0.08/0.07. Sweeping the mapper
+objective over 198 configurations, raw representation error does not rank these
+variants; within every run it is positively related to EM, whereas error measured
+after the student's attention output and after its o-projection is strongly
+negatively related (-0.96 and -0.96 within 1.7B->0.6B, and -0.80 and -0.82 over
+all 198 points, with intervals disjoint from the raw interval in every run). A
+rank-8 correction of the student's output
 projections (~0.7M parameters), trained by next-token cross-entropy on calibration
 answers under injected teacher KV, restores K/V/Joint EM to 0.94/0.94/0.83
 (1.7B->0.6B; Joint spread 0.55-0.96 across seeds) and 0.79/0.36/0.47 (8B->0.6B),
@@ -118,10 +124,12 @@ as unresolved. The same adapter trained on student states stays much lower
 states is intermediate (Joint 0.46 and 0.13). The repair does not transfer across
 domains, and on SQuAD it does not reappear within one either: retrained on SQuAD
 calibration documents, every transfer arm still answers 0.000 of the held-out
-questions across three document splits, so what the synthetic domain repairs is
-bound to that task distribution; we name this task-conditioned functional
-compatibility. All experiments are within a single model family, and the adapter
-is trained on the task distribution it is evaluated on.
+questions across three document splits; a calibration set of the same size drawn
+from the other domain fails identically, and 85 documents mixing both still fail,
+so it is the distribution rather than the calibration volume that binds. We name
+this task-conditioned functional compatibility. All experiments are within a
+single model family, and the adapter is trained on the task distribution it is
+evaluated on.
 
 ## Pre-submission checklist
 

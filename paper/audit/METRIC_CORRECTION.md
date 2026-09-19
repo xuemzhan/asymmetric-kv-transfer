@@ -958,3 +958,109 @@ and the largest seed-averaged arm mean is `0.042`. The conclusion is unchanged
 against Self `0.90`. Its A3 "max transfer-arm EM" for C3 is a maximum over the
 three splits (`0.067`/`0.067`/`0.000`, mean `0.044`) reached by a different arm in
 each split, i.e. one held-out question of fifteen.
+
+## 15. W32: the PART II GPU results land in the paper
+
+`REVISION_PLAN4` PART III left the paper-side rewrite of A1/A2/A3 conditional on
+the data. W30 produced the data and W31 fixed the rank metric; this pass is that
+rewrite. Nothing is recomputed here: every number comes from the reports
+registered in section 13, and every one of them is now asserted against the paper
+text by `paper/audit/verify_audit4_edits.py` (the `TODO(audit4)` placeholders of
+`REVISION_PLAN4` T8 are filled).
+
+### A1 -> new paragraph in 6.2, table `tab:routingkey`, contribution 2, Abstract
+
+The routing-aware key mapper is presented as an intervention rather than a
+diagnostic: routing TV falls `0.167 -> 0.139` on 1.7B->0.6B (17%) and
+`0.254 -> 0.153` on 8B->0.6B (38-43% across seeds), top-1 agreement rises
+`0.700 -> 0.872` and `0.581 -> 0.839`, and the task arm does not follow -- the
+routing arm's EM stays at or below `0.054` in every run and `0.089` over all four
+key arms, against `0.899` for the student's own cache, with the shuffled-target
+control not worse (`0.042` against `0.030` on 8B->0.6B) while reproducing the
+likelihood gain on 1.7B->0.6B (`+3.85` against `+3.79`). The unit-weight
+self-check (`max|delta| = 0` on all six runs) is asserted as well. The wording
+follows the plan's second pre-registered branch -- "necessary and not sufficient"
+-- and is written as a *negative intervention* for "the key side is repairable in
+routing space". The paper no longer claims anywhere that the key side is measured
+rather than intervened on; that clause is asserted `absent`.
+
+### A2 -> sweep paragraph in 6.3, table `tab:sweep`, figure `fig:sweep`, contribution 3, Abstract
+
+The five-variant correlations stay in Table 4, but the rule is now stated from the
+sweep: `33` configurations per run (`alpha in {0, 0.1, ..., 1}`,
+`lambda in {1e-4, 1e-3, 1e-2}`, with `alpha=0` and `alpha=1` reproducing the
+affine and the attention-output-aware mapper exactly) and `198` points over two
+pairs and three seeds. Within every run raw representation error is *positively*
+related to EM (`+0.890` to `+0.944` on 8B->0.6B, `+0.934` to `+0.989` on
+1.7B->0.6B), while consumption-space error is strongly negative
+(`-0.964`/`-0.962` and `-0.919`/`-0.918` pooled per pair; `-0.799`/`-0.823` over
+all `198` points, intervals disjoint from the raw interval in every run). The
+single pooled raw value `-0.267` is labelled in the paper as a between-pair scale
+artifact rather than as the law. The paper's rule sentence is now "the error that
+predicts transfer is the error the receiver makes on the state where it consumes
+it, not the distance between the states".
+
+### A3 -> calibration-mix paragraph in 6.3, contribution 4, Limitations, Abstract
+
+The volume concession is retired. The paper used to say that a difference in
+calibration volume "is not excluded by these runs"; the calibration-mix control
+excludes it: fifteen synthetic documents -- the same volume with the wrong
+distribution -- fail identically (`0.000` on every transfer arm), and `85`
+documents mixing both domains still leave the best transfer arm at `0.067` (one
+held-out question, in two of three splits and from a different arm each time, and
+none in the third; mean `0.044`), while ``adapted Self'' rises to `0.556` and
+`0.422` against `0.489` for the SQuAD-only control. What remains as a bound is the
+single second domain and the held-out Self ceiling of `0.20`-`0.40`, both still
+stated.
+
+### Deviations from the plan, and the guard changes they forced
+
+* The plan's A1 row for this branch named 6.3 and Discussion (iii); the text went
+  into 6.2, where the key-side analysis lives, plus Discussion (iii), contribution
+  2 and the Abstract. The Abstract carries it because that sentence is what tells
+  the reader the two failures are *not* symmetric.
+* T6's `SQuAD supplies only fifteen calibration` assertion is retired: the
+  sentence it pinned no longer exists, because the volume caveat is answered. It
+  is replaced by the calibration-mix wording, and `calibration volume` is kept.
+* T7's `pooled over five variants and six` is replaced by `five mapper variants
+  and six` (the `tab:errorbudget` caption) plus `$-0.267$`, because the Abstract now leads
+  with the sweep instead of the pooled-only phrase.
+* New assertions recompute every A1/A2/A3 number the paper prints: the eight A1
+  rows (likelihood/EM/TV/top-1), both EM floor bounds, the unit-weight
+  self-check, the sign of every per-run raw correlation, the eight sweep
+  correlations, the `198`-point count, and the three A3 cells (held-out Self,
+  adapted Self, best transfer arm and, for C3, its mean over splits).
+* Future work no longer proposes the routing-aware key mapper (it exists); it now
+  asks for a key-side repair that changes the receiver's routing instead of
+  re-weighting the fit.
+
+### W32 re-check (before the commit/push)
+
+Four drifts were found by re-reading the changed files against each other and are
+fixed here.
+
+1. **Table numbers moved.** W32 inserts two tables ahead of the error-budget table,
+   so in the compiled paper the sweep is Table 4 and the error-budget table is
+   Table 5 (previously Table 4). The paper itself only uses labels, but the audit
+   documents quote numbers: `audit4.md`, `REVISION_PLAN4.md` and section 14 above
+   say "Table 4" meaning the error-budget table. This section and section 14 now
+   use labels, and the mapping is recorded here.
+2. **`arxiv_metadata.md` had drifted.** Its ASCII abstract mirror still carried the
+   pre-W32 sentences, and the figure list and the comments field were stale. Fixed:
+   abstract re-synced with `main.tex` (all three W32 sentences), `figures/fig_sweep.pdf`
+   added to the file list, and the comments field is now `26 pages, 11 tables,
+   8 figures`.
+3. **The C3 `adapted Self` sentence implied more than the data.** Section 6.3 read
+   as if both controls raised the adapter's own SQuAD reading; in fact only the
+   synthetic-only control does (`0.556`) while the mixed control is *lower*
+   (`0.422` against `0.489`). Rewritten to report the three values and to say that
+   the adapter's own reading follows the calibration mix while no transfer arm
+   leaves the floor.
+4. **The three new analyses were missing from the protocol classification.** They
+   were specified in `REVISION_PLAN4` PART II with pre-registered gates, so they are
+   now listed in the paper's own "Confirmatory" sentence
+   (Section 4.5) alongside the other plan-specified runs.
+
+Re-verified in the same pass: the arXiv bundle still compiles standalone from an
+empty directory (Tectonic, 26 pages, 0 errors, 0 undefined references or
+citations) with the new figure in it.

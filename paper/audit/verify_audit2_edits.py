@@ -130,7 +130,10 @@ def main() -> int:
     present("C4", tex, "V-only, and joint EM at $0.000$ and $0.033$")
     # audit3/A3 merged the cross-domain bullet into the task-distribution
     # limitation and added the within-domain SQuAD result (tag A3).
-    present("C4", tex, "compatibility being bound to the task distribution")
+    # W32: this sentence was re-wrapped inside the Limitations edit, so the pinned
+    # phrase straddles a line break; pin its two halves instead (wording unchanged).
+    present("C4", tex, "compatibility being bound to the task")
+    present("C4", tex, "distribution rather than as proof that no mapper can work there")
 
     # C2 (reports/phaseB_selfdiag_seed0.json) - par.12, 1.7B Self anomaly.
     # audit3 (par.13, tag A7) replaced this sentence with a rule-based taxonomy

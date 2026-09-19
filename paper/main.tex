@@ -86,15 +86,19 @@ collapses V-only EM from $0.91$ to $0.11$--$0.23$, so the earlier null result wa
 a floor effect of the mapper and alignment does matter once the consumer reads
 the state correctly. Two failures are kept apart below: under mapped teacher keys
 the student's top-1 attention agreement with its own routing is $0.59$--$0.70$
-(a key-side diagnostic), while the value arm, which never sees a mapped key, is
-limited by how the receiver consumes it. Fitting the value mapper where the
-student reads value raises V-only EM from $0.113$ to $0.90$--$0.94$
+(a key-side diagnostic), and a routing-aware key mapper that shrinks routing
+divergence by $17$--$43\%$ still leaves the key arm at the floor, so closing the
+routing gap is necessary but not sufficient; the value arm, which never sees a
+mapped key, is limited by how the receiver consumes it. Fitting the value mapper
+where the student reads value raises V-only EM from $0.113$ to $0.90$--$0.94$
 ($1.7$B$\to0.6$B) and from $0.000$ to $0.25$--$0.27$ ($8$B$\to0.6$B), while a
-shuffled-target mapper stays at $0.08/0.07$. Raw representation error does not
-rank these variants (rank correlation $-0.10$ pooled over five variants and six
-runs, per-run range $[-0.60,+0.05]$), whereas error measured after the
-student's attention output and after its $o$-projection does ($-1.00$ and
-$-0.80$, range $[-1.00,-0.80]$ in every run). A rank-8 correction of the
+shuffled-target mapper stays at $0.08/0.07$. Sweeping the mapper objective over
+$198$ configurations, raw representation error does not rank these variants---within
+every run it is positively related to EM---whereas error measured after the
+student's attention output and after its $o$-projection is strongly negatively
+related ($-0.96$ and $-0.96$ within $1.7$B$\to0.6$B, and $-0.80$ and $-0.82$ over
+all $198$ points, with intervals disjoint from the raw interval in every run). A
+rank-8 correction of the
 student's output projections ($\sim$$0.7$M parameters), trained by next-token
 cross-entropy on calibration answers under injected teacher KV, restores
 K/V/Joint EM to $0.94/0.94/0.83$
@@ -111,9 +115,11 @@ unresolved. The same adapter trained on student states stays much lower
 teacher states is intermediate (Joint $0.46$ and $0.13$). The repair does not
 transfer across domains, and on SQuAD it does not reappear within one either:
 retrained on SQuAD calibration documents, every transfer arm still answers
-$0.000$ of the held-out questions across three document splits, so what the
-synthetic domain repairs is bound to that task distribution; we name this
-\emph{task-conditioned} functional compatibility. All experiments are
+$0.000$ of the held-out questions across three document splits; a calibration set
+of the same size drawn from the other domain fails identically and $85$ documents
+volume that binds; we name this \emph{task-conditioned} functional compatibility.
+All experiments are
+compatibility. All experiments are
 within a single model family, and the
 adapter is trained on the task distribution it is evaluated on.
 \end{abstract}
@@ -181,10 +187,14 @@ Figure~\ref{fig:setting}). Our contributions are:
   claim that task performance decomposes additively, and we identify the terms
   by intervention. The key arm moves the receiver's routing: top-1 attention
   agreement with its own routing is $0.70$ ($1.7$B$\to0.6$B) and $0.59$
-  ($8$B$\to0.6$B), with routing total-variation $0.167$ and $0.251$. The value
-  arm never sees a mapped key, so its failure is not addressing; it is a
-  consumption-space mismatch, which is why the two failures are kept apart
-  rather than folded into one mechanism.
+  ($8$B$\to0.6$B), with routing total-variation $0.167$ and $0.251$. A
+  routing-aware mapper that shrinks that divergence by $17\%$ on
+  $1.7$B$\to0.6$B and by $38$--$43\%$ on $8$B$\to0.6$B does not move the task arm
+  off the floor (K-only EM at most $0.089$ in any run, against $0.899$ for the
+  student's own cache) and its shuffled-target control is not worse, so the
+  routing term is necessary and not sufficient. The value arm never sees a mapped
+  key, so its failure is not addressing; it is a consumption-space mismatch, which
+  is why the two failures are kept apart rather than folded into one mechanism.
 
 \item \textbf{Consumer-space alignment.} The target of alignment matters more
   than its accuracy. Fitting the value mapper where the student reads value
@@ -192,11 +202,13 @@ Figure~\ref{fig:setting}). Our contributions are:
   an attention-output-aware mapper raises EM from $0.113$ to $0.935$
   ($1.7$B$\to0.6$B) and from $0.000$ to $0.250$ ($8$B$\to0.6$B), a
   $W_O$-aware mapper reaches $0.899$ and $0.268$, and a mapper with shuffled
-  targets stays at $0.077$ and $0.065$. Measuring the same five mapper variants
-  against the state they produce separates the two spaces: pooled over six runs,
-  raw representation error does not rank them (rank correlation $-0.10$ against
-  EM), while attention-output error and $o$-projection-space error do ($-1.00$
-  and $-0.80$), with the shuffled-target control the visible exception. Layer
+  targets stays at $0.077$ and $0.065$. Measuring error against the state a mapper
+  produces separates the two spaces, and a sweep of the mapper objective over
+  $198$ configurations says the same thing at higher resolution: raw
+  representation error does not rank the configurations---within every run it is
+  positively related to EM---while attention-output and $o$-projection-space error
+  are strongly negatively related with intervals disjoint from the raw interval in
+  every run, the shuffled-target control being the visible exception. Layer
   alignment is masked rather than absent: with a representation-space mapper the
   value arm sits at the floor (corrected V-only EM $\le0.143$ in every seed) and
   offsetting or permuting the layer map changes almost nothing, whereas with the
@@ -226,8 +238,11 @@ Figure~\ref{fig:setting}). Our contributions are:
   the mapper and the adapter on SQuAD calibration documents still answers
   $0.000$ of the held-out questions on every transfer arm across three document
   splits, even though the same recipe recovers $0.94$ V-only EM on the synthetic
-  distribution. Compatibility is therefore conditioned on the task distribution
-  and not a property of the model pair alone.
+  distribution. The bound is the distribution and not the amount of data: a
+  calibration set of the same size drawn from the other domain fails identically,
+  and $85$ documents mixing both still fail. Compatibility is therefore
+  conditioned on the task distribution and not a property of the model pair
+  alone.
 
 \end{enumerate}
 
@@ -241,10 +256,13 @@ where our evidence is clearest: on the equal-depth pair the consumption-space
 value mapper recovers the value arm without changing a single consumer weight and
 only the residual gap needs the adapter, whereas on the flagship pair the mapper
 alone recovers about a quarter of Self and the adapter is required. The
-key-side mismatch is diagnosable (routing divergence) and the value-side one is
-repairable; the general lesson is that representation alignment is the wrong
-target object, because the quantity that decides usability is the error the
-receiver makes on the state it is handed, measured where it consumes it.
+key-side mismatch is diagnosable and, on our evidence, not repairable by
+re-weighting the routing: closing the routing gap leaves the task arm at the
+floor. The value-side mismatch is repairable once the mapper is fit where the
+receiver consumes the state. The general lesson is that representation alignment
+is the wrong target object, because the quantity that decides usability is the
+error the receiver makes on the state it is handed, measured where it consumes
+it.
 Evaluations of cross-model transfer should therefore report task performance
 under a corrected evaluator and include content controls.
 
@@ -498,9 +516,10 @@ part of our own earlier work.
 three-seed requirement, and the pre-registered G0 gate predate this revision. The
 content-control suite, the layer-map ablation, the held-out layer scan, the
 routing/mapper comparison, the evaluator validator, the repaired-regime layer
-scrambling, the adapter causality test, and the cross-domain repair attempt were
-all specified in a written revision plan, with a decision rule, before the
-corresponding runs; the plan and the raw reports are in the repository.
+scrambling, the adapter causality test, the cross-domain repair attempt, the
+routing-aware key mapper, the mapper-objective sweep, and the calibration-mix
+control were all specified in a written revision plan, with a decision rule,
+before the corresponding runs; the plan and the raw reports are in the repository.
 
 \emph{Exploratory.} The corrected evaluator, the consumption adapter, the
 projection ablation, the decomposition of the likelihood gains into K and V main
@@ -779,33 +798,135 @@ inherits both, the student is asked to read teacher keys, and its routing does
 move (top-1 agreement $0.70$ on $1.7$B$\to0.6$B and $0.59$ on
 $8$B$\to0.6$B, with attention cosine $0.97$ and $0.93$). We report routing
 divergence as a diagnostic for the key side and consumption-space alignment as
-the operative variable on the value side; neither is identified as a unique
-mechanism by an intervention, and we no longer use one to explain the other.
+the operative variable on the value side, and we no longer use one to explain the
+other.
+
+We also intervene on the key side rather than only measuring it
+(Table~\ref{tab:routingkey}). The intervention re-weights the same per-(layer,
+head) ridge fit by the student's attention mass, so that accuracy is demanded
+where the student will actually look; with unit weights it reproduces the affine
+key fit exactly ($\max|\Delta| = 0$ on all six runs). It shrinks routing
+divergence from $0.167$ to $0.139$ on $1.7$B$\to0.6$B ($17\%$) and from $0.254$
+to $0.153$ on $8$B$\to0.6$B ($38$--$43\%$ across seeds), and lifts top-1
+agreement from $0.70$ to $0.87$ and from $0.58$ to $0.84$. The task arm does not
+follow: K-only EM stays at the floor (at most $0.054$ for the routing-aware
+mapper itself and $0.089$ across all four key arms in any run, against $0.899$
+for the student's own cache), and the same objective fit to shuffled-document
+targets---which cannot carry content---is not worse on the task arm ($0.042$
+against $0.030$ on $8$B$\to0.6$B) while reproducing the likelihood gain on
+$1.7$B$\to0.6$B ($+3.85$ against $+3.79$). Closing the routing gap is therefore a
+condition we can move without repairing the arm, so we call this a negative
+intervention for ``the key side is repairable in routing space'' rather than a
+rescue, and it is why the repair we do find is on the consumer side.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Routing-aware key mapper against the affine key mapper: three seeds, $56$
+held-out questions per seed, likelihood as the mean answer log-likelihood
+difference against the student's own cache, routing TV as the total-variation
+distance between the student's routing under mapped teacher keys and under its own
+keys, and top-1 as document-token agreement. ``routing'' is the routing-aware
+mapper and ``routing-shuf'' the same objective fit to another document's targets.
+Routing divergence moves, the task arm does not, and the shuffled control is not
+worse.}
+\label{tab:routingkey}
+\begin{tabular}{llcccc}
+\toprule
+Pair & Key mapper & $\dll$ & EM & routing TV & top-1 \\
+\midrule
+$1.7$B$\to0.6$B & affine        & $-0.82$ & $0.030$ & $0.167$ & $0.700$ \\
+$1.7$B$\to0.6$B & routing       & $+3.79$ & $0.000$ & $0.139$ & $0.872$ \\
+$1.7$B$\to0.6$B & routing-shuf  & $+3.85$ & $0.006$ & $0.205$ & $0.842$ \\
+$1.7$B$\to0.6$B & raw layers    & $+0.31$ & $0.030$ & $0.170$ & $0.745$ \\
+\midrule
+$8$B$\to0.6$B & affine          & $+2.62$ & $0.000$ & $0.254$ & $0.581$ \\
+$8$B$\to0.6$B & routing         & $+2.26$ & $0.030$ & $0.153$ & $0.839$ \\
+$8$B$\to0.6$B & routing-shuf    & $+1.35$ & $0.042$ & $0.214$ & $0.813$ \\
+$8$B$\to0.6$B & raw layers      & $-0.98$ & $0.000$ & $0.773$ & $0.032$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 Table~\ref{tab:errorbudget} puts both candidate alignment targets next to the
 task metric for the same five mapper variants, pooled over the two pairs that
 share the $0.6$B student ($1.7$B$\to0.6$B and $8$B$\to0.6$B; six runs). Raw
-representation error does not order them: the affine
-mapper has by far the smallest raw error ($0.267$) and the second-lowest EM
-($0.057$), while the two consumption-space mappers carry raw errors of
-$0.70$--$0.77$, more than twice as large, and reach $0.586$--$0.592$. Errors
-measured where the student reads the state do order them: attention-output error
-falls from $3.20$ (affine) to $0.073$ and $o$-projection error from $3.75$ to
-$0.081$, and the rank correlations with EM are $-1.00$ and $-0.80$ against
-$-0.10$ for the raw error, computed on the pooled means. That pooled value hides
-the run-to-run spread, so we report it with the per-run range: the
-attention-output and $o$-projection correlations stay in $[-1.00,-0.80]$ in every
-one of the six runs, while the raw-error correlation ranges over
-$[-0.60,+0.05]$ and changes sign between the two pairs. The ordering therefore
-holds run by run, but five variants are
-too few to attach a $p$-value to it, and we read the correlations as a
-consistency check on the mechanism rather than as an estimated law. One variant
+representation error does not order them: the affine mapper has by far the
+smallest raw error ($0.267$) and the second-lowest EM ($0.057$), while the two
+consumption-space mappers carry raw errors of $0.70$--$0.77$, more than twice as
+large, and reach $0.586$--$0.592$. Errors measured where the student reads the
+state do order them: attention-output error falls from $3.20$ (affine) to $0.073$
+and $o$-projection error from $3.75$ to $0.081$.
+
+Five variants are too few to found a rule on, so we swept the objective instead.
+With $\mathcal{L}_\alpha = (1-\alpha)\|\hat V - V_S\|^2 +
+\alpha\|A_S\hat V - A_S V_S\|^2$ over $\alpha \in \{0, 0.1, \dots, 1\}$ and ridge
+$\lambda \in \{10^{-4}, 10^{-3}, 10^{-2}\}$, where $\alpha=0$ reproduces the
+affine mapper and $\alpha=1$ the attention-output-aware mapper exactly, each run
+supplies $33$ configurations scored on the same held-out questions, for $198$
+points over the two pairs and three seeds (Table~\ref{tab:sweep},
+Figure~\ref{fig:sweep}). The grid confirms the ordering and sharpens
+it. Consumption-space error is strongly and negatively rank-correlated with EM,
+with a bootstrap interval disjoint from the raw interval in every run
+($\rho=-0.964$ $[-0.983,-0.925]$ for attention-output error and $-0.962$ for
+$o$-projection error within $1.7$B$\to0.6$B, $-0.919$ and $-0.918$ within
+$8$B$\to0.6$B, and $-0.799$ and $-0.823$ over all $198$ points). Raw
+representation error is not merely uninformative: within every run it is
+\emph{positively} related to EM ($+0.890$ to $+0.944$ on $8$B$\to0.6$B, $+0.934$
+to $+0.989$ on $1.7$B$\to0.6$B), so the configuration with the smallest
+state-space error is the one that answers the fewest questions---the
+five-variant observation above with more resolution. The single pooled raw figure
+of $-0.27$ over all $198$ points runs the other way only because the two pairs
+differ in scale (the $8$B pair has both larger errors and lower EM) and is still
+far weaker than the consumption-space values. We therefore state the rule at the
+level the grid supports: the error that predicts transfer is the error the
+receiver makes on the state where it consumes it, not the distance between the
+states. One variant
 is a genuine exception and we report it as
 such: the shuffled-target mapper reaches a low attention-output error ($0.90$)
 against the wrong document's targets while answering $0.071$ of questions,
 because the quantity it fits is not the quantity the answer depends on. Within
 the family of mappers fit to the right targets, alignment where the receiver reads
 the state is what tracks task performance; raw representation error does not.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Rank correlation between each error measure and corrected V-only EM over
+the mapper-objective sweep: $33$ configurations per run, $198$ points over two
+pairs and three seeds, correlations and intervals computed with average ranks
+(configuration-level bootstrap). Within every run the raw error is positively
+related to EM, so it does not order configurations by task performance, while the
+consumption-space errors are strongly negative. The pooled ($198$-point) values
+are $-0.267$ $[-0.373,-0.148]$, $-0.799$ $[-0.846,-0.740]$ and $-0.823$
+$[-0.865,-0.770]$ for $e_{\text{raw}}$, $e_{\text{attn}}$ and $e_{W_O}$; only the
+pooled raw value is negative, and it is a between-pair scale artifact.}
+\label{tab:sweep}
+\begin{tabular}{lccc}
+\toprule
+Error measure & $1.7$B$\to0.6$B & $8$B$\to0.6$B & pooled ($198$) \\
+ & per run ($33$ each) & per run ($33$ each) & \\
+\midrule
+$e_{\text{raw}}$  & $+0.93$ to $+0.99$ & $+0.89$ to $+0.94$ & $-0.267$ \\
+$e_{\text{attn}}$ & $-0.99$ to $-0.93$ & $-0.95$ to $-0.90$ & $-0.799$ \\
+$e_{W_O}$         & $-0.99$ to $-0.93$ & $-0.95$ to $-0.90$ & $-0.823$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_sweep.pdf}
+\caption{The mapper-objective sweep, $198$ configurations. Each point is one
+$(\alpha,\lambda)$ setting scored on the same held-out questions; the horizontal
+axis is logarithmic. (a) Error in state space: raw representation error does not
+order configurations by task performance, and within each pair it is positively
+related to it. (b) Error in consumption space: attention-output and
+$o$-projection error both fall by orders of magnitude before EM rises, and their
+rank correlation with EM is strongly negative in every run. Rank correlations use
+average ranks; the pooled values are in Table~\ref{tab:sweep}.}
+\label{fig:sweep}
+\end{figure}
 
 \begin{table}[t]
 \centering
@@ -819,7 +940,9 @@ EM is corrected V-only EM. Rank correlation with EM is computed on the pooled
 means over five mapper variants and six runs and is reported with its per-run
 range: $-0.10$ [$[-0.60,+0.05]$] for $e_{\text{raw}}$, $-1.00$
 [$[-1.00,-0.80]$] for $e_{\text{attn}}$ and $-0.80$ [$[-1.00,-0.80]$] for
-$e_{W_O}$. Five variants and six runs are too few for a $p$-value.}
+$e_{W_O}$. Five variants and six runs are too few for a $p$-value, so
+Table~\ref{tab:sweep} and Figure~\ref{fig:sweep} repeat the comparison over
+$198$ configurations of the mapper objective.}
 \label{tab:errorbudget}
 \begin{tabular}{lcccc}
 \toprule
@@ -952,16 +1075,24 @@ and $0.400$. The adapter is not inert: it raises the student's own SQuAD score t
 $0.667$, $0.400$, and $0.400$ on those splits, and to $0.600$ when trained on the
 synthetic domain alone. What it raises is the student's reading of \emph{its own}
 state; it never makes the transferred state answer SQuAD questions, in domain or
-out of it. Two caveats keep this honest: SQuAD supplies only fifteen calibration
-documents, far fewer than the synthetic runs use, and the held-out Self ceiling is
-$0.20$--$0.40$, which bounds how much either fix could demonstrate. We therefore
-read this as consumer compatibility being bound to the task distribution, not as
-a claim that no mapper could ever work on SQuAD, and we name the phenomenon
-\emph{task-conditioned functional compatibility}: the same producer--consumer
-pair is repairable on one distribution and not on another. These runs bound the
-claim in two ways. It rests on a single second domain, and a difference in
-calibration volume between the two domains is not excluded by them, since the
-SQuAD fit sees fifteen documents against the synthetic run's seventy.
+out of it. The obvious alternative explanation is calibration volume: the SQuAD
+fit sees fifteen documents where the synthetic runs use seventy. We separate the
+two with a calibration-mix control that holds the held-out documents and the
+scoring path fixed and changes only what the mapper and the adapter are fit on.
+Fifteen synthetic documents---the same volume, the wrong distribution---fail in
+exactly the same way ($0.000$ on every transfer arm), and fifteen SQuAD plus
+seventy synthetic documents, $85$ in total, still leave the best transfer arm at
+$0.067$ (one held-out question, drawn from different arms in the two splits that
+reach it and from none in the third, against $0.044$ averaged over the three). The
+adapter's own SQuAD reading follows the calibration mix rather than transfer: it
+reaches $0.556$ under the synthetic-only control and $0.422$ under the mixed one,
+against $0.489$ for the SQuAD-only control, while no transfer arm leaves the floor.
+Extra calibration data is therefore not the binding
+factor; the distribution is. We name the phenomenon \emph{task-conditioned
+functional compatibility}: the same producer--consumer pair is repairable on one
+distribution and not on another. Two caveats remain: the evidence rests on a
+single second domain, and its held-out Self ceiling is $0.20$--$0.40$, which
+bounds how much either fix could demonstrate.
 
 \begin{table}[t]
 \centering
@@ -1129,18 +1260,23 @@ value arm unusable, while a mapper fit where the student consumes value recovers
 it (Table~\ref{tab:mappers}); with documents as the resampling unit the recovered
 arm's clustered CI95 is $[0.839, 0.982]$ against $[0.018, 0.107]$ for the affine
 mapper at seed 0, and the two intervals stay disjoint in all three seeds. The
-error budget of Table~\ref{tab:errorbudget} makes the distinction quantitative:
-raw representation error is smallest for the affine mapper and does not rank the
-variants (rank correlation $-0.10$ with EM), while error measured after the
-student's attention output and after its $o$-projection does ($-1.00$ and
-$-0.80$). Those correlations are computed on the pooled means over five variants
-and six runs; the per-run ranges are $[-0.60,+0.05]$, $[-1.00,-0.80]$ and
-$[-1.00,-0.80]$, so the ordering holds in every run even though five variants
-cannot support a $p$-value.
+error budget of Table~\ref{tab:errorbudget} makes the distinction quantitative,
+and the mapper-objective sweep of Table~\ref{tab:sweep} confirms it on $198$
+configurations rather than five: raw representation error is smallest for the
+affine mapper and is positively related to EM within every run, while error
+measured after the student's attention output and after its $o$-projection is
+strongly negatively related in every run, with bootstrap intervals disjoint from
+the raw interval. The five-variant pooled values are $-0.10$, $-1.00$ and
+$-0.80$, with per-run ranges $[-0.60,+0.05]$, $[-1.00,-0.80]$ and
+$[-1.00,-0.80]$; the sweep reaches the same ordering with $33$ configurations per
+run.
 \emph{(iii) Key transfer.} Mapped teacher keys can perturb the receiver's
 routing (top-1 agreement $0.59$--$0.70$ against attention cosine
-$0.93$--$0.97$). This is a diagnostic for the key side; the value arm never sees
-a mapped key and is not explained by it.
+$0.93$--$0.97$), and re-weighting the key fit by the student's attention shrinks
+that divergence by $17$--$43\%$ without moving the task arm
+(Table~\ref{tab:routingkey}). The key-side mismatch is therefore diagnosable and,
+on this evidence, not repairable by routing-space alignment; the value arm never
+sees a mapped key and is not explained by it.
 \emph{(iv) Joint handoff.} A full handoff must satisfy both forms of
 compatibility and is therefore consistently fragile; it does not reliably combine
 the gains of the two components. The joint arm is the lowest of the three teacher
@@ -1159,8 +1295,13 @@ Our evidence does not establish that the recovered information is the teacher's
 document content in full. The shuffled-document adapter control is intermediate,
 not at the floor, so part of the recovery is an adaptation to teacher-like state
 distributions rather than to the specific document. Nor do we identify the
-mechanism that makes a state readable: routing divergence is a diagnostic for the
-key side, and we measure it rather than intervening on it.
+mechanism that makes a state readable. On the key side we can move the diagnostic
+without repairing the arm: the routing-aware mapper of
+Section~\ref{sec:two-failures} reduces routing divergence by $17$--$43\%$ and
+still leaves K-only EM at the floor, with a shuffled-target control that is not
+worse. That is a negative result about one intervention rather than a proof that
+no key-side repair exists, and it is the strongest statement our evidence
+supports.
 
 \subsection{Implications}
 \label{sec:implications}
@@ -1189,13 +1330,15 @@ taken together.
   generalization, and the second domain sharpens this: with the mapper and the
   adapter refit \emph{inside} SQuAD, every transfer arm still answers $0.000$ of
   the held-out questions across three document splits
-  (Table~\ref{tab:squadrepair}). SQuAD supplies only fifteen calibration
-  documents and its held-out Self is $0.20$--$0.40$, so we read this as
-  compatibility being bound to the task distribution rather than as proof that no
-  mapper can work there, and we call it \emph{task-conditioned}. The alternative
-  reading---that the second domain fails only because it supplies far less
-  calibration data---is not excluded by these runs and is the first thing a
-  follow-up should separate.
+  (Table~\ref{tab:squadrepair}). We separate the two candidate explanations in
+  Section~\ref{sec:adapter-results}: a calibration set of the \emph{same size}
+  drawn from the synthetic domain fails the same way ($0.000$ on every transfer
+  arm), and $85$ documents mixing both domains still fail (best arm $0.067$, one
+  held-out question), so the binding factor is the distribution rather than the
+  volume. The second domain's held-out Self is only $0.20$--$0.40$ and it is a
+  single domain, so we read this as compatibility being bound to the task
+  distribution rather than as proof that no mapper can work there, and we call it
+  \emph{task-conditioned}.
 \item \textbf{Corpus effects.} Every document shares a template, and each
   document is reused across about seven questions (test: $56$ questions from $8$
   documents). Wrong-document controls are therefore conservative as content
@@ -1213,9 +1356,9 @@ taken together.
   spread (for example $8$B$\to1.7$B K-only $+1.04 \pm 1.53$). Three seeds is a
   small sample; we report std rather than intervals for most arms.
 \item \textbf{Mapper family.} We test linear and ridge mappers, including
-  consumer-space variants. Nonlinear mappers, and mappers trained on more
-  calibration data, remain untested; a stronger mapper could change how much of
-  the failure is attributable to consumption rather than to mapping.
+  consumer-space variants and a one-parameter interpolation between them, but the
+  family remains linear: nonlinear mappers are untested and could change how much
+  of the failure is attributable to consumption rather than to mapping.
 \item \textbf{Evaluator provenance.} Our corrected numbers come from our own
   evaluator, validated against a full-prefill reference on the complete $56$-item
   Self test set of three student sizes (Figure~\ref{fig:evalcheck}) and again on
@@ -1271,13 +1414,13 @@ taken together.
 
 \subsection{Future work}
 \label{sec:future-work}
-Three directions follow: (i) a routing-aware key mapper that optimizes the
-attention logits rather than the key vectors, to test whether the residual gap on
-large-gap pairs is closable; (ii) cross-family evaluation (for example
-Qwen$\to$Llama) to test the boundary of the consumption adapter; and (iii)
-systems measurements of mapper and adapter latency against re-prefilling, which
-should replace the parameter-count heuristic of Appendix~\ref{app:cost} with
-measured cost.
+Three directions follow: (i) a key-side repair that changes the receiver's
+routing rather than re-weighting the fit, since the routing-aware mapper of
+Section~\ref{sec:two-failures} shrinks routing divergence without moving the task
+arm; (ii) cross-family evaluation (for example Qwen$\to$Llama) to test the
+boundary of the consumption adapter; and (iii) systems measurements of mapper and
+adapter latency against re-prefilling, which should replace the parameter-count
+heuristic of Appendix~\ref{app:cost} with measured cost.
 
 \subsection{Conclusion}
 \label{sec:conclusion}
@@ -1332,8 +1475,12 @@ per-sample decomposition write JSON reports under \texttt{reports/}
 \texttt{phaseB\_evalcheck\_squad.json} for the evaluator attribution,
 \texttt{phaseB\_adapter\_causal20\_*.json} for the frozen
 adapter causality test, \texttt{phaseB\_squadwithin\_split*.json} for the
-within-domain SQuAD repair, \texttt{phaseB\_errorbudget\_*.json} for the error
-budget, and \texttt{cluster\_stats\_audit3.json} for the document-clustered
+budget, \texttt{phaseB\_routingkey\_*.json} for the routing-aware key mapper,
+\texttt{phaseB\_mappersweep\_*.json} and its \texttt{aggregate} for the
+mapper-objective sweep, and the calibration-mix reports
+(\texttt{phaseB\_squadwithin\_*\_split*.json}) for the volume and distribution
+controls, and
+\texttt{cluster\_stats\_audit3.json} for the document-clustered
 intervals; the superseded cost figure replaced in Appendix~\ref{app:cost} is
 archived under \texttt{reports/archive/}). A
 detailed correction note (\texttt{paper/audit/METRIC\_CORRECTION.md}) documents
