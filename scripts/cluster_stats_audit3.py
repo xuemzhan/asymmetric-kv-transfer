@@ -38,18 +38,29 @@ N_BOOT = 10000
 
 def bootstrap_ci95(values: np.ndarray, groups: np.ndarray | None = None,
                     n_boot: int = N_BOOT, seed: int = 0) -> tuple:
-    """Mean and bootstrap CI95; resamples whole clusters when groups are given.
+    """Mean and percentile bootstrap CI95.
+
+    With `groups`, the resampling unit is the cluster and the interval is a
+    document-clustered interval. Without groups, the resampling unit is the
+    individual observation (an earlier version resampled a single bucket, so
+    every replicate was the whole array and the interval collapsed onto the
+    mean). Both paths use the same replicate count.
 
     Self-contained on purpose: this script must run on a CPU-only machine with
     no torch/transformers installed.
     """
     values = np.asarray(values, dtype=float)
-    if groups is None:
-        buckets = [values]
-    else:
-        uniq = np.unique(groups)
-        buckets = [values[np.asarray(groups) == g] for g in uniq]
     rng = np.random.RandomState(seed)
+    if values.size == 0:
+        return float("nan"), float("nan"), float("nan")
+    if groups is None:
+        n = len(values)
+        pick = rng.randint(0, n, size=(n_boot, n))
+        boots = values[pick].mean(axis=1)
+        return (float(values.mean()), float(np.percentile(boots, 2.5)),
+                float(np.percentile(boots, 97.5)))
+    uniq = np.unique(groups)
+    buckets = [values[np.asarray(groups) == g] for g in uniq]
     boots = np.empty(n_boot)
     for b in range(n_boot):
         pick = rng.randint(0, len(buckets), len(buckets))
@@ -86,7 +97,7 @@ def summarise_arm(rows: list, arm: str, base_arm: str, groups: np.ndarray) -> di
     ems = np.array([float(r[arm + "_em"]) for r in rows])
     out = {
         "EM": float(ems.mean()),
-        "EM_ci95": list(bootstrap_ci95(ems, None, n_boot=2000)[1:]),
+        "EM_ci95": list(bootstrap_ci95(ems, None, n_boot=N_BOOT)[1:]),
         "n": int(len(ems)),
         "n_docs": int(len(np.unique(groups))),
     }

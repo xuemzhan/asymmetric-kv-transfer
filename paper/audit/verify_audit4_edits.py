@@ -62,7 +62,31 @@ def present(tag: str, text: str, needle: str) -> None:
 
 
 def read(path: str) -> str:
-    return io.open(path, encoding="utf-8").read()
+    """Read a guard input; a missing file is a FAILURE, not a crash."""
+    try:
+        return io.open(path, encoding="utf-8").read()
+    except OSError as exc:
+        FAILURES.append("FILE: %s could not be read (%s)" % (path, exc))
+        return ""
+
+
+def load_report(name: str) -> dict:
+    """Load reports/<name>; missing or corrupt is a FAILURE, not a crash.
+
+    A guard that raises cannot be told apart from a guard that failed, so the
+    artifact is recorded in FAILURES and an empty dict is returned.
+    """
+    path = os.path.join(REPORTS, name)
+    try:
+        with io.open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, ValueError) as exc:
+        FAILURES.append("REPORT: %s could not be read (%s)" % (path, exc))
+        return {}
+    if not isinstance(data, dict):
+        FAILURES.append("REPORT: %s is not a JSON object" % path)
+        return {}
+    return data
 
 
 def close(a: float, b: float, tol: float = 0.005) -> bool:
@@ -126,7 +150,11 @@ def main() -> int:
     present("T4", tex, "near $260$ tokens")
     present("T4", tex, "$7.40$M")
     # The appendices must follow the bibliography, not interrupt the main text.
-    if tex.index("\\appendix") < tex.index("\\end{thebibliography}"):
+    if "\\appendix" not in tex or "\\end{thebibliography}" not in tex:
+        FAILURES.append("T4: main.tex must carry both \\appendix and the "
+                        "bibliography")
+    elif tex.index("\\appendix") < tex.index("\\end{thebibliography}"):
+        FAILURES.append("T4: the appendix block must follow the bibliography")
         FAILURES.append("T4: the appendix block must follow the bibliography")
     # Recompute the heuristic from the per-(layer, head) mapper definition.
     params = 2 * 28 * 8 * (128 * 128 + 128)          # K + V, 28 layers, 8 heads
@@ -164,12 +192,10 @@ def main() -> int:
     budget = {}
     for pair in ("1.7B_0.6B", "8B_0.6B"):
         for seed in (0, 1, 2):
-            path = os.path.join(REPORTS, "phaseB_errorbudget_%s_seed%d.json"
-                                % (pair, seed))
-            if not os.path.isfile(path):
-                FAILURES.append("T7: missing report %s" % path)
+            rep = load_report("phaseB_errorbudget_%s_seed%d.json" % (pair, seed))
+            if not rep:
                 continue
-            budget[(pair, seed)] = json.load(io.open(path, encoding="utf-8"))
+            budget[(pair, seed)] = rep
     if len(budget) == 6:
         names = ["raw", "affine", "outaware", "outaware-shuffled", "woaware"]
         pooled = {}

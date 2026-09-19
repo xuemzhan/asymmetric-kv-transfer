@@ -47,6 +47,24 @@ def present(tag: str, text: str, needle: str) -> None:
 def close(a: float, b: float, tol: float = 0.005) -> bool:
     return abs(a - b) <= tol
 
+def load_report(name: str) -> dict:
+    """Load reports/<name>; a missing or corrupt file is a FAILURE, not a crash.
+
+    A guard that raises cannot be told apart from a guard that failed, so any
+    unreadable artifact is recorded in FAILURES and an empty dict is returned.
+    """
+    path = os.path.join(ROOT, "reports", name)
+    try:
+        with io.open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, ValueError) as exc:
+        FAILURES.append("REPORT: %s could not be read (%s)" % (path, exc))
+        return {}
+    if not isinstance(data, dict):
+        FAILURES.append("REPORT: %s is not a JSON object" % path)
+        return {}
+    return data
+
 
 def main() -> int:
     tex = io.open(TEX, encoding="utf-8").read()
@@ -115,9 +133,9 @@ def main() -> int:
     if not os.path.isfile(CLUSTER):
         FAILURES.append("A6: %s must exist" % CLUSTER)
     else:
-        stats = json.load(io.open(CLUSTER, encoding="utf-8"))
+        stats = load_report("cluster_stats_audit3.json")
         key = "8B_4B_seed0"
-        entry = stats["fourarm"].get(key)
+        entry = stats.get("fourarm", {}).get(key)
         if entry is None:
             FAILURES.append("A6: %s missing from cluster stats" % key)
         else:
@@ -136,7 +154,7 @@ def main() -> int:
                 ems.append(entry["arms"]["V-only"]["EM"])
         if ems and not all(0.42 <= e <= 0.45 for e in ems):
             FAILURES.append("A6: 8B_4B V-only per-seed EM outside 0.43-0.45: %s" % ems)
-        oa = stats["outaware"].get("phaseB_outaware_1.7B_0.6B_seed0", {})
+        oa = stats.get("outaware", {}).get("phaseB_outaware_1.7B_0.6B_seed0", {})
         oa_arms = oa.get("arms", {})
         if "V-OutAware" in oa_arms:
             lo, hi = oa_arms["V-OutAware"]["EM_ci95_clustered"]
@@ -152,7 +170,7 @@ def main() -> int:
     if not os.path.isfile(tax_path):
         FAILURES.append("A7: %s must exist" % tax_path)
     else:
-        tax = json.load(io.open(tax_path, encoding="utf-8"))["students"]
+        tax = load_report("error_taxonomy_selfdiag.json").get("students") or {}
         counts = tax.get("1.7B", {}).get("counts", {})
         if counts.get("wrong_entity") != 32 or counts.get("correct") != 24:
             FAILURES.append("A7: 1.7B taxonomy changed: %s" % counts)
@@ -171,10 +189,7 @@ def main() -> int:
     present("A1", tex, "first-token top-1\nagreement is $0.933$")
     absent("A1", tex, "end-to-end equivalent to full prefill")
 
-    def load_report(name: str) -> dict:
-        return json.load(io.open(os.path.join(ROOT, "reports", name), encoding="utf-8"))
-
-    res = load_report("phaseB_evalcheck_residual_seed0.json")["students"]
+    res = load_report("phaseB_evalcheck_residual_seed0.json").get("students") or []
     want = {"0.6B": (0.929, 0.0047, 1.344), "1.7B": (0.929, 0.0015, 0.875),
             "4B": (0.982, 0.0010, 0.969)}
     for entry in res:
@@ -188,50 +203,81 @@ def main() -> int:
         if not close(entry["first_logits_max_abs_err_max"], mx, 0.001):
             FAILURES.append("A1: %s max logit error changed (%.4f)"
                             % (entry["student"], entry["first_logits_max_abs_err_max"]))
-    attrib = load_report("phaseB_evalcheck_attrib.json")
+    attrib = load_report("phaseB_evalcheck_attrib.json").get("default_attn") or {}
     for key in ("roundtrip", "position_ids"):
-        blk = attrib["default_attn"][key]
+        blk = attrib.get(key)
+        if blk is None:
+            FAILURES.append("A1: attribution block %s is missing" % key)
+            continue
         if blk["max_abs_logit_err_max"] > 1e-6 or blk["kl_median"] > 1e-9:
             FAILURES.append("A1: attribution %s is no longer exact (%s)"
                             % (key, blk))
-    squad = load_report("phaseB_evalcheck_squad.json")["students"][0]
-    if not close(squad["first_top1_agreement"], 0.933, 0.002):
+    squad = load_report("phaseB_evalcheck_squad.json").get("students") or []
+    if not squad:
+        FAILURES.append("A1: the SQuAD validator report carries no students")
+    elif not close(squad[0]["first_top1_agreement"], 0.933, 0.002):
         FAILURES.append("A1: SQuAD validator top-1 changed (%.4f)"
-                        % squad["first_top1_agreement"])
+                        % squad[0]["first_top1_agreement"])
 
     # ------------- A2: audit3 par.6/7 (20-epoch adapter, three seeds, row dumps)
     absent("A2", tex, "Both causality runs use a shorter schedule")
     present("A2", tex, "$\\mathbf{0.905{\\pm}0.083}$")
     present("A2", tex, "$\\mathbf{0.321{\\pm}0.129}$")
-    present("A2", tex, "the mean margin $+0.071$ falls below the $0.10$ our")
+    present("A2", tex, "the mean margin $+0.095$ falls below the $0.10$")
     present("A2", tex, "\\textbf{Adapter training variance.}")
-    causal = {"1.7B_0.6B": (0.857, 0.857, 1.000), "8B_0.6B": (0.429, 0.357, 0.179)}
-    for pair, expected in causal.items():
+    # Report-derived margins (audit3 par.6/7). Mean margins: +0.750000
+    # (1.7B_0.6B) and +0.095238 (8B_0.6B).
+    want_margins = {"1.7B_0.6B": (0.714286, 0.678571, 0.857143),
+                    "8B_0.6B": (0.178571, 0.071429, 0.035714)}
+    want_joint = {"1.7B_0.6B": (0.857143, 0.857143, 1.0),
+                  "8B_0.6B": (0.428571, 0.357143, 0.178571)}
+    means = {}
+    for pair, expected in want_margins.items():
         margins = []
         for seed in (0, 1, 2):
             rep = load_report(f"phaseB_adapter_causal20_{pair}_seed{seed}.json")
             if rep.get("epochs") != 20:
                 FAILURES.append("A2: %s seed%d is not a 20-epoch run"
                                 % (pair, seed))
-            rows = rep["rows_by_condition"].get("adapter(joint)")
+            rows = (rep.get("rows_by_condition") or {}).get("adapter(joint)")
             if not rows:
                 FAILURES.append("A2: %s seed%d has no adapter rows" % (pair, seed))
                 continue
             mean = lambda a: sum(x[a + "_em"] for x in rows) / len(rows)
-            if not close(mean("Joint"), expected[seed], 0.01):
-                FAILURES.append("A2: %s seed%d correct-KV EM changed (%.4f)"
-                                % (pair, seed, mean("Joint")))
+            if not close(mean("Joint"), want_joint[pair][seed], 0.001):
+                FAILURES.append("A2: %s seed%d correct-KV EM changed (%.6f, "
+                                "want %.6f)"
+                                % (pair, seed, mean("Joint"),
+                                   want_joint[pair][seed]))
             margins.append(mean("Joint") - max(mean("WrongJoint"),
                                               mean("RandKV"), mean("ZeroKV")))
-        if len(margins) == 3:
-            avg = sum(margins) / 3
-            bound = (0.75, 0.10)[pair == "8B_0.6B"]
-            if pair == "1.7B_0.6B" and avg < bound:
-                FAILURES.append("A2: equal-depth margin dropped to %+.3f" % avg)
-            if pair == "8B_0.6B" and avg >= bound:
-                FAILURES.append("A2: flagship margin %+.3f now passes the 0.10 "
-                                "gate but the paper still reports it as "
-                                "unresolved" % avg)
+        if len(margins) != 3:
+            FAILURES.append("A2: %s has %d margins, expected 3"
+                            % (pair, len(margins)))
+            continue
+        for seed, (got, want) in enumerate(zip(margins, expected)):
+            if not close(got, want, 0.001):
+                FAILURES.append("A2: %s seed%d margin changed (%+.6f, want %+.6f)"
+                                % (pair, seed, got, want))
+        avg = sum(margins) / 3
+        means[pair] = avg
+        if not close(avg, sum(expected) / 3, 0.001):
+            FAILURES.append("A2: %s mean margin changed (%+.6f, want %+.6f)"
+                            % (pair, avg, sum(expected) / 3))
+    # Real bounds instead of the old `avg < 0.75`, which passed at exactly
+    # 0.750000: the equal-depth gain must stay large, and the flagship margin
+    # must stay inside the pre-registered noise band the paper reports.
+    if means.get("1.7B_0.6B") is not None and means["1.7B_0.6B"] < 0.70:
+        FAILURES.append("A2: equal-depth margin dropped to %+.3f"
+                        % means["1.7B_0.6B"])
+    if means.get("8B_0.6B") is not None and means["8B_0.6B"] >= 0.10:
+        FAILURES.append("A2: flagship margin %+.3f now passes the 0.10 gate but "
+                        "the paper still reports it as unresolved"
+                        % means["8B_0.6B"])
+    # The paper text must carry the report-derived margins: per-seed $+0.679$
+    # (1.7B seed1), $+0.179$ (8B seed0) and the mean margin $+0.095$.
+    for literal in ("$+0.679$", "$+0.179$", "$+0.095$"):
+        present("A2", tex, literal)
 
     # ------------------- A3: audit3 par.8 (within-domain second-domain repair)
     present("A3", tex, "Mapper retrained on SQuAD")
@@ -239,7 +285,7 @@ def main() -> int:
     present("A3", tex, "every\ntransfer arm---K-only, V-only under each mapper objective, and joint---answers")
     for split in (0, 1, 2):
         rep = load_report(f"phaseB_squadwithin_split{split}.json")
-        for arm, block in rep["summary"].items():
+        for arm, block in (rep.get("summary") or {}).items():
             if arm != "Self" and block["EM"] > 0:
                 FAILURES.append("A3: split%d arm %s is no longer zero (%.3f)"
                                 % (split, arm, block["EM"]))
@@ -256,7 +302,7 @@ def main() -> int:
     for pair in ("1.7B_0.6B", "8B_0.6B"):
         for seed in (0, 1, 2):
             rep = load_report(f"phaseB_errorbudget_{pair}_seed{seed}.json")
-            for name, block in rep["summary"].items():
+            for name, block in (rep.get("summary") or {}).items():
                 budget.setdefault(name, []).append(block)
     if len(budget) != 5:
         FAILURES.append("A4: expected five mapper variants, found %d" % len(budget))

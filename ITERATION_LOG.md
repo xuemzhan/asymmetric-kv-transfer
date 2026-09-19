@@ -1139,3 +1139,100 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
 - **遗留（GPU 机器）**：PART II 的 A1 routing-aware K mapper（≈45–60 min）、
   A2 mapper objective sweep（2–3 h）、A3 校准量/分布对照（≈30 min，决定 task-conditioned
   命名能否保留）；`scripts/run_audit4_gpu_queue.sh` 与三个脚本尚未编写。
+
+## W29 (2026-09-19): 非 GPU 全面修正 —— 旗舰 margin、守卫覆盖、可移植性、溯源
+
+- **触发**：全项目复核（本机 CPU，无 GPU）。查出 1 处正文数字漂移、1 个守卫覆盖率漏洞、
+  1 个退化统计量、104 处硬编码路径、若干陈旧文档。本轮只做非 GPU 项。
+
+### 正文数字修正（登记 `METRIC_CORRECTION §12`）
+
+`main.tex` 的因果 margin 与产物不符，已改为报告口径：
+
+| 量 | 原印 | 复算（`reports/phaseB_adapter_causal20_*.json`） |
+|---|---|---|
+| 1.7B→0.6B per-seed | `+0.714 / +0.643 / +0.857` | `+0.714 / +0.679 / +0.857` |
+| 1.7B→0.6B mean | `+0.738` | `+0.750` |
+| 8B→0.6B per-seed | `+0.107 / +0.071 / +0.036` | `+0.179 / +0.071 / +0.036` |
+| 8B→0.6B mean | `+0.071` | `+0.095` |
+| 含 0 的聚类区间 | "one seed" | seed 1 `[+0.000,+0.125]`、seed 2 `[-0.036,+0.089]` 两个 |
+
+- 报告内部两条聚合路径（`results.causal` 与 `rows_by_condition`）互相一致，且 W26 已记
+  `+0.750 / +0.095` → 漂移发生在 W27 的正文改写，不是产物问题。
+- 聚类区间用「margin 的逐文档 bootstrap」（8 簇 / 10000 次，5 个随机种子下界稳定）独立复算：
+  1.7B 三 seed 全部排除 0；8B seed 1 下界恰为 `0.000`、seed 2 为 `-0.036`。
+- **门禁判定不变**：1.7B established，8B mean `+0.095` < `0.10` → 仍 unresolved，未下调阈值。
+- 同步修改 Abstract、因果段落正文、Table 5 表注、Limitations §7.3；
+  `arxiv_submission/main.tex` 逐字节同步（SHA256 `4F1B7019…`）。
+- 独立复算（不依赖项目守卫）：flagship 逐样本 K−V = `+2.457 [+1.73,+3.29]` /
+  `+2.720 [+1.98,+3.56]` / `+3.361 [+2.53,+4.32]`（p 为双侧，与论文逐位一致）；6 对 factorial
+  全部两位小数命中；附录 B 成本 7.40M / 28.2 MiB / 112 KiB → 258 ≈ 260 tokens；Table 5 十格全部命中。
+
+### 守卫加固
+
+- `scripts/verify_corrected_paper.py`：四臂表改为合并**所有** `phaseB_fourarm_*.json`
+  （8B_4B 的 seed 0 在独立文件里），六对均 3 seed；新增 `n_seeds == 3` 硬断言；
+  8B_4B 四个均值容差 0.01 → 0.002。此前守卫只用 2 个 seed 得 0.446（论文为 3 seed 的 0.440），
+  靠容差蒙混通过。
+- `paper/audit/verify_audit3_edits.py` A2：新增 6 个 per-seed margin 与两个 mean 的数值断言
+  （容差 0.001）；1.7B 下界由 `avg < 0.75`（报告值恰为 `0.750000`，刀锋）改为 `avg < 0.70`；
+  8B 仍为"达到 0.10 即 FAIL"，防止 unpublished 的静默升级。
+- `verify_audit3/4_edits.py` 与 `verify_corrected_paper.py`：报告缺失/损坏时记 FAILURE 并继续，
+  不再抛异常（"失败"与"崩溃"此前不可区分）。
+
+### 统计修正
+
+- `scripts/cluster_stats_audit3.py`：非聚类 bootstrap 此前重采样的是桶索引，导致 `EM_ci95`
+  恒等于均值；改为逐观测百分位 bootstrap，并统一 `n_boot=10000`。重生成
+  `reports/cluster_stats_audit3.json`：**仅** `EM_ci95` 变化（310 个叶子 = 155 arm × 2），
+  `EM_ci95_clustered`（0 处变化）、`EM`、`doc_level_*`、`n_boot` 全部不变；零宽区间
+  282 → 127，且剩余 127 个全部是 EM 恒为 0（122）或 1（5）的合法情形。
+
+### 可移植性
+
+- 26 个文件（`experiments/*.py`、`data/*.py`、`tests/*.py`）中 104 处硬编码
+  `/workspace/v3`、`/root/.cache/modelscope/models`、`/workspace/apcs`、`/tmp/*` 全部替换为
+  各文件自包含的常量块（`_ROOT/DATA_DIR/REPORT_DIR/MODELS_DIR/APCS_DIR`），可用
+  `V3_ROOT/V3_DATA_DIR/V3_REPORT_DIR/V3_MODELS_DIR/V3_APCS_DIR` 覆盖；GPU 主机行为不变。
+- **顺带修掉本轮引入的一个真实缺陷**：初版探测写成 `os.path.isdir("/workspace/v3")`；
+  Windows 下该串是驱动器相对路径，本机恰有一个**空的** `E:\Workspace\v3` → 探测为真 →
+  `DATA_DIR` 指向不存在的 `E:\Workspace\v3\data`。改为要求哨兵目录存在
+  （`os.path.isdir(os.path.join("/workspace/v3","experiments"))`）。
+- 验证：`compileall` exit 0；26/26 文件的常量在本机解析到本仓库根
+  （`stats_utils.py`、`test_stats_utils.py` 无路径块，符合预期）；`V3_ROOT` 覆盖路径正常。
+- `tests/test_w2_baseline_fix.py`：GPU/torch/模型快照/legacy 数据缺失时 **SKIP 并 exit 0**
+  （此前在 CPU 机器上直接 `ModuleNotFoundError` 崩溃，且它是唯一 import `phase0_g0` 的测试）；
+  输出改到 `$V3_W2_OUT`（默认系统临时目录），不再覆盖被追踪的 provenance 报告；
+  删除其"teacher LL > student LL"断言——该 W2 时代前提已被项目自身推翻
+  （`reports/w2_baseline_fix.json` 记 teacher `-16.92` < student `-11.33`），改为打印诊断。
+
+### 文档与卫生
+
+- 新增 `reports/README.md`：按产出脚本列出哪些报告的 EM 有效、哪些来自已作废评测器
+  （`phase4_scaling_law_v2_*` 仍带 K EM 0.71–0.95 的 `exact_match`），并记录
+  `factorial_analysis.json` 的 `retention` 块基于 legacy EM、`six_pair_per_sample` 为 `null`
+  的原因（三份 phase4 报告早于 dump-rows 改动，W15 的"六对逐样本"遗留项实际未闭环）。
+- `README.md`：守卫清单补 `verify_audit4_edits.py`；测试清单标注 CPU-only；
+  headline findings 补因果检验的弱功效与 task-conditioned 边界；Status 说明
+  REVISION_PLAN4 的 GPU 项脚本尚不存在。
+- `paper/arxiv_metadata.md`：摘要与 `main.tex` 重新同步（旧版仍写 "we confirm both defects in
+  the published evaluation code" —— audit3 §15 已要求把归属改为我方实现）；页/表/图
+  16/5/6 → 24/9/7；补 `fig_evalcheck.pdf`；行号 39/30 → 40/31。
+- 删除陈旧构建产物 `paper/main.{aux,log,out,bbl,blg}`（其中 log 仍写 "14 pages"）与两处
+  `.ipynb_checkpoints`（内含 v1 "Addressing Transfers…" 与 "~2050 tokens" 的陈旧副本）。
+- `paper/references.bib` 加头部注释：构建不使用（论文用内联 `thebibliography` 18 条）。
+- `reports/factorial_analysis.json` 重新生成（仅 `note` 文本与 `six_pair_per_sample` 键漂移，
+  数值不变），关闭产物/脚本之间的代差。
+
+### 验证（全部本机执行）
+
+- `tests/test_stats_utils.py`、`tests/test_w2_baseline_fix.py`（SKIP）、
+  `scripts/verify_corrected_paper.py`（ALL PASS）、
+  `paper/audit/verify_audit2/3/4_edits.py`（OK）全部 exit 0。
+- Tectonic 编译 `paper/main.tex`：exit 0、**0 error**、**24 页**、0 overfull
+  （13–26 处 underfull hbox 集中在复现声明段，为既有情况；`METRIC_CORRECTION §11` 中
+  "0 underfull" 的表述已据实修正）。`paper/arxiv_submission/main.tex` 独立编译同样
+  exit 0、24 页、306,240 字节。
+- **未做**：`REVISION_PLAN4` PART II 的 A1/A2/A3（需 GPU，且 `phaseB_routingkey.py`、
+  `phaseB_mappersweep.py`、`scripts/run_audit4_gpu_queue.sh` 尚不存在）。
+  `phase4_scaling_law_v2.py` 的逐样本 rows 也需 GPU 重跑才能填充 `six_pair_per_sample`。

@@ -21,8 +21,16 @@ import time
 import numpy as np
 import torch
 
-sys.path.insert(0, "/workspace/apcs")
-sys.path.insert(0, "/workspace/v3")
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
+sys.path.insert(0, APCS_DIR)
+sys.path.insert(0, _ROOT)
 
 from phase0_g0 import (  # noqa: E402
     KV,
@@ -39,10 +47,7 @@ from apcs.mapper.math import AffineMapper  # noqa: E402
 from apcs.rope.runner import _rope_pairs, de_rope  # noqa: E402
 from stats_utils import bootstrap_ci95, paired_wilcoxon_test  # noqa: E402
 
-DATA_DIR = "/workspace/v3/data"
-REPORT_DIR = "/workspace/v3/reports"
-
-MSC = "/root/.cache/modelscope/models"
+MSC = MODELS_DIR
 MODELS = {
     "8B": f"{MSC}/Qwen--Qwen3-8B/snapshots/master",
     "4B": f"{MSC}/Qwen--Qwen3-4B/snapshots/master",

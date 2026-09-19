@@ -34,6 +34,16 @@ state.
   output projections (~0.7M params), trained by next-token cross-entropy under
   injected teacher KV, restores K/V/Joint EM to 0.94/0.94/0.83 (1.7B→0.6B) and
   0.79/0.36/0.47 (8B→0.6B).
+- **The causal test has little power on the flagship pair.** Holding the final
+  adapter fixed and destroying the injected content separates the correct arm
+  clearly on 1.7B→0.6B (0.905±0.083 against at most 0.179) but not on 8B→0.6B,
+  where the mean margin is +0.095 against a pre-registered 0.10 gate and two of
+  the three seeds' clustered intervals reach zero. It is reported as unresolved
+  rather than by lowering the bar.
+- **The repair is bound to the task distribution.** Retrained inside SQuAD, every
+  transfer arm still answers 0.000 of the held-out questions across three
+  document splits, so the paper names the phenomenon *task-conditioned*
+  functional compatibility.
 - **Scope.** Within-Qwen3, synthetic OOD domain plus a SQuAD second domain
   (which replicates the negative result).
 
@@ -112,14 +122,19 @@ bash scripts/run_audit3_gpu_queue.sh
 # Regenerate the paper figures (writes paper/figures/*.pdf)
 python3 paper/figures/gen_paper_figures.py
 
-# Unit tests
+# Unit tests (CPU only)
 python3 tests/test_stats_utils.py
 
 # Paper-number guards (run after editing the paper or any report)
 python3 scripts/verify_corrected_paper.py
 python3 paper/audit/verify_audit2_edits.py
 python3 paper/audit/verify_audit3_edits.py
+python3 paper/audit/verify_audit4_edits.py
 ```
+
+`tests/test_w2_baseline_fix.py` is deliberately absent from the list above: it
+needs a GPU, torch and the legacy `data/*.json` splits, so it skips itself when
+those are unavailable.
 
 All experiment scripts assume the current working directory is the repository
 root.
@@ -145,14 +160,18 @@ On Windows the bundled Tectonic wrapper is `tools/compile_paper.ps1`
   revision plans, the metric-correction writeup, and guard scripts.
 - Numbers are asserted by `scripts/verify_corrected_paper.py`,
   `paper/audit/verify_audit2_edits.py`, `paper/audit/verify_audit3_edits.py`, and
-  `paper/audit/verify_audit4_edits.py`.
-  The pre-correction guard is kept for history only at
-  `scripts/archive/verify_paper_numbers_v1_stale.py` (it targets the superseded
-  v1 paper and is expected to fail).
+  `paper/audit/verify_audit4_edits.py`. The pre-correction guard is kept for
+  history only at `scripts/archive/verify_paper_numbers_v1_stale.py` (it targets
+  the superseded v1 paper and is expected to fail).
+- `reports/README.md` records which reports carry a valid exact-match (EM) field
+  and which were written by the defective evaluator whose EM was withdrawn. Read
+  it before citing anything from `reports/`.
 
 ## Status
 
-The paper is an anonymous draft under review (24 pages with the appendices);
-the author list and citation will be filled in before posting. The pending
-GPU-side work is scheduled in `paper/audit/REVISION_PLAN4.md` (routing-aware key
-mapper, mapper-objective sweep, calibration-volume control).
+The paper is an anonymous draft under review (24 pages with the appendices;
+re-verified with a Tectonic build). The author list and citation will be filled
+in before posting. The pending GPU-side work is scheduled in
+`paper/audit/REVISION_PLAN4.md` (routing-aware key mapper, mapper-objective
+sweep, calibration-volume control); none of it has been run, and the scripts it
+needs do not exist in this repository yet.

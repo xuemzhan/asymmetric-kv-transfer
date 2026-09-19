@@ -606,14 +606,17 @@ distribution. Nothing in the paper was changed by lowering a threshold.
 | Zero KV | 0.107 ± 0.071 | 0.214 ± 0.095 |
 | Self (own cache, adapted) | 0.952 ± 0.054 | 0.929 ± 0.095 |
 
-Per-seed margins (correct − worst destroyed): 1.7B `+0.714 / +0.643 / +0.857`
+Per-seed margins (correct − worst destroyed): 1.7B `+0.714 / +0.679 / +0.857`
 (document-clustered CI95 excludes zero in all three seeds); 8B
-`+0.107 / +0.071 / +0.036`, mean `+0.071`, with seed 2's clustered interval
-`[-0.036, +0.107]` containing zero. Gate verdict: **established on the
-equal-depth pair, unresolved on the flagship pair** — the paper says exactly
-that and does not upgrade it. Caveat carried into the paper: repeating the 8B
-training at a fixed seed gave 0.679 and 0.429 on the correct arm, so the margin
-is comparable to adapter training variance.
+`+0.179 / +0.071 / +0.036`, mean `+0.095`, with the clustered margin intervals
+of seeds 1 and 2 reaching or containing zero (`[0.000, +0.125]`,
+`[-0.036, +0.089]`) while seed 0's `[+0.107, +0.232]` excludes it. Gate verdict:
+**established on the equal-depth pair, unresolved on the flagship pair** — the
+paper says exactly that and does not upgrade it. Caveat carried into the paper:
+repeating the 8B training at a fixed seed gave 0.679 and 0.429 on the correct
+arm, so the margin is comparable to adapter training variance. The per-seed
+margins were re-derived from the reports in W29; see Section 12 for the
+correction and the clustered intervals.
 
 ### A3 — within-domain repair on the second domain (audit3 par.8; paper: `tab:squadrepair`, 5.3, 6.4, Abstract, Limitations)
 
@@ -736,5 +739,43 @@ REVISION_PLAN4 A2 is what would turn this into an estimated law.
 correlations and the cost arithmetic; the four superseded assertions in
 `verify_audit2_edits.py` (B3, B4) and `verify_audit3_edits.py` (T1, A4) were
 repointed at the current wording with a comment naming this plan. `main.tex`
-compiles with 0 errors, 0 overfull and 0 underfull boxes (24 pages), and
-`arxiv_submission/main.tex` is byte-identical to it.
+compiles with 0 errors and 0 overfull boxes; underfull hbox warnings remain in
+the Reproducibility statement paragraph (24 pages, re-verified by a Tectonic
+build in W29), and `arxiv_submission/main.tex` is byte-identical to it.
+
+## 12. W29 correction: flagship causality margins (paper-side numbers)
+
+The per-seed margins printed for the causality test did not reproduce from the
+committed reports, although every other number in the same table did.
+
+| quantity | previously printed | recomputed from `reports/phaseB_adapter_causal20_*.json` |
+|---|---|---|
+| 1.7B->0.6B per-seed margins | `+0.714 / +0.643 / +0.857` | `+0.714 / +0.679 / +0.857` |
+| 1.7B->0.6B mean | `+0.738` | `+0.750` |
+| 8B->0.6B per-seed margins | `+0.107 / +0.071 / +0.036` | `+0.179 / +0.071 / +0.036` |
+| 8B->0.6B mean | `+0.071` | `+0.095` |
+| zero-containing clustered intervals | "one seed" | seeds 1 and 2 |
+
+Both aggregation paths inside those reports (`results.causal` and
+`rows_by_condition["adapter(joint)"]`) agree with the recomputed column, and
+`ITERATION_LOG.md` (W26) already recorded `+0.750` and `+0.095`: the reports and
+the log were consistent, and the transcribed text had drifted.
+
+Document-clustered bootstrap CI95 for the margin (cluster = document, 8 clusters,
+10,000 resamples; bounds stable across five bootstrap seeds):
+
+| run | margin | clustered CI95 | excludes 0 |
+|---|---|---|---|
+| 1.7B->0.6B s0 | `+0.714` | `[+0.625, +0.786]` | yes |
+| 1.7B->0.6B s1 | `+0.679` | `[+0.625, +0.714]` | yes |
+| 1.7B->0.6B s2 | `+0.857` | `[+0.857, +0.857]` | yes |
+| 8B->0.6B s0 | `+0.179` | `[+0.107, +0.232]` | yes |
+| 8B->0.6B s1 | `+0.071` | `[+0.000, +0.125]` | no (touches 0) |
+| 8B->0.6B s2 | `+0.036` | `[-0.036, +0.089]` | no |
+
+Gate verdict unchanged: **established on the equal-depth pair, unresolved on the
+flagship pair** (8B mean `+0.095` is below `0.10`). Text, the Table 5 caption,
+the Abstract and the Limitations entry were corrected;
+`paper/audit/verify_audit3_edits.py` now pins the per-seed margins and both means
+so the numbers cannot drift again, and fails if the flagship mean reaches `0.10`
+while the paper still reports it as unresolved.

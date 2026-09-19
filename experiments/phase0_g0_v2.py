@@ -39,8 +39,16 @@ from dataclasses import dataclass
 
 import numpy as np
 
-sys.path.insert(0, "/workspace/apcs")
-sys.path.insert(0, "/workspace/v3")
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
+sys.path.insert(0, APCS_DIR)
+sys.path.insert(0, _ROOT)
 import torch
 
 from apcs.mapper.math import (
@@ -53,12 +61,9 @@ from apcs.mapper.math import (
 from apcs.rope.runner import _rope_pairs, de_rope
 from stats_utils import bootstrap_ci95, paired_wilcoxon_test
 
-DATA_DIR = "/workspace/v3/data"
-REPORT_DIR = "/workspace/v3/reports"
-
 MODEL_PATHS = {
-    "teacher": "/root/.cache/modelscope/models/Qwen--Qwen3-8B/snapshots/master",
-    "student": "/root/.cache/modelscope/models/Qwen--Qwen3-0.6B/snapshots/master",
+    "teacher": os.path.join(MODELS_DIR, "Qwen--Qwen3-8B", "snapshots", "master"),
+    "student": os.path.join(MODELS_DIR, "Qwen--Qwen3-0.6B", "snapshots", "master"),
 }
 
 TEACHER_LAYERS = 36

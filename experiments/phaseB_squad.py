@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 
 import numpy as np
 import torch
@@ -37,7 +38,16 @@ from phaseB_mechanism import (apply_output_aware, fit_output_aware_mapper,
                               get_attn_map)
 from phase0_g0 import answer_loglik, exact_match
 
-DATA = "/workspace/v3/data"
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
+
+DATA = DATA_DIR
 
 
 def main():
@@ -148,7 +158,7 @@ def main():
         "self_EM": float(np.mean([r["Self_em"] for r in rows])),
         "summary": summary, "novelty_probe_student": probe_s, "rows": rows,
     }
-    out = a.output or f"/workspace/v3/reports/phaseB_squad_seed{a.seed}.json"
+    out = a.output or f"{REPORT_DIR}/phaseB_squad_seed{a.seed}.json"
     with open(out, "w") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
     print(f"[squad] saved: {out}")

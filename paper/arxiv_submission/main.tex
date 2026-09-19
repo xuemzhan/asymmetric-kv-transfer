@@ -104,7 +104,7 @@ the flagship pair rather than the unadapted $0.899$. Holding the final adapter
 fixed and destroying the injected content drops EM to the floor on
 $1.7$B$\to0.6$B, where correct teacher KV answers $0.905\pm0.083$ of questions
 against at most $0.179$ for wrong-document, random, and zero caches (three
-seeds); on $8$B$\to0.6$B the same margin is $+0.071$ on average, which our
+seeds); on $8$B$\to0.6$B the same margin is $+0.095$ on average, which our
 pre-registered gate does not let us separate from no margin, and we report it as
 unresolved. The same adapter trained on student states stays much lower
 ($0.20/0.35/0.18$ and $0.11/0.11/0.12$), and one trained on shuffled-document
@@ -214,9 +214,10 @@ Figure~\ref{fig:setting}). Our contributions are:
   $20$-epoch adapter frozen and the injected content destroyed, the arms
   separate cleanly on $1.7$B$\to0.6$B (correct teacher KV $0.905\pm0.083$ across
   three seeds, against at most $0.179$ for wrong-document, random, and zero
-  caches) but not on $8$B$\to0.6$B, where the mean margin $+0.071$ falls below
-  the $0.10$ our pre-registered gate requires and one seed's clustered interval
-  includes zero; we report that as unresolved rather than lowering the bar. The
+  caches) but not on $8$B$\to0.6$B, where the mean margin $+0.095$ falls below
+  the $0.10$ our pre-registered gate requires and two of the three seeds'
+  clustered intervals include zero; we report that as unresolved rather than
+  lowering the bar. The
   same adapter trained on the student's own states stays far lower
   ($0.20/0.35/0.18$ and $0.11/0.11/0.12$), so the recovery requires the
   teacher-state distribution rather than a generic correction of the consumer.
@@ -920,18 +921,19 @@ test (Table~\ref{tab:causal}), and we run it on the same $20$-epoch adapter that
 Table~\ref{tab:adapter} reports, over three seeds. On $1.7$B$\to0.6$B, correct
 teacher KV answers $0.905\pm0.083$ of questions while wrong-document teacher KV,
 moment-matched random KV, and an all-zero cache answer at most $0.179$; the
-per-seed margins are $+0.714$, $+0.643$, and $+0.857$, and their
+per-seed margins are $+0.714$, $+0.679$, and $+0.857$, and their
 document-clustered intervals exclude zero in every seed. The adapter is reading
 the injected teacher state rather than solving the task. On $8$B$\to0.6$B the
 same test is much weaker: correct KV answers $0.321\pm0.129$ against
-$0.107$--$0.286$ for the destroyed arms, the per-seed margins are $+0.107$,
-$+0.071$, and $+0.036$, and the mean margin $+0.071$ falls below the $0.10$ our
-pre-registered gate requires, with one seed's clustered interval including zero.
-We therefore report the flagship causality as unresolved rather than lowering the
-bar. One caveat belongs beside that number: repeating the $8$B adapter training
-at a fixed seed gave $0.679$ and $0.429$ on the correct arm in two runs, so the
-flagship margin is comparable to the training variance of the adapter itself and
-the three-seed spread should not be read as a precise estimate.
+$0.107$--$0.286$ for the destroyed arms, the per-seed margins are $+0.179$,
+$+0.071$, and $+0.036$, and the mean margin $+0.095$ falls below the $0.10$ our
+pre-registered gate requires, with two of the three seeds' clustered intervals
+including zero. We therefore report the flagship causality as unresolved rather
+than lowering the bar. One caveat belongs beside that number: repeating the $8$B
+adapter training at a fixed seed gave $0.679$ and $0.429$ on the correct arm in
+two runs, so the flagship margin is comparable to the training variance of the
+adapter itself and the three-seed spread should not be read as a precise
+estimate.
 
 The repair is also tied to the task distribution, and the tie is tighter than a
 cross-domain result alone would suggest (Table~\ref{tab:squadrepair}). Applying
@@ -968,7 +970,7 @@ adapter does not. The adapter is trained on teacher KV (rank 8, $20$ epochs, the
 same schedule as Table~\ref{tab:adapter}), frozen, and injected with four
 different states; corrected EM, mean $\pm$ std over three seeds. A causal adapter
 answers only from the correct teacher state. The $8$B block shows that this test
-has little power there: its correct-KV margin ($+0.071$) sits below the
+has little power there: its correct-KV margin ($+0.095$) sits below the
 pre-registered $0.10$ threshold and one seed's document-clustered interval
 includes zero, so we report it as unresolved. ``Self'' is the student's own cache
 under the same adapted model.}
@@ -1251,13 +1253,13 @@ taken together.
 \item \textbf{Flagship causality.} With the final $20$-epoch adapter frozen,
   destroying the injected content separates the correct arm from the
   controls clearly on $1.7$B$\to0.6$B ($0.905\pm0.083$ against at most $0.179$,
-  margins $+0.71$ to $+0.86$ with clustered intervals excluding zero) but not on
-  $8$B$\to0.6$B ($0.321\pm0.129$ against $0.107$--$0.286$, mean margin $+0.071$,
-  one clustered interval containing zero). We cannot rule out that part of the
+  margins $+0.68$ to $+0.86$ with clustered intervals excluding zero) but not on
+  $8$B$\to0.6$B ($0.321\pm0.129$ against $0.107$--$0.286$, mean margin $+0.095$,
+  two clustered intervals containing zero). We cannot rule out that part of the
   flagship recovery is generic adaptation to teacher-like states.
 \item \textbf{Adapter training variance.} Repeating the flagship adapter
   training at a fixed seed gave $0.679$ and $0.429$ on the correct causal arm in
-  two runs. The $8$B margin ($+0.071$) is therefore comparable to the training
+  two runs. The $8$B margin ($+0.095$) is therefore comparable to the training
   variance of the adapter itself, which is a second reason not to read the
   flagship causality as established. We report three-seed means and do not treat
   the seed spread as a confidence statement.

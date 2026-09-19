@@ -13,46 +13,51 @@ import argparse, json, os, sys, time
 import numpy as np
 import torch
 
-sys.path.insert(0, "/workspace/apcs")
-sys.path.insert(0, "/workspace/v3")
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
+sys.path.insert(0, APCS_DIR)
+sys.path.insert(0, _ROOT)
 from phase0_g0 import load_model, capture_kv, build_cache, answer_loglik, \
     greedy_answer, exact_match, KV, HEAD_DIM, ROPE_THETA
 from apcs.mapper.math import AffineMapper
 from apcs.rope.runner import _rope_pairs, de_rope
 from stats_utils import bootstrap_ci95, paired_wilcoxon_test
 
-DATA_DIR = "/workspace/v3/data"
-REPORT_DIR = "/workspace/v3/reports"
-
 MODEL_PAIRS = {
     "8B_0.6B": {
-        "teacher": "/root/.cache/modelscope/models/Qwen--Qwen3-8B/snapshots/master",
-        "student": "/root/.cache/modelscope/models/Qwen--Qwen3-0.6B/snapshots/master",
+        "teacher": os.path.join(MODELS_DIR, "Qwen--Qwen3-8B", "snapshots", "master"),
+        "student": os.path.join(MODELS_DIR, "Qwen--Qwen3-0.6B", "snapshots", "master"),
         "t_layers": 36, "s_layers": 28,
     },
     "4B_1.7B": {
-        "teacher": "/root/.cache/modelscope/models/Qwen--Qwen3-4B/snapshots/master",
-        "student": "/root/.cache/modelscope/models/Qwen--Qwen3-1.7B/snapshots/master",
+        "teacher": os.path.join(MODELS_DIR, "Qwen--Qwen3-4B", "snapshots", "master"),
+        "student": os.path.join(MODELS_DIR, "Qwen--Qwen3-1.7B", "snapshots", "master"),
         "t_layers": 36, "s_layers": 28,
     },
     "4B_0.6B": {
-        "teacher": "/root/.cache/modelscope/models/Qwen--Qwen3-4B/snapshots/master",
-        "student": "/root/.cache/modelscope/models/Qwen--Qwen3-0.6B/snapshots/master",
+        "teacher": os.path.join(MODELS_DIR, "Qwen--Qwen3-4B", "snapshots", "master"),
+        "student": os.path.join(MODELS_DIR, "Qwen--Qwen3-0.6B", "snapshots", "master"),
         "t_layers": 36, "s_layers": 28,
     },
     "8B_1.7B": {
-        "teacher": "/root/.cache/modelscope/models/Qwen--Qwen3-8B/snapshots/master",
-        "student": "/root/.cache/modelscope/models/Qwen--Qwen3-1.7B/snapshots/master",
+        "teacher": os.path.join(MODELS_DIR, "Qwen--Qwen3-8B", "snapshots", "master"),
+        "student": os.path.join(MODELS_DIR, "Qwen--Qwen3-1.7B", "snapshots", "master"),
         "t_layers": 36, "s_layers": 28,
     },
     "1.7B_0.6B": {
-        "teacher": "/root/.cache/modelscope/models/Qwen--Qwen3-1.7B/snapshots/master",
-        "student": "/root/.cache/modelscope/models/Qwen--Qwen3-0.6B/snapshots/master",
+        "teacher": os.path.join(MODELS_DIR, "Qwen--Qwen3-1.7B", "snapshots", "master"),
+        "student": os.path.join(MODELS_DIR, "Qwen--Qwen3-0.6B", "snapshots", "master"),
         "t_layers": 28, "s_layers": 28,
     },
     "8B_4B": {
-        "teacher": "/root/.cache/modelscope/models/Qwen--Qwen3-8B/snapshots/master",
-        "student": "/root/.cache/modelscope/models/Qwen--Qwen3-4B/snapshots/master",
+        "teacher": os.path.join(MODELS_DIR, "Qwen--Qwen3-8B", "snapshots", "master"),
+        "student": os.path.join(MODELS_DIR, "Qwen--Qwen3-4B", "snapshots", "master"),
         "t_layers": 36, "s_layers": 36,
     },
 }

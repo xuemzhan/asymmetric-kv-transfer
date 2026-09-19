@@ -55,8 +55,17 @@ from phaseB_common import (
     query_of,
 )
 
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
+
 _PUNCT = set(string.punctuation)
-SQUAD_PATH = "/workspace/v3/data/squad_test_seed0.json"
+SQUAD_PATH = os.path.join(DATA_DIR, "squad_test_seed0.json")
 
 
 def normalize(s: str) -> str:
@@ -365,14 +374,14 @@ def main():
     a = ap.parse_args()
 
     if a.attrib:
-        out = a.output or "/workspace/v3/reports/phaseB_evalcheck_attrib.json"
+        out = a.output or os.path.join(REPORT_DIR, "phaseB_evalcheck_attrib.json")
         run_attrib(a.students[0], a.seed, a.n_eval, out)
         return
 
     res = [run_student(s, a.seed, a.n_eval, a.domain) for s in a.students]
     report = {"task": "phaseB_evalcheck", "seed": a.seed, "domain": a.domain,
               "n_eval": a.n_eval, "students": res}
-    out = a.output or f"/workspace/v3/reports/phaseB_evalcheck_seed{a.seed}.json"
+    out = a.output or f"{REPORT_DIR}/phaseB_evalcheck_seed{a.seed}.json"
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     with open(out, "w") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)

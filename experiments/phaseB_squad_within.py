@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import gc
 import json
+import os
 
 import numpy as np
 import torch
@@ -54,7 +55,16 @@ from phaseB_common import (
 from phaseB_mechanism import apply_output_aware, fit_output_aware_mapper, get_attn_map
 from phaseB_outaware import apply_wo_aware, fit_wo_aware_mapper
 
-SQUAD_PATH = "/workspace/v3/data/squad_test_seed0.json"
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
+
+SQUAD_PATH = os.path.join(DATA_DIR, "squad_test_seed0.json")
 
 
 def split_documents(samples: list, split_seed: int, n_calib: int):
@@ -242,7 +252,7 @@ def main():
         "rows": rows_no,
         "rows_adapted": rows_ad,
     }
-    out = a.output or (f"/workspace/v3/reports/phaseB_squadwithin_split{a.split_seed}.json")
+    out = a.output or (f"{REPORT_DIR}/phaseB_squadwithin_split{a.split_seed}.json")
     with open(out, "w") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
     print(f"[within] saved: {out}")

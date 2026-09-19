@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import string
 
@@ -27,6 +28,15 @@ from phaseB_common import (
     load_model_gpu,
     query_of,
 )
+
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
 
 _PUNCT = set(string.punctuation)
 
@@ -94,7 +104,7 @@ def main():
     ap.add_argument("--output", default="")
     a = ap.parse_args()
     res = [run_student(s, a.seed, a.n_eval) for s in a.students]
-    out = a.output or f"/workspace/v3/reports/phaseB_selfdiag_seed{a.seed}.json"
+    out = a.output or f"{REPORT_DIR}/phaseB_selfdiag_seed{a.seed}.json"
     with open(out, "w") as f:
         json.dump({"task": "phaseB_selfdiag", "seed": a.seed, "students": res},
                   f, ensure_ascii=False, indent=2)

@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import gc
 import json
+import os
 
 import numpy as np
 import torch
@@ -50,6 +51,15 @@ from phaseB_common import (
     score_arm,
     stack_kv,
 )
+
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
 
 
 def _causal_extra_arms(test, eval_s, mapped_eval, rng):
@@ -282,7 +292,7 @@ def main():
     a = ap.parse_args()
     targets = tuple(t.strip() for t in a.targets.split(",") if t.strip())
     tag = "_".join(targets)
-    out = a.output or f"/workspace/v3/reports/phaseB_adapter_{a.pair}_{tag}_seed{a.seed}.json"
+    out = a.output or f"{REPORT_DIR}/phaseB_adapter_{a.pair}_{tag}_seed{a.seed}.json"
     conds = tuple(c.strip() for c in a.conditions.split(",") if c.strip())
     run(a.pair, a.seed, a.rank, a.epochs, a.lr, a.n_calib, a.n_eval, out, targets,
         causal=a.causal, conditions=conds, dump_rows=a.dump_rows)

@@ -19,6 +19,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 
 import numpy as np
 import torch
@@ -40,6 +41,15 @@ from phaseB_common import (
     summarize_rows,
 )
 from phase0_g0 import build_cache
+
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
 
 
 def get_attn_map(model, tok, cache, query: str, n_doc: int):
@@ -217,7 +227,7 @@ def main():
     ap.add_argument("--n-diagnostic", type=int, default=24)
     ap.add_argument("--output", default="")
     a = ap.parse_args()
-    out = a.output or f"/workspace/v3/reports/phaseB_mechanism_{a.pair}_seed{a.seed}.json"
+    out = a.output or f"{REPORT_DIR}/phaseB_mechanism_{a.pair}_seed{a.seed}.json"
     run(a.pair, a.seed, a.n_calib, a.n_eval, a.n_diagnostic, out)
 
 

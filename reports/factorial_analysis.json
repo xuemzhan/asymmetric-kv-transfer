@@ -1,6 +1,6 @@
 {
  "task": "factorial_analysis",
- "note": "K_main = K-only - Self; V_main = V-only - Self; interaction = Joint - K-only - V-only + Self (mean LL). Summary-based effects use per-seed mean LL from phase4; per-sample significance available where four-arm rows are saved (flagship 8B->0.6B, SQuAD).",
+ "note": "K_main = K-only - Self; V_main = V-only - Self; interaction = Joint - K-only - V-only + Self (mean LL). Summary-based effects use per-seed mean LL from phase4; per-sample significance available where four-arm rows are saved (flagship 8B->0.6B, all six pairs once phase4 rows are persisted). ci95_clustered resamples whole documents (data repeats ~7 Q/doc).",
  "pair_effects_seed_means": {
   "8B_0.6B": {
    "0": {
@@ -515,6 +515,7 @@
   }
  },
  "squad_per_sample": null,
+ "six_pair_per_sample": null,
  "retention": {
   "8B_0.6B": [
    {

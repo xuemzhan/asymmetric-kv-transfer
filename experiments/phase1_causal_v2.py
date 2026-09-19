@@ -12,8 +12,16 @@ import argparse, json, os, sys, time
 import numpy as np
 import torch
 
-sys.path.insert(0, "/workspace/apcs")
-sys.path.insert(0, "/workspace/v3")
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
+sys.path.insert(0, APCS_DIR)
+sys.path.insert(0, _ROOT)
 from phase0_g0 import (
     load_model, capture_kv, build_cache, answer_loglik,
     greedy_answer, exact_match, layer_map_proportional, KV,
@@ -23,8 +31,6 @@ from apcs.mapper.math import AffineMapper
 from apcs.rope.runner import _rope_pairs, de_rope
 from stats_utils import bootstrap_ci95, paired_wilcoxon_test
 
-DATA_DIR = "/workspace/v3/data"
-REPORT_DIR = "/workspace/v3/reports"
 
 # 预注册的 selective V injection 配置（基于 paper-1 发现 L8/L12 为 V hotspot；固定不事后调整）
 SELECTIVE_V_LAYERS = [8, 12]

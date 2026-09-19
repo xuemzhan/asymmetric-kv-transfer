@@ -17,6 +17,15 @@ import os
 import random
 from dataclasses import dataclass, field
 
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
+
 # ---------------------------------------------------------------------------
 # 虚构词表（全虚构，防止权重记忆）
 # ---------------------------------------------------------------------------
@@ -444,8 +453,8 @@ def main():
     parser.add_argument("--graph-seed", type=int, default=42)
     parser.add_argument("--seeds", type=str, default=None,
                         help="Comma-separated data seeds for multi-seed generation")
-    parser.add_argument("--output-dir", type=str, default="/workspace/v3/data")
-    parser.add_argument("--report-dir", type=str, default="/workspace/v3/reports")
+    parser.add_argument("--output-dir", type=str, default=DATA_DIR)
+    parser.add_argument("--report-dir", type=str, default=REPORT_DIR)
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)

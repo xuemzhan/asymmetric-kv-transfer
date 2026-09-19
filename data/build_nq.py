@@ -13,11 +13,20 @@
 预注册（不事后调整）：seed=0 固定采样 30 个 1-5 token 答案样本。
 """
 import argparse, json, os, random
+import tempfile
 import numpy as np
 import requests
 
-DATA_DIR = "/workspace/v3/data"
-SQUAD_PARQUET = "/tmp/squad_val.parquet"
+_ROOT = (os.environ.get("V3_ROOT")
+         or ("/workspace/v3"
+             if os.path.isdir(os.path.join("/workspace/v3", "experiments"))
+             else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+DATA_DIR = os.environ.get("V3_DATA_DIR", os.path.join(_ROOT, "data"))
+REPORT_DIR = os.environ.get("V3_REPORT_DIR", os.path.join(_ROOT, "reports"))
+MODELS_DIR = os.environ.get("V3_MODELS_DIR", "/root/.cache/modelscope/models")
+APCS_DIR = os.environ.get("V3_APCS_DIR", "/workspace/apcs")
+SQUAD_PARQUET = os.environ.get("V3_SQUAD_PARQUET",
+                               os.path.join(tempfile.gettempdir(), "squad_val.parquet"))
 
 
 def fetch_squad(parquet: str):
