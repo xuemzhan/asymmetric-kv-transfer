@@ -1,0 +1,922 @@
+{
+  "task": "rank_correlation_recompute",
+  "why": "W31 switched spearman() from ordinal to average ranks; the stored correlations were recomputed from the points already in the reports",
+  "method": {
+    "old": "ordinal ranks (np.argsort(np.argsort))",
+    "new": "average ranks (scipy-compatible)",
+    "bootstrap": "point-level, n_boot=10000, seed=run seed (aggregate: 0)"
+  },
+  "migration": {
+    "preflight": {
+      "a2_runs_recorded_ordinal_reproduced": [
+        "1.7B_0.6B_seed0",
+        "1.7B_0.6B_seed1",
+        "1.7B_0.6B_seed2",
+        "8B_0.6B_seed0",
+        "8B_0.6B_seed1",
+        "8B_0.6B_seed2"
+      ],
+      "a2_aggregate_matches_stored_points": false,
+      "a2_aggregate_stale_vs_stored_points": {
+        "e_raw": {
+          "recorded_value": -0.26877426665708176,
+          "ordinal_from_stored_points": -0.2667645255967578,
+          "average_from_stored_points": -0.26705786670680115,
+          "abs_diff_vs_ordinal": 0.0020097410603239774,
+          "recorded_ci95": [
+            -0.3719964226609126,
+            -0.14730072451165224
+          ],
+          "ordinal_ci95_from_stored_points": [
+            -0.3723503303318623,
+            -0.14738660229311457
+          ]
+        },
+        "e_attn": {
+          "recorded_value": -0.7955459500239237,
+          "ordinal_from_stored_points": -0.7994912263208057,
+          "average_from_stored_points": -0.7986457035562793,
+          "abs_diff_vs_ordinal": 0.0039452762968820165,
+          "recorded_ci95": [
+            -0.8434592590703093,
+            -0.7388092593408513
+          ],
+          "ordinal_ci95_from_stored_points": [
+            -0.8438411098717706,
+            -0.7391905690581811
+          ]
+        },
+        "e_wo": {
+          "recorded_value": -0.8196968537503702,
+          "ordinal_from_stored_points": -0.8233422148428653,
+          "average_from_stored_points": -0.8228148420601469,
+          "abs_diff_vs_ordinal": 0.0036453610924951363,
+          "recorded_ci95": [
+            -0.8628864596787972,
+            -0.7679377505895885
+          ],
+          "ordinal_ci95_from_stored_points": [
+            -0.8626918239868779,
+            -0.7686071489581425
+          ]
+        }
+      },
+      "a4_runs_ordinal_reproduced": [
+        "1.7B_0.6B_seed0",
+        "1.7B_0.6B_seed1",
+        "1.7B_0.6B_seed2",
+        "8B_0.6B_seed0",
+        "8B_0.6B_seed1",
+        "8B_0.6B_seed2"
+      ]
+    },
+    "n_changed_fields": 79,
+    "changes": [
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "rho.e_raw",
+        "old": 0.9338235294117648,
+        "new": 0.9337707806272249
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "rho_ci95.e_raw",
+        "old": [
+          0.7904328208556151,
+          0.9792780748663101
+        ],
+        "new": [
+          0.7982922666098007,
+          0.9833148383926976
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "rho.e_attn",
+        "old": -0.929144385026738,
+        "new": -0.9320961558413081
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "rho_ci95.e_attn",
+        "old": [
+          -0.9786096256684492,
+          -0.779077540106952
+        ],
+        "new": [
+          -0.9851448648059895,
+          -0.7867199725619379
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "rho.e_wo",
+        "old": -0.929144385026738,
+        "new": -0.9320961558413081
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "rho_ci95.e_wo",
+        "old": [
+          -0.9786096256684492,
+          -0.779077540106952
+        ],
+        "new": [
+          -0.9851448648059895,
+          -0.7867199725619379
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "gate.rho_raw",
+        "old": 0.9338235294117648,
+        "new": 0.9337707806272249
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "gate.rho_attn",
+        "old": -0.929144385026738,
+        "new": -0.9320961558413081
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "gate.rho_wo",
+        "old": -0.929144385026738,
+        "new": -0.9320961558413081
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "gate.rho_raw_upper",
+        "old": 0.9792780748663101,
+        "new": 0.9833148383926976
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "gate.attn_wo_strong",
+        "old": true,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "gate.bootstrap_intervals_disjoint",
+        "old": null,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed0.json",
+        "field": "gate.branch",
+        "old": "direction preserved, phrase as consistent with",
+        "new": "strong statement preserved"
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "rho.e_raw",
+        "old": 0.9752673796791445,
+        "new": 0.9728881329666283
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "rho_ci95.e_raw",
+        "old": [
+          0.8957135695187166,
+          0.9903074866310161
+        ],
+        "new": [
+          0.9016902332983842,
+          0.9921514388379296
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "rho.e_attn",
+        "old": -0.9799465240641712,
+        "new": -0.9762354170986312
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "rho_ci95.e_attn",
+        "old": [
+          -0.9869652406417113,
+          -0.9074197860962567
+        ],
+        "new": [
+          -0.9916560355399368,
+          -0.9168891256794126
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "rho.e_wo",
+        "old": -0.9799465240641712,
+        "new": -0.9762354170986312
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "rho_ci95.e_wo",
+        "old": [
+          -0.9869652406417113,
+          -0.9074197860962567
+        ],
+        "new": [
+          -0.9916560355399368,
+          -0.9168891256794126
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "gate.rho_raw",
+        "old": 0.9752673796791445,
+        "new": 0.9728881329666283
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "gate.rho_attn",
+        "old": -0.9799465240641712,
+        "new": -0.9762354170986312
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "gate.rho_wo",
+        "old": -0.9799465240641712,
+        "new": -0.9762354170986312
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "gate.rho_raw_upper",
+        "old": 0.9903074866310161,
+        "new": 0.9921514388379296
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "gate.attn_wo_strong",
+        "old": true,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "gate.bootstrap_intervals_disjoint",
+        "old": null,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed1.json",
+        "field": "gate.branch",
+        "old": "direction preserved, phrase as consistent with",
+        "new": "strong statement preserved"
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "rho.e_raw",
+        "old": 0.9842914438502673,
+        "new": 0.9886109285899485
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "rho_ci95.e_raw",
+        "old": [
+          0.946524064171123,
+          0.9929812834224601
+        ],
+        "new": [
+          0.9562839318185921,
+          0.9950319413655624
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "rho.e_attn",
+        "old": -0.9849598930481284,
+        "new": -0.9866005352425362
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "rho_ci95.e_attn",
+        "old": [
+          -0.9896390374331551,
+          -0.9361547459893049
+        ],
+        "new": [
+          -0.9945194026432763,
+          -0.947210272360952
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "rho.e_wo",
+        "old": -0.9849598930481284,
+        "new": -0.9866005352425362
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "rho_ci95.e_wo",
+        "old": [
+          -0.9896390374331551,
+          -0.9361547459893049
+        ],
+        "new": [
+          -0.9945194026432763,
+          -0.947210272360952
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "gate.rho_raw",
+        "old": 0.9842914438502673,
+        "new": 0.9886109285899485
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "gate.rho_attn",
+        "old": -0.9849598930481284,
+        "new": -0.9866005352425362
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "gate.rho_wo",
+        "old": -0.9849598930481284,
+        "new": -0.9866005352425362
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "gate.rho_raw_upper",
+        "old": 0.9929812834224601,
+        "new": 0.9950319413655624
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "gate.attn_wo_strong",
+        "old": true,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "gate.bootstrap_intervals_disjoint",
+        "old": true,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_1.7B_0.6B_seed2.json",
+        "field": "gate.branch",
+        "old": "strong statement preserved",
+        "new": "strong statement preserved"
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "rho.e_raw",
+        "old": 0.8683155080213903,
+        "new": 0.8902986263914637
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "rho_ci95.e_raw",
+        "old": [
+          0.7423128342245989,
+          0.9365056818181817
+        ],
+        "new": [
+          0.7652324535391268,
+          0.9459312438072076
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "rho.e_attn",
+        "old": -0.8933823529411766,
+        "new": -0.8986160015474564
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "rho_ci95.e_attn",
+        "old": [
+          -0.935837232620321,
+          -0.761029411764706
+        ],
+        "new": [
+          -0.9479792997514083,
+          -0.7883243150577758
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "rho.e_wo",
+        "old": -0.8943850267379679,
+        "new": -0.900143682698557
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "rho_ci95.e_wo",
+        "old": [
+          -0.9378342245989305,
+          -0.7620320855614974
+        ],
+        "new": [
+          -0.9504729542949996,
+          -0.7891896838959267
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "gate.rho_raw",
+        "old": 0.8683155080213903,
+        "new": 0.8902986263914637
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "gate.rho_attn",
+        "old": -0.8933823529411766,
+        "new": -0.8986160015474564
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "gate.rho_wo",
+        "old": -0.8943850267379679,
+        "new": -0.900143682698557
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "gate.rho_raw_upper",
+        "old": 0.9365056818181817,
+        "new": 0.9459312438072076
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "gate.attn_wo_strong",
+        "old": true,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "gate.bootstrap_intervals_disjoint",
+        "old": true,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed0.json",
+        "field": "gate.branch",
+        "old": "strong statement preserved",
+        "new": "strong statement preserved"
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "rho.e_raw",
+        "old": 0.8913770053475937,
+        "new": 0.922350258874871
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "rho_ci95.e_raw",
+        "old": [
+          0.7847510026737968,
+          0.9515374331550803
+        ],
+        "new": [
+          0.8151172454520129,
+          0.9613629973288853
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "rho.e_attn",
+        "old": -0.9124331550802139,
+        "new": -0.9240557881997135
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "rho_ci95.e_attn",
+        "old": [
+          -0.9495320855614974,
+          -0.7844251336898396
+        ],
+        "new": [
+          -0.9619731595675325,
+          -0.819264669409794
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "rho.e_wo",
+        "old": -0.9134358288770055,
+        "new": -0.9247379999296506
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "rho_ci95.e_wo",
+        "old": [
+          -0.9512032085561498,
+          -0.7844251336898396
+        ],
+        "new": [
+          -0.963263740691754,
+          -0.8197490882011989
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "gate.rho_raw",
+        "old": 0.8913770053475937,
+        "new": 0.922350258874871
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "gate.rho_attn",
+        "old": -0.9124331550802139,
+        "new": -0.9240557881997135
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "gate.rho_wo",
+        "old": -0.9134358288770055,
+        "new": -0.9247379999296506
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "gate.rho_raw_upper",
+        "old": 0.9515374331550803,
+        "new": 0.9613629973288853
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "gate.attn_wo_strong",
+        "old": true,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "gate.bootstrap_intervals_disjoint",
+        "old": true,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed1.json",
+        "field": "gate.branch",
+        "old": "strong statement preserved",
+        "new": "strong statement preserved"
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "rho.e_raw",
+        "old": 0.9338235294117648,
+        "new": 0.9442452351617484
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "rho_ci95.e_raw",
+        "old": [
+          0.834884692513369,
+          0.9662433155080214
+        ],
+        "new": [
+          0.8490116979808621,
+          0.971743763943407
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "rho.e_attn",
+        "old": -0.9471925133689839,
+        "new": -0.9462678954298565
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "rho_ci95.e_attn",
+        "old": [
+          -0.9608957219251338,
+          -0.8402322860962569
+        ],
+        "new": [
+          -0.9703790550221387,
+          -0.8549699218345184
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "rho.e_wo",
+        "old": -0.9471925133689839,
+        "new": -0.9469421155192258
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "rho_ci95.e_wo",
+        "old": [
+          -0.9629010695187166,
+          -0.840909090909091
+        ],
+        "new": [
+          -0.9719327261561748,
+          -0.8551291708724645
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "gate.rho_raw",
+        "old": 0.9338235294117648,
+        "new": 0.9442452351617484
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "gate.rho_attn",
+        "old": -0.9471925133689839,
+        "new": -0.9462678954298565
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "gate.rho_wo",
+        "old": -0.9471925133689839,
+        "new": -0.9469421155192258
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "gate.rho_raw_upper",
+        "old": 0.9662433155080214,
+        "new": 0.971743763943407
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "gate.attn_wo_strong",
+        "old": true,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "gate.bootstrap_intervals_disjoint",
+        "old": true,
+        "new": true
+      },
+      {
+        "file": "phaseB_mappersweep_8B_0.6B_seed2.json",
+        "field": "gate.branch",
+        "old": "strong statement preserved",
+        "new": "strong statement preserved"
+      },
+      {
+        "file": "phaseB_mappersweep_aggregate.json",
+        "field": "rho_pooled.e_raw",
+        "old": -0.26877426665708176,
+        "new": -0.26705786670680115
+      },
+      {
+        "file": "phaseB_mappersweep_aggregate.json",
+        "field": "rho_ci95.e_raw",
+        "old": [
+          -0.3719964226609126,
+          -0.14730072451165224
+        ],
+        "new": [
+          -0.37306719933690674,
+          -0.14775704909113138
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_aggregate.json",
+        "field": "rho_pooled.e_attn",
+        "old": -0.7955459500239237,
+        "new": -0.7986457035562793
+      },
+      {
+        "file": "phaseB_mappersweep_aggregate.json",
+        "field": "rho_ci95.e_attn",
+        "old": [
+          -0.8434592590703093,
+          -0.7388092593408513
+        ],
+        "new": [
+          -0.8459807169641635,
+          -0.7404720457065035
+        ]
+      },
+      {
+        "file": "phaseB_mappersweep_aggregate.json",
+        "field": "rho_pooled.e_wo",
+        "old": -0.8196968537503702,
+        "new": -0.8228148420601469
+      },
+      {
+        "file": "phaseB_mappersweep_aggregate.json",
+        "field": "rho_ci95.e_wo",
+        "old": [
+          -0.8628864596787972,
+          -0.7679377505895885
+        ],
+        "new": [
+          -0.8651210974491486,
+          -0.7695428692584009
+        ]
+      },
+      {
+        "file": "phaseB_errorbudget_1.7B_0.6B_seed0.json",
+        "field": "spearman.e_raw_vs_EM",
+        "old": -0.39999999999999997,
+        "new": -0.39999999999999997
+      },
+      {
+        "file": "phaseB_errorbudget_1.7B_0.6B_seed0.json",
+        "field": "spearman.e_attn_vs_EM",
+        "old": -0.9999999999999999,
+        "new": -0.9999999999999999
+      },
+      {
+        "file": "phaseB_errorbudget_1.7B_0.6B_seed0.json",
+        "field": "spearman.e_wo_vs_EM",
+        "old": -0.9999999999999999,
+        "new": -0.9999999999999999
+      },
+      {
+        "file": "phaseB_errorbudget_1.7B_0.6B_seed1.json",
+        "field": "spearman.e_raw_vs_EM",
+        "old": -0.6,
+        "new": -0.6
+      },
+      {
+        "file": "phaseB_errorbudget_1.7B_0.6B_seed1.json",
+        "field": "spearman.e_attn_vs_EM",
+        "old": -0.8999999999999998,
+        "new": -0.8999999999999998
+      },
+      {
+        "file": "phaseB_errorbudget_1.7B_0.6B_seed1.json",
+        "field": "spearman.e_wo_vs_EM",
+        "old": -0.8999999999999998,
+        "new": -0.8999999999999998
+      },
+      {
+        "file": "phaseB_errorbudget_1.7B_0.6B_seed2.json",
+        "field": "spearman.e_raw_vs_EM",
+        "old": -0.6,
+        "new": -0.6
+      },
+      {
+        "file": "phaseB_errorbudget_1.7B_0.6B_seed2.json",
+        "field": "spearman.e_attn_vs_EM",
+        "old": -0.7999999999999999,
+        "new": -0.7999999999999999
+      },
+      {
+        "file": "phaseB_errorbudget_1.7B_0.6B_seed2.json",
+        "field": "spearman.e_wo_vs_EM",
+        "old": -0.7999999999999999,
+        "new": -0.7999999999999999
+      },
+      {
+        "file": "phaseB_errorbudget_8B_0.6B_seed0.json",
+        "field": "spearman.e_raw_vs_EM",
+        "old": -0.19999999999999998,
+        "new": -0.05129891760425771
+      },
+      {
+        "file": "phaseB_errorbudget_8B_0.6B_seed0.json",
+        "field": "spearman.e_attn_vs_EM",
+        "old": -0.7999999999999999,
+        "new": -0.8720815992723809
+      },
+      {
+        "file": "phaseB_errorbudget_8B_0.6B_seed0.json",
+        "field": "spearman.e_wo_vs_EM",
+        "old": -0.7999999999999999,
+        "new": -0.8720815992723809
+      },
+      {
+        "file": "phaseB_errorbudget_8B_0.6B_seed1.json",
+        "field": "spearman.e_raw_vs_EM",
+        "old": -0.19999999999999998,
+        "new": -0.05129891760425771
+      },
+      {
+        "file": "phaseB_errorbudget_8B_0.6B_seed1.json",
+        "field": "spearman.e_attn_vs_EM",
+        "old": -0.7999999999999999,
+        "new": -0.8720815992723809
+      },
+      {
+        "file": "phaseB_errorbudget_8B_0.6B_seed1.json",
+        "field": "spearman.e_wo_vs_EM",
+        "old": -0.8999999999999998,
+        "new": -0.9746794344808963
+      },
+      {
+        "file": "phaseB_errorbudget_8B_0.6B_seed2.json",
+        "field": "spearman.e_raw_vs_EM",
+        "old": -0.09999999999999999,
+        "new": 0.05129891760425771
+      },
+      {
+        "file": "phaseB_errorbudget_8B_0.6B_seed2.json",
+        "field": "spearman.e_attn_vs_EM",
+        "old": -0.8999999999999998,
+        "new": -0.9746794344808963
+      },
+      {
+        "file": "phaseB_errorbudget_8B_0.6B_seed2.json",
+        "field": "spearman.e_wo_vs_EM",
+        "old": -0.8999999999999998,
+        "new": -0.9746794344808963
+      }
+    ],
+    "a2_pooled_198_points": {
+      "rho_pooled": {
+        "e_raw": -0.26705786670680115,
+        "e_attn": -0.7986457035562793,
+        "e_wo": -0.8228148420601469
+      },
+      "rho_ci95": {
+        "e_raw": [
+          -0.37306719933690674,
+          -0.14775704909113138
+        ],
+        "e_attn": [
+          -0.8459807169641635,
+          -0.7404720457065035
+        ],
+        "e_wo": [
+          -0.8651210974491486,
+          -0.7695428692584009
+        ]
+      },
+      "n_points": 198,
+      "n_runs": 6
+    },
+    "a4_pooled_over_six_runs": {
+      "e_raw_vs_EM": {
+        "pooled_old": -0.09999999999999999,
+        "pooled_new": -0.09999999999999999,
+        "per_run_old": [
+          -0.39999999999999997,
+          -0.6,
+          -0.6,
+          -0.19999999999999998,
+          -0.19999999999999998,
+          -0.09999999999999999
+        ],
+        "per_run_new": [
+          -0.39999999999999997,
+          -0.6,
+          -0.6,
+          -0.05129891760425771,
+          -0.05129891760425771,
+          0.05129891760425771
+        ],
+        "per_run_range_new": [
+          -0.6,
+          0.05129891760425771
+        ]
+      },
+      "e_attn_vs_EM": {
+        "pooled_old": -0.9999999999999999,
+        "pooled_new": -0.9999999999999999,
+        "per_run_old": [
+          -0.9999999999999999,
+          -0.8999999999999998,
+          -0.7999999999999999,
+          -0.7999999999999999,
+          -0.7999999999999999,
+          -0.8999999999999998
+        ],
+        "per_run_new": [
+          -0.9999999999999999,
+          -0.8999999999999998,
+          -0.7999999999999999,
+          -0.8720815992723809,
+          -0.8720815992723809,
+          -0.9746794344808963
+        ],
+        "per_run_range_new": [
+          -0.9999999999999999,
+          -0.7999999999999999
+        ]
+      },
+      "e_wo_vs_EM": {
+        "pooled_old": -0.7999999999999999,
+        "pooled_new": -0.7999999999999999,
+        "per_run_old": [
+          -0.9999999999999999,
+          -0.8999999999999998,
+          -0.7999999999999999,
+          -0.7999999999999999,
+          -0.8999999999999998,
+          -0.8999999999999998
+        ],
+        "per_run_new": [
+          -0.9999999999999999,
+          -0.8999999999999998,
+          -0.7999999999999999,
+          -0.8720815992723809,
+          -0.9746794344808963,
+          -0.9746794344808963
+        ],
+        "per_run_range_new": [
+          -0.9999999999999999,
+          -0.7999999999999999
+        ]
+      }
+    }
+  },
+  "verified_reruns": [
+    {
+      "n_changed_fields": 79,
+      "a2_aggregate_matches_stored_points": false
+    },
+    {
+      "n_changed_fields": 0,
+      "a2_aggregate_matches_stored_points": true
+    }
+  ]
+}

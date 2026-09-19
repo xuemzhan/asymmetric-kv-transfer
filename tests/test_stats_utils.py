@@ -8,7 +8,15 @@ from pathlib import Path
 
 # Ensure stats_utils is importable
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "experiments"))
-from stats_utils import bootstrap_ci95, paired_wilcoxon_test, paired_bootstrap_test
+from scipy import stats
+from stats_utils import (
+    bootstrap_ci95,
+    paired_wilcoxon_test,
+    paired_bootstrap_test,
+    rankdata_average,
+    spearman,
+    bootstrap_spearman_ci,
+)
 
 
 def test_bootstrap_ci95_normal():
@@ -151,6 +159,114 @@ def test_paired_bootstrap_test_no_difference():
     }
 
 
+def test_rankdata_average_ties():
+    """Test rankdata_average: 1-based average ranks (scipy "average" tie policy)."""
+    # Hand-checked tie case: the two 20s span ranks 2 and 3 → 2.5 each.
+    hand = rankdata_average([10, 20, 20, 30])
+    assert np.allclose(hand, [1.0, 2.5, 2.5, 4.0]), f"rankdata_average([10,20,20,30]) = {hand}"
+
+    # Random vector with deliberate ties → must match scipy exactly.
+    rng = np.random.RandomState(3)
+    x = rng.randint(0, 5, size=50).astype(float)
+    ours = rankdata_average(x)
+    ref = stats.rankdata(x, method="average")
+    assert np.allclose(ours, ref), "rankdata_average disagrees with scipy.stats.rankdata(method='average')"
+
+    return {
+        "test": "rankdata_average_ties",
+        "hand_case": [float(v) for v in hand],
+        "n_ties_in_random": int(len(x) - len(np.unique(x))),
+        "max_abs_diff_vs_scipy": float(np.max(np.abs(ours - ref))),
+        "status": "PASS",
+    }
+
+
+def test_spearman_matches_scipy_with_ties():
+    """Test spearman: average-rank rho matches scipy.spearmanr even with heavy ties.
+
+    Documents the W31 correction: until W31 the reports used ordinal ranks
+    (``np.argsort(np.argsort(x))``), which break ties by input position, so the
+    same data reordered gave a different correlation. The two values must differ
+    here by more than round-off — that is the bug the average-rank helper fixes.
+    """
+    rng = np.random.RandomState(5)
+    x = rng.randint(0, 5, size=40).astype(float)          # many ties
+    y = rng.randint(0, 5, size=40).astype(float) / 4.0    # proportions on a small grid
+
+    rho_average = spearman(x, y)
+    rho_scipy = float(stats.spearmanr(x, y).statistic)
+    rho_ordinal = float(np.corrcoef(np.argsort(np.argsort(x)), np.argsort(np.argsort(y)))[0, 1])
+
+    assert rho_average is not None, "spearman returned None for usable data"
+    assert abs(rho_average - rho_scipy) < 1e-12, (
+        f"average-rank spearman {rho_average} != scipy {rho_scipy}"
+    )
+    assert abs(rho_average - rho_ordinal) > 1e-9, (
+        f"ordinal ranks {rho_ordinal} unexpectedly match average ranks {rho_average}; "
+        "the tie-handling difference is not exercised"
+    )
+
+    return {
+        "test": "spearman_matches_scipy_with_ties",
+        "rho_average": rho_average,
+        "rho_ordinal": rho_ordinal,
+        "rho_scipy": rho_scipy,
+        "abs_diff_average_vs_scipy": abs(rho_average - rho_scipy),
+        "abs_diff_average_vs_ordinal": abs(rho_average - rho_ordinal),
+        "status": "PASS",
+    }
+
+
+def test_spearman_degenerate_returns_none():
+    """Test spearman: None for constant input, len<3, and length mismatch."""
+    constant = spearman([1, 2, 3], [5, 5, 5])
+    assert constant is None, f"constant vector should give None, got {constant}"
+
+    too_short = spearman([1, 2], [3, 4])
+    assert too_short is None, f"len<3 should give None, got {too_short}"
+
+    mismatched = spearman([1, 2, 3], [1, 2])
+    assert mismatched is None, f"length mismatch should give None, got {mismatched}"
+
+    return {
+        "test": "spearman_degenerate_returns_none",
+        "constant_vector": constant,
+        "too_short": too_short,
+        "length_mismatch": mismatched,
+        "status": "PASS",
+    }
+
+
+def test_bootstrap_spearman_ci_deterministic_and_contains_estimate():
+    """Test bootstrap_spearman_ci: percentile CI brackets the estimate and is seed-stable."""
+    rng = np.random.RandomState(11)
+    x = rng.normal(size=30)
+    y = x + rng.normal(scale=0.5, size=30)
+
+    lo, hi = bootstrap_spearman_ci(x, y, n_boot=2000, seed=0)
+    rho = spearman(x, y)
+
+    assert lo is not None and hi is not None, f"CI degenerate: [{lo}, {hi}]"
+    assert lo < rho < hi, f"CI [{lo}, {hi}] does not bracket spearman {rho}"
+    assert -1.0 <= lo <= hi <= 1.0, f"CI [{lo}, {hi}] outside [-1, 1]"
+
+    # Determinism: same seed → bitwise identical bounds.
+    lo2, hi2 = bootstrap_spearman_ci(x, y, n_boot=2000, seed=0)
+    assert (lo, hi) == (lo2, hi2), f"seed=0 not reproducible: [{lo}, {hi}] vs [{lo2}, {hi2}]"
+
+    lo3, hi3 = bootstrap_spearman_ci(x, y, n_boot=2000, seed=1)
+
+    return {
+        "test": "bootstrap_spearman_ci_deterministic_and_contains_estimate",
+        "rho": rho,
+        "ci_low": lo,
+        "ci_high": hi,
+        "ci_low_seed1": lo3,
+        "ci_high_seed1": hi3,
+        "status": "PASS",
+    }
+
+
 def main():
     """Run all tests and collect results."""
     results = []
@@ -163,6 +279,10 @@ def main():
         test_paired_wilcoxon_test_no_difference,
         test_paired_bootstrap_test_detects_difference,
         test_paired_bootstrap_test_no_difference,
+        test_rankdata_average_ties,
+        test_spearman_matches_scipy_with_ties,
+        test_spearman_degenerate_returns_none,
+        test_bootstrap_spearman_ci_deterministic_and_contains_estimate,
     ]:
         try:
             result = test_fn()

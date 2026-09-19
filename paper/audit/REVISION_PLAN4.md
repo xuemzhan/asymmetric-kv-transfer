@@ -374,7 +374,12 @@ transfer by adapting the consumer rather than the state.
    $e_{\text{attn}}$, $-0.80$ [$[-1.00,-0.80]$] for $e_{W_O}$.`
 2. §6.3 正文补一句说明 pooled 与 per-run 的关系，并明确 `n=5` 不足以给 p 值。
 3. A2 落地后，把这段替换为 sweep 结果（散点 + per-configuration ρ），T7 作为过渡版本，
-   保证"即使 A2 没跑，也没有披露漏洞"。
+  保证"即使 A2 没跑，也没有披露漏洞"。
+
+> **W31 更新**：第 1 条里的逐 run 区间 `$[-0.60,-0.10]$` 是序数秩口径的旧值。W31 把
+> 全仓库换成平均秩（与 `scipy.stats.spearmanr` 一致）后为 `$[-0.60,+0.05]$`，pooled
+> 三值不变。本文件保留当时的预登记数值不改写；现行口径与全部 old→new 见
+> `METRIC_CORRECTION.md` §14。
 
 ## T8 — 守卫 `paper/audit/verify_audit4_edits.py`（先写断言，后改正文）
 

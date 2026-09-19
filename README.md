@@ -118,6 +118,9 @@ python3 experiments/phaseB_fourarm.py --seed 0 --n-calib 4 --n-eval 2 \
 
 # Resumable audit3 GPU queue (A1 evaluator check -> A2 causality -> A3 -> A4)
 bash scripts/run_audit3_gpu_queue.sh
+# Recompute the stored rank correlations with average ranks (CPU only; W31)
+python3 scripts/recompute_rank_correlations.py --dry-run
+
 
 # Regenerate the paper figures (writes paper/figures/*.pdf)
 python3 paper/figures/gen_paper_figures.py

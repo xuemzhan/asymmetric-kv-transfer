@@ -53,6 +53,7 @@ from phaseB_common import (
 )
 from phaseB_mechanism import apply_output_aware, fit_output_aware_mapper, get_attn_map
 from phaseB_outaware import apply_wo_aware, fit_wo_aware_mapper
+from stats_utils import spearman
 
 _ROOT = (os.environ.get("V3_ROOT")
          or ("/workspace/v3"
@@ -114,14 +115,6 @@ def error_budget(v_hat: np.ndarray, v_s: np.ndarray, attn_layers: list,
     }
 
 
-def spearman(x: np.ndarray, y: np.ndarray) -> float | None:
-    if len(x) < 3:
-        return None
-    rx = np.argsort(np.argsort(x)).astype(float)
-    ry = np.argsort(np.argsort(y)).astype(float)
-    if rx.std() == 0 or ry.std() == 0:
-        return None
-    return float(np.corrcoef(rx, ry)[0, 1])
 
 
 def main():

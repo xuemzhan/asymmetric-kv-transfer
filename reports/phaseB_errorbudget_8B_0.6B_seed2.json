@@ -58,11 +58,12 @@
     }
   },
   "spearman": {
-    "e_raw_vs_EM": -0.09999999999999999,
-    "e_attn_vs_EM": -0.8999999999999998,
-    "e_wo_vs_EM": -0.8999999999999998,
+    "e_raw_vs_EM": 0.05129891760425771,
+    "e_attn_vs_EM": -0.9746794344808963,
+    "e_wo_vs_EM": -0.9746794344808963,
     "n_variants": 5,
-    "note": "Spearman over 5 mapper variants in one run; n is too small for a p-value."
+    "note": "Spearman over 5 mapper variants in one run; n is too small for a p-value.",
+    "rank_method": "average"
   },
   "rows": [
     {

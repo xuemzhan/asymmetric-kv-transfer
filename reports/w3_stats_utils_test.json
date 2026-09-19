@@ -1,7 +1,7 @@
 {
   "module": "stats_utils.py",
-  "total": 6,
-  "passed": 6,
+  "total": 10,
+  "passed": 10,
   "failed": 0,
   "all_pass": true,
   "results": [
@@ -48,6 +48,43 @@
       "ci_low": 0.0,
       "ci_high": 0.0,
       "p_value": 2.0,
+      "status": "PASS"
+    },
+    {
+      "test": "rankdata_average_ties",
+      "hand_case": [
+        1.0,
+        2.5,
+        2.5,
+        4.0
+      ],
+      "n_ties_in_random": 45,
+      "max_abs_diff_vs_scipy": 0.0,
+      "status": "PASS"
+    },
+    {
+      "test": "spearman_matches_scipy_with_ties",
+      "rho_average": 0.04290613227221136,
+      "rho_ordinal": 0.06454033771106943,
+      "rho_scipy": 0.042906132272211364,
+      "abs_diff_average_vs_scipy": 6.938893903907228e-18,
+      "abs_diff_average_vs_ordinal": 0.02163420543885807,
+      "status": "PASS"
+    },
+    {
+      "test": "spearman_degenerate_returns_none",
+      "constant_vector": null,
+      "too_short": null,
+      "length_mismatch": null,
+      "status": "PASS"
+    },
+    {
+      "test": "bootstrap_spearman_ci_deterministic_and_contains_estimate",
+      "rho": 0.9101223581757508,
+      "ci_low": 0.7807348724578745,
+      "ci_high": 0.9646931317484898,
+      "ci_low_seed1": 0.7704152299333579,
+      "ci_high_seed1": 0.9619873857973421,
       "status": "PASS"
     }
   ]

@@ -61,6 +61,7 @@ from phaseB_common import (
 )
 from phaseB_errorbudget import apply_oa, error_budget, spearman
 from phaseB_mechanism import get_attn_map
+from stats_utils import bootstrap_spearman_ci
 
 _ROOT = (os.environ.get("V3_ROOT")
          or ("/workspace/v3"
@@ -124,20 +125,14 @@ def config_id(alpha: float, lam: float) -> str:
 
 def bootstrap_config_rho(err: np.ndarray, em: np.ndarray, n_boot=10000,
                          seed=0) -> list:
-    """Configuration-level bootstrap CI95 for Spearman(error, EM)."""
-    rng = np.random.RandomState(seed)
-    n = len(err)
-    vals = []
-    for _ in range(n_boot):
-        idx = rng.randint(0, n, n)
-        if len(np.unique(err[idx])) < 2 or len(np.unique(em[idx])) < 2:
-            continue
-        r = spearman(err[idx], em[idx])
-        if r is not None:
-            vals.append(r)
-    if not vals:
-        return [None, None]
-    return [float(np.percentile(vals, 2.5)), float(np.percentile(vals, 97.5))]
+    """Configuration-level bootstrap CI95 for Spearman(error, EM).
+
+    Thin wrapper over :func:`stats_utils.bootstrap_spearman_ci` (average ranks);
+    the name and call signature are unchanged so the A2 reports keep their
+    provenance. See `paper/audit/METRIC_CORRECTION.md` section 14 for the W31
+    change from ordinal to average ranks.
+    """
+    return bootstrap_spearman_ci(err, em, n_boot=n_boot, seed=seed)
 
 
 def main():

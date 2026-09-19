@@ -62,7 +62,8 @@
     "e_attn_vs_EM": -0.7999999999999999,
     "e_wo_vs_EM": -0.7999999999999999,
     "n_variants": 5,
-    "note": "Spearman over 5 mapper variants in one run; n is too small for a p-value."
+    "note": "Spearman over 5 mapper variants in one run; n is too small for a p-value.",
+    "rank_method": "average"
   },
   "rows": [
     {

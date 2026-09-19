@@ -93,10 +93,38 @@ def close(a: float, b: float, tol: float = 0.005) -> bool:
     return abs(a - b) <= tol
 
 
+def _ranks_average(values) -> "np.ndarray":
+    """1-based average ranks: ties share the mean of the ranks they span.
+
+    W31: the pre-W31 helper used ordinal ranks (np.argsort(np.argsort(x))),
+    which break ties by position in the input, so the same data in a different
+    order gave a different correlation. Every rank correlation in the repository
+    is an average-rank value now; see METRIC_CORRECTION.md section 14.
+    """
+    import numpy as np
+    x = np.asarray(values, dtype=float)
+    n = len(x)
+    ranks = np.empty(n, dtype=float)
+    if n == 0:
+        return ranks
+    order = np.argsort(x, kind="stable")
+    ranks[order] = np.arange(1, n + 1, dtype=float)
+    sorted_x = x[order]
+    i = 0
+    while i < n:
+        j = i
+        while j + 1 < n and sorted_x[j + 1] == sorted_x[i]:
+            j += 1
+        if j > i:
+            ranks[order[i:j + 1]] = 0.5 * (i + j + 2)
+        i = j + 1
+    return ranks
+
+
 def spearman(x, y) -> float:
     import numpy as np
-    rx = np.argsort(np.argsort(np.asarray(x, dtype=float))).astype(float)
-    ry = np.argsort(np.argsort(np.asarray(y, dtype=float))).astype(float)
+    rx = _ranks_average(x)
+    ry = _ranks_average(y)
     if rx.std() == 0 or ry.std() == 0:
         raise ValueError("degenerate rank vector")
     return float(np.corrcoef(rx, ry)[0, 1])
@@ -187,7 +215,7 @@ def main() -> int:
     # ------------------------------------------- T7: correlation disclosure
     present("T7", tex, "per-run range")
     present("T7", tex, "pooled over five variants and six")
-    present("T7", tex, "$[-0.60,-0.10]$")
+    present("T7", tex, "$[-0.60,+0.05]$")
     present("T7", tex, "$[-1.00,-0.80]$")
     budget = {}
     for pair in ("1.7B_0.6B", "8B_0.6B"):
@@ -196,13 +224,17 @@ def main() -> int:
             if not rep:
                 continue
             budget[(pair, seed)] = rep
+            if rep.get("spearman", {}).get("rank_method") != "average":
+                FAILURES.append("W31: %s spearman block does not declare "
+                                "rank_method=average" % ("phaseB_errorbudget_%s_seed%d.json"
+                                                         % (pair, seed)))
     if len(budget) == 6:
         names = ["raw", "affine", "outaware", "outaware-shuffled", "woaware"]
         pooled = {}
         for key in ("e_raw_mean", "e_attn_mean", "e_wo_mean", "EM"):
             pooled[key] = [sum(b["summary"][n][key] for b in budget.values())
                            / len(budget) for n in names]
-        checks = {"e_raw_mean": (-0.10, -0.60, -0.10),
+        checks = {"e_raw_mean": (-0.10, -0.60, 0.05),
                   "e_attn_mean": (-1.00, -1.00, -0.80),
                   "e_wo_mean": (-0.80, -1.00, -0.80)}
         for key, (want_pooled, want_lo, want_hi) in checks.items():
@@ -216,6 +248,65 @@ def main() -> int:
             if not close(min(runs), want_lo, 0.005) or not close(max(runs), want_hi, 0.005):
                 FAILURES.append("T7: per-run rho range for %s changed (%s)"
                                 % (key, [round(r, 2) for r in runs]))
+
+    # ------------------- W31: rank method, A2 report integrity (PART II A2/A4)
+    # The stored A2 correlations must be average-rank values recomputed from the
+    # very configs stored in the same file, the gate must carry the disjointness
+    # verdict, and the aggregate must equal the pooled recomputation.
+    a2_runs = {}
+    for pair in ("1.7B_0.6B", "8B_0.6B"):
+        for seed in (0, 1, 2):
+            name = "phaseB_mappersweep_%s_seed%d.json" % (pair, seed)
+            rep = load_report(name)
+            if not rep:
+                continue
+            a2_runs[(pair, seed)] = rep
+            if rep.get("rank_method") != "average":
+                FAILURES.append("W31: %s does not declare rank_method=average" % name)
+            gate = rep.get("gate", {})
+            if "bootstrap_intervals_disjoint" not in gate:
+                FAILURES.append("W31: %s gate lacks bootstrap_intervals_disjoint" % name)
+            elif gate.get("branch") != "strong statement preserved":
+                FAILURES.append("W31: %s gate branch is %r, not the disjoint branch"
+                                % (name, gate.get("branch")))
+            for k in ("e_raw", "e_attn", "e_wo"):
+                got = spearman([c[k] for c in rep["configs"]],
+                               [c["EM"] for c in rep["configs"]])
+                if not close(got, rep.get("rho", {}).get(k), 1e-9):
+                    FAILURES.append("W31: %s rho[%s]=%r is not the average-rank value "
+                                    "of its own configs (%.6f)"
+                                    % (name, k, rep.get("rho", {}).get(k), got))
+    if len(a2_runs) == 6:
+        agg = load_report("phaseB_mappersweep_aggregate.json")
+        if not agg:
+            FAILURES.append("W31: the A2 aggregate report is missing")
+        else:
+            order = []
+            for lab in agg.get("running", []):
+                rid = lab.split("/")[0]
+                if rid not in order:
+                    order.append(rid)
+            by_id = {"%s_s%d" % (p, s): r for (p, s), r in a2_runs.items()}
+            if sorted(order) != sorted(by_id):
+                FAILURES.append("W31: aggregate `running` names runs %r" % order)
+            else:
+                rebuilt = [("%s/%s" % (rid, c["key"]), c) for rid in order
+                           for c in by_id[rid]["configs"]]
+                if [lab for lab, _ in rebuilt] != agg.get("running"):
+                    FAILURES.append("W31: aggregate point order does not match its "
+                                    "stored `running` labels")
+                for k in ("e_raw", "e_attn", "e_wo"):
+                    got = spearman([c[k] for _, c in rebuilt],
+                                   [c["EM"] for _, c in rebuilt])
+                    if not close(got, agg.get("rho_pooled", {}).get(k), 1e-9):
+                        FAILURES.append("W31: aggregate rho_pooled[%s]=%r is not the "
+                                        "average-rank value of the stored points (%.6f)"
+                                        % (k, agg.get("rho_pooled", {}).get(k), got))
+        trail = load_report("rank_correlation_recompute.json")
+        if not trail:
+            FAILURES.append("W31: reports/rank_correlation_recompute.json is missing")
+        elif not (trail.get("migration", {}).get("n_changed_fields") or 0) > 0:
+            FAILURES.append("W31: the rank-method migration trail records no changes")
 
     # --------------------------------------------------- T9: stale v1 docs
     for name in V1_DOCS:

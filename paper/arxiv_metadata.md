@@ -101,7 +101,7 @@ the receiver consumes it. Fitting the value mapper where the student reads value
 raises V-only EM from 0.113 to 0.90-0.94 (1.7B->0.6B) and from 0.000 to 0.25-0.27
 (8B->0.6B), while a shuffled-target mapper stays at 0.08/0.07. Raw representation
 error does not rank these variants (rank correlation -0.10 pooled over five
-variants and six runs, per-run range [-0.60,-0.10]), whereas error measured after
+variants and six runs, per-run range [-0.60,+0.05]), whereas error measured after
 the student's attention output and after its o-projection does (-1.00 and -0.80,
 range [-1.00,-0.80] in every run). A rank-8 correction of the student's output
 projections (~0.7M parameters), trained by next-token cross-entropy on calibration

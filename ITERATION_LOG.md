@@ -1292,3 +1292,60 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
 - **登记**：`paper/audit/METRIC_CORRECTION.md §13`（全部数字与门禁判定）。
 - **未做（后续）**：PART III 的条件式正文改写 + 守卫数字断言（`verify_audit4_edits.py`
   的 A1/A2/A3 占位）、paper/main.tex 更新与编译。本轮只做 GPU 实验与落报告/登记。
+
+## W31 (2026-09-19): 秩相关口径修正（序数秩 → 平均秩）+ W30 溯源缺陷登记
+
+- **触发**：拉取 W30 GPU 结果（`acc4c26`）后，本机独立复算 `METRIC_CORRECTION §13`
+  发现三件事：(1) §13 的 A1 上界 `<=0.054` 与产物不符；(2) 项目 `spearman()`
+  用的是**序数秩**（`np.argsort(np.argsort)`），与 `scipy.stats.spearmanr`
+  （平均秩）不是同一个量；(3) W30 存的 A2 聚合值与 A2 `gate` 块都与其自身的
+  逐 run 产物对不上。本轮只做非 GPU 的修正与登记。
+- **代码**：`experiments/stats_utils.py` 新增 `rankdata_average` / `spearman` /
+  `bootstrap_spearman_ci`（平均秩，与 scipy 逐位一致，单测见
+  `tests/test_stats_utils.py`）；`phaseB_errorbudget.py` 删除本地序数版、改为
+  `from stats_utils import spearman`（`phaseB_mappersweep.py` 从它导入的名字不变）；
+  `phaseB_mappersweep.py` 的 `bootstrap_config_rho` 改为共享实现的薄封装（函数名与
+  签名不变，A2 报告溯源不断链）。
+- **本机复算（零 GPU）**：新增 `scripts/recompute_rank_correlations.py`，只从报告里
+  已存的点（A2 `configs[]`、A4 `summary[]`）重算全部相关系数：
+  - 前置校验：每个记录值必须与两种秩口径之一**精确**吻合，否则拒绝写入 —— 证明
+    量本身没变、只有并列值处理方式变了；102 个字段中 79 个变化；
+  - 幂等：二次运行后 13 个数据报告逐字节不变；审计文件 `reports/
+    rank_correlation_recompute.json` 为 append-only（首轮 old→new 存在 `migration`，
+    复跑只追加 `verified_reruns`）；
+  - 结果：A4 pooled 三值**不变**（−0.10/−1.00/−0.80）；A4 逐 run 只有 8B 行变化
+    （`e_raw` −0.20/−0.20/−0.10 → −0.05/−0.05/**+0.05**，`e_attn`/`e_wo` 同段变化但
+    区间仍为 [−1.00,−0.80]）；A2 逐 run 至多差 0.031，198 点 pooled
+    −0.269/−0.796/−0.820 → −0.267/−0.799/−0.823（区间仍不相交，门禁判定不变）。
+- **W30 溯源缺陷（已登记，未改变任何门禁判定）**：
+  1. **A2 `gate` 块陈旧**：缺 `bootstrap_intervals_disjoint`，branch 写
+     "direction preserved, phrase as consistent with"，而代码、重算区间与 §13 都给
+     disjoint 的 "strong statement preserved" —— 已按存储点重算，旧字符串保留在
+     迁移记录的 `changes` 里；
+  2. **A2 聚合值在两种秩口径下都无法从其逐 run 报告复现**（`e_raw` 记录
+     `-0.268774` vs 复算 `-0.266765`（序数）/`-0.267058`（平均）；`e_attn`
+     `-0.795546` vs `-0.799491`/`-0.798646`；`e_wo` `-0.819697` vs
+     `-0.823342`/`-0.822815`），而点数、顺序、`running` 标签全部吻合 ⇒ 它是对某份
+     逐 run 报告的**更早版本**算出来的 —— 已按存储点重生成，残差保留为
+     `a2_aggregate_stale_vs_stored_points`。
+- **论文（本机）**：Abstract、§6.3、§7.1(ii)、`tab:errorbudget` 表注的 e_raw 逐 run
+  区间 `[-0.60,-0.10]` → `[-0.60,+0.05]`，§6.3 补一句"该相关在两对之间符号翻转"；
+  `arxiv_submission/main.tex` 逐字节同步（SHA256 `551B98E7…`），`arxiv_metadata.md`
+  摘要同步。pooled 值、两个 `[-1.00,-0.80]` 区间与全部门禁判定**未动**。
+- **守卫**：`paper/audit/verify_audit4_edits.py` 自带的 `spearman` 换成平均秩、T7
+  期望区间改为 `[-0.60,+0.05]`，并新增 W31 断言：每份 A2 报告的 `rho` 必须等于其
+  自身 `configs` 的平均秩值（1e-9）、聚合值必须等于存储点的 198 点复算、A2/A4 必须
+  声明 `rank_method=average`、A2 gate 必须是 disjoint 分支、迁移记录必须非零。
+  W31 之前**没有任何守卫检查 A2 数字**，这正是上面两个缺陷能活过 W30 的原因。
+- **登记**：`paper/audit/METRIC_CORRECTION.md §14`（含 old→new 表）；同轮修正 §13 的
+  `<=0.054` → 逐 run 最大 **`0.089`**（8B→0.6B seed 0 `K-routing-shuf`，即打乱目标
+  对照；0.054 只是该 seed 的 `K-routing`，按 seed 平均后最大臂均值是 0.042），并补
+  §13 A3 的口径说明（C3 的 0.067 是三个 split 的最大值，均值 0.044，且达到它的臂
+  每次不同 ⇒ 15 题中的 1 题，不是可复现的臂）。
+- **验证（全部本机）**：`tests/test_stats_utils.py`（新增秩口径用例）、
+  `tests/test_w2_baseline_fix.py`（SKIP）、`scripts/verify_corrected_paper.py`、
+  `paper/audit/verify_audit2/3/4_edits.py`、`scripts/cluster_stats_audit3.py` 全部
+  exit 0；Tectonic 编译 `main.tex` 与 `arxiv_submission/main.tex`（24 页、0 error）；
+  `recompute_rank_correlations.py --dry-run` 二次运行零变化。
+- **留给 GPU 机器**：若在 GPU 机器重跑 A2，`phaseB_mappersweep.py --aggregate`
+  应执行一次以确认新聚合值（本轮用同一算法、同一份逐 run 点在本机重生成）。

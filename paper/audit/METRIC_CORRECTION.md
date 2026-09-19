@@ -644,7 +644,7 @@ with rank correlation against V-only EM over the five variants:
 | shuffled target | 5.58 | 0.903 | 1.09 | 0.071 |
 | $W_O$-aware | 0.699 | **0.076** | **0.081** | 0.586 |
 
-Spearman with EM: `-0.10` (raw), `-1.00` (attention output), `-0.80`
+Spearman with EM (average-rank values, section 14): `-0.10` (raw), `-1.00` (attention output), `-0.80`
 ($o$-projection space). Gate verdict: the paper's central claim needs **no
 downgrade** — raw representation error does not rank the mappers, and error in
 the receiver's consumption space does. The shuffled-target mapper is reported in
@@ -710,10 +710,15 @@ Recomputed per run (tag T7 in `verify_audit4_edits.py`):
 | 1.7B->0.6B s0 | -0.40 | -1.00 | -1.00 |
 | 1.7B->0.6B s1 | -0.60 | -0.90 | -0.90 |
 | 1.7B->0.6B s2 | -0.60 | -0.80 | -0.80 |
-| 8B->0.6B s0 | -0.20 | -0.80 | -0.80 |
-| 8B->0.6B s1 | -0.20 | -0.80 | -0.90 |
-| 8B->0.6B s2 | -0.10 | -0.90 | -0.90 |
+| 8B->0.6B s0 | -0.05 | -0.87 | -0.87 |
+| 8B->0.6B s1 | -0.05 | -0.87 | -0.97 |
+| 8B->0.6B s2 | **+0.05** | -0.97 | -0.97 |
 | pooled (paper) | **-0.10** | **-1.00** | **-0.80** |
+
+These are average-rank values (section 14). Only the three 8B rows of `e_raw` and
+the 8B rows of `e_attn`/`e_wo` moved when W31 replaced the ordinal tie policy; the
+pooled row is identical under both. The paper prints the per-run range
+`[-0.60,+0.05]` for `e_raw` and `[-1.00,-0.80]` for the other two.
 
 The Abstract, 6.3, 7.1(ii) and the `tab:errorbudget` caption now report the
 pooled value together with the per-run range and state that five variants cannot
@@ -811,7 +816,8 @@ shuffled-document targets, raw layer selection.
 
 Routing-TV drop relative to affine: `0.17` on 1.7B->0.6B (below the pre-registered
 `0.30` gate) and `0.383`-`0.426` on 8B->0.6B (passes the drop half of the gate).
-K-only EM is at the floor everywhere (`<=0.054` vs Self `0.90`), the 1.7B dLL gain
+K-only EM is at the floor everywhere (per-run maximum `0.089`, on 8B->0.6B seed 0
+`K-routing-shuf`, vs Self `0.90`), the 1.7B dLL gain
 is fully reproduced by the shuffled-target control, and on 8B the shuffled control
 is not below the real mapper. **Gate verdict:** the literal 8B branch is "routing
 gap closed but the task arm is still at the floor" (the plan's second branch).
@@ -829,17 +835,27 @@ affine V mapper and `a=1` the output-aware mapper (both endpoints exact). Sweep
 
 | scope | rho(e_raw, EM) | rho(e_attn, EM) | rho(e_wo, EM) |
 |---|---|---|---|
-| 1.7B->0.6B, pooled 3 seeds (99 pts) | `+0.916` `[+0.874,+0.942]` | `-0.964` `[-0.982,-0.922]` | `-0.962` `[-0.979,-0.921]` |
-| 8B->0.6B per seed | `+0.868`/`+0.891`/`+0.934` | `-0.893`/`-0.912`/`-0.947` | `-0.894`/`-0.913`/`-0.947` |
-| all six runs pooled (198 pts) | `-0.269` `[-0.372,-0.147]` | `-0.796` `[-0.843,-0.739]` | `-0.820` `[-0.863,-0.768]` |
+| scope | rho(e_raw, EM) | rho(e_attn, EM) | rho(e_wo, EM) |
+|---|---|---|---|
+| 1.7B->0.6B, pooled 3 seeds (99 pts) | `+0.918` `[+0.876,+0.943]` | `-0.964` `[-0.983,-0.925]` | `-0.962` `[-0.981,-0.924]` |
+| 8B->0.6B per seed | `+0.890`/`+0.922`/`+0.944` | `-0.899`/`-0.924`/`-0.946` | `-0.900`/`-0.925`/`-0.947` |
+| all six runs pooled (198 pts) | `-0.267` `[-0.373,-0.148]` | `-0.799` `[-0.846,-0.740]` | `-0.823` `[-0.865,-0.770]` |
 
 **Gate verdict:** "strong statement preserved" (per-run and pooled). Within every
 run the raw error is positively related to EM, i.e. it does not rank mapper
 variants by task performance; consumption-space error is strongly negative and
 its bootstrap interval is disjoint from the raw interval in every case. The
-pooled `rho_raw=-0.269` is a between-pair scale artifact (8B has larger errors and
+pooled `rho_raw=-0.267` is a between-pair scale artifact (8B has larger errors and
 lower EM) and is still far weaker than `e_attn`/`e_wo`. The five-point A4 result
 is thereby replaced by 198 configurations.
+
+**W31:** the values above are average-rank values (section 14), so they differ
+from the ones first written in W30 by up to `0.031` per run. W30's stored
+`gate.branch` strings said "direction preserved" and omitted
+`bootstrap_intervals_disjoint`; the recomputed gate is the disjoint branch, which
+is what section 13 states and what the intervals support. W30's stored aggregate
+also disagreed with the stored per-run configs under either tie policy and is
+regenerated from them -- both defects are registered in section 14.
 
 ### A3 calibration-volume / distribution control (3 splits each)
 
@@ -853,8 +869,92 @@ held-out SQuAD documents, same scoring path.
 | C2 synthetic-only | 0.311 | 0.000 | 0.556 |
 | C3 squad+synthetic (85 docs) | 0.311 | 0.067 | 0.422 |
 
+Caveat on the C3 cell: its `0.067` is the **maximum over the three splits** (per
+split `0.067`/`0.067`/`0.000`, mean `0.044`), and the arm that reaches it differs
+by split (`V-only-outaware`, `V-only-woaware`, none) -- one held-out question of
+fifteen, not a reproducible arm.
+
 **Gate verdict:** C2 fails at the same floor as C1, so calibration *volume* is not
 the binding factor; C3 still fails with ~5.7x the calibration data, so the
 binding factor is the *distribution*. The "task-conditioned compatibility"
 naming (T6) is therefore supported, with the standing caveat that the evidence
 comes from a single second domain and held-out Self is only 0.20-0.40.
+
+## 14. W31 correction: rank correlations recomputed with average ranks
+
+Until W31 the project's `spearman` helper ranked with
+`np.argsort(np.argsort(x))` -- **ordinal** ranks, which break ties by position in
+the input vector instead of sharing the mean rank. Every rank correlation in the
+repository therefore depended on the arbitrary order of the variants/configs in
+the report, and a reader recomputing with `scipy.stats.spearmanr` (average ranks)
+could not reproduce it. `experiments/stats_utils.py` now provides
+`rankdata_average` / `spearman` / `bootstrap_spearman_ci`, and
+`phaseB_errorbudget.py` / `phaseB_mappersweep.py` use them.
+
+`scripts/recompute_rank_correlations.py` recomputed every stored correlation from
+the points already in the reports (A2 `configs[]`, A4 `summary[]`) -- no GPU and no
+models involved -- under **both** tie policies. Preflight: each recorded value
+matched one of the two policies exactly, so the measured quantity is unchanged and
+only the tie policy moves; 79 of 102 recorded fields changed. Old and new values
+are in `reports/rank_correlation_recompute.json` (its `migration` block is
+preserved across reruns, and rerunning leaves the 13 data reports
+byte-identical).
+
+| quantity | old (ordinal) | new (average) |
+|---|---|---|
+| A4 `rho(e_raw, EM)`, pooled 5 variants x 6 runs | `-0.10` | `-0.10` (unchanged) |
+| A4 `rho(e_attn, EM)` / `rho(e_wo, EM)`, pooled | `-1.00` / `-0.80` | `-1.00` / `-0.80` (unchanged) |
+| A4 per-run `rho(e_raw, EM)`, 1.7B then 8B | `-0.40/-0.60/-0.60`, `-0.20/-0.20/-0.10` | `-0.40/-0.60/-0.60`, `-0.05/-0.05/`**`+0.05`** |
+| A4 per-run range printed in the paper | `[-0.60,-0.10]` | `[-0.60,+0.05]` |
+| A4 per-run `rho(e_attn)` / `rho(e_wo)`, 8B rows | `-0.80/-0.80/-0.90`, `-0.80/-0.90/-0.90` | `-0.87/-0.87/-0.97`, `-0.87/-0.97/-0.97` |
+| A4 per-run range for those two | `[-1.00,-0.80]` | `[-1.00,-0.80]` (unchanged) |
+| A2 per-run `rho` (33 configs each) | up to `0.031` away | `reports/phaseB_mappersweep_*.json` |
+| A2 pooled 198 points | `-0.269` `[-0.372,-0.147]`, `-0.796` `[-0.843,-0.739]`, `-0.820` `[-0.863,-0.768]` | `-0.267` `[-0.373,-0.148]`, `-0.799` `[-0.846,-0.740]`, `-0.823` `[-0.865,-0.770]` |
+
+Every A2/A4 report now carries `rank_method: "average"`.
+
+Paper-side edits: the Abstract, 6.3, 7.1(ii) and the `tab:errorbudget` caption
+print `[-0.60,+0.05]` for the raw error's per-run range, and 6.3 notes that the
+raw correlation changes sign between the two pairs. `arxiv_submission/main.tex`
+(byte-identical to `main.tex`) and `arxiv_metadata.md` are updated in step.
+Nothing else moves: the pooled values, both `[-1.00,-0.80]` ranges and every gate
+verdict are identical under the two policies. The 8B per-run raw correlations are
+now essentially zero (`-0.05`, `-0.05`, `+0.05`), which strengthens rather than
+weakens "raw representation error does not rank the mappers".
+
+### Two W30 provenance defects found by the same pass
+
+Both are recorded rather than smoothed over; neither changes a gate verdict.
+`paper/audit/REVISION_PLAN4.md` 0.1 keeps its ordinal-rank per-run table as the
+historical pre-registration record; this section supersedes its values.
+
+1. **The stored A2 `gate` blocks are stale.** They lack
+   `bootstrap_intervals_disjoint` and carry the branch "direction preserved,
+   phrase as consistent with", although the code, the recomputed intervals and
+   section 13 all give the disjoint "strong statement preserved" branch. The gate
+   is recomputed from the stored per-run points; the old strings are kept in the
+   migration record's `changes` list.
+2. **The stored A2 aggregate did not reproduce from the stored per-run configs
+   under either tie policy.** Recorded `e_raw` `-0.268774` against `-0.266765`
+   (ordinal) and `-0.267058` (average) from the stored points; `e_attn`
+   `-0.795546` against `-0.799491` / `-0.798646`; `e_wo` `-0.819697` against
+   `-0.823342` / `-0.822815`. The point set, its order, the counts and the
+   `running` labels all match, so the aggregate was derived from an earlier state
+   of some per-run report. It is regenerated from the stored per-run points and
+   the residual is kept as `a2_aggregate_stale_vs_stored_points`.
+
+`paper/audit/verify_audit4_edits.py` now asserts, on every run: each stored A2
+`rho` equals the average-rank value of its own `configs`; the aggregate equals the
+pooled recomputation of the stored points; every A2/A4 report declares
+`rank_method=average`; the A2 gate carries the disjoint branch; and the migration
+trail records a non-zero change count. Before W31 no guard checked the A2 numbers
+at all, which is how the two defects above survived W30.
+
+Corrections to section 13 made in the same pass: its A1 bound "K-only EM is at the
+floor everywhere (`<=0.054`)" is wrong -- the per-run maximum over all K arms,
+pairs and seeds is **`0.089`** (8B->0.6B seed 0 `K-routing-shuf`, the
+shuffled-target control), while `0.054` is only the 8B seed-0 `K-routing` value
+and the largest seed-averaged arm mean is `0.042`. The conclusion is unchanged
+against Self `0.90`. Its A3 "max transfer-arm EM" for C3 is a maximum over the
+three splits (`0.067`/`0.067`/`0.000`, mean `0.044`) reached by a different arm in
+each split, i.e. one held-out question of fifteen.

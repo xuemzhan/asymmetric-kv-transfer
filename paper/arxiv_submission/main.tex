@@ -92,7 +92,7 @@ student reads value raises V-only EM from $0.113$ to $0.90$--$0.94$
 ($1.7$B$\to0.6$B) and from $0.000$ to $0.25$--$0.27$ ($8$B$\to0.6$B), while a
 shuffled-target mapper stays at $0.08/0.07$. Raw representation error does not
 rank these variants (rank correlation $-0.10$ pooled over five variants and six
-runs, per-run range $[-0.60,-0.10]$), whereas error measured after the
+runs, per-run range $[-0.60,+0.05]$), whereas error measured after the
 student's attention output and after its $o$-projection does ($-1.00$ and
 $-0.80$, range $[-1.00,-0.80]$ in every run). A rank-8 correction of the
 student's output projections ($\sim$$0.7$M parameters), trained by next-token
@@ -796,7 +796,8 @@ $-0.10$ for the raw error, computed on the pooled means. That pooled value hides
 the run-to-run spread, so we report it with the per-run range: the
 attention-output and $o$-projection correlations stay in $[-1.00,-0.80]$ in every
 one of the six runs, while the raw-error correlation ranges over
-$[-0.60,-0.10]$. The ordering therefore holds run by run, but five variants are
+$[-0.60,+0.05]$ and changes sign between the two pairs. The ordering therefore
+holds run by run, but five variants are
 too few to attach a $p$-value to it, and we read the correlations as a
 consistency check on the mechanism rather than as an estimated law. One variant
 is a genuine exception and we report it as
@@ -816,7 +817,7 @@ student's $V$, $e_{\text{attn}}$ compares the student's attention output
 $A_S V$, and $e_{W_O}$ compares that output after the student's own $o$-projection.
 EM is corrected V-only EM. Rank correlation with EM is computed on the pooled
 means over five mapper variants and six runs and is reported with its per-run
-range: $-0.10$ [$[-0.60,-0.10]$] for $e_{\text{raw}}$, $-1.00$
+range: $-0.10$ [$[-0.60,+0.05]$] for $e_{\text{raw}}$, $-1.00$
 [$[-1.00,-0.80]$] for $e_{\text{attn}}$ and $-0.80$ [$[-1.00,-0.80]$] for
 $e_{W_O}$. Five variants and six runs are too few for a $p$-value.}
 \label{tab:errorbudget}
@@ -1133,7 +1134,7 @@ raw representation error is smallest for the affine mapper and does not rank the
 variants (rank correlation $-0.10$ with EM), while error measured after the
 student's attention output and after its $o$-projection does ($-1.00$ and
 $-0.80$). Those correlations are computed on the pooled means over five variants
-and six runs; the per-run ranges are $[-0.60,-0.10]$, $[-1.00,-0.80]$ and
+and six runs; the per-run ranges are $[-0.60,+0.05]$, $[-1.00,-0.80]$ and
 $[-1.00,-0.80]$, so the ordering holds in every run even though five variants
 cannot support a $p$-value.
 \emph{(iii) Key transfer.} Mapped teacher keys can perturb the receiver's
