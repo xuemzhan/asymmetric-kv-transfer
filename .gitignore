@@ -11,9 +11,13 @@ __pycache__/
 # Temp
 /tmp/
 
-# Agent session dumps / notebooks
+# Agent session dumps / notebooks / installed skill packs
+# (.agents/ and skills-lock.json are local tooling installed by the editor, not
+# part of this research artifact; ignore them so they cannot end up in a commit.)
 .omo/
 .ipynb_checkpoints/
+.agents/
+skills-lock.json
 
 # LaTeX build artifacts
 paper/*.aux
