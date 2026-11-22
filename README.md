@@ -7,7 +7,7 @@ Research artifact for the paper
 
 The paper is built from [`paper/main.tex`](paper/main.tex) in English and
 Chinese; see [Building the paper](#building-the-paper). Compiled PDFs are not
-committed, so build them locally. arXiv: _not posted yet._
+committed, so build them locally. arXiv: _not posted yet._ License: MIT.
 
 ---
 
@@ -155,10 +155,10 @@ Additional requirements:
   `numpy==1.26.4` — the versions this artifact was run with.
 - A CUDA GPU; an RTX 4090 is enough for the 0.6B–8B pairs.
 - Qwen3 snapshots for 0.6B, 1.7B, 4B and 8B.
-- **The sibling `apcs` package**, which supplies the mapper and RoPE helpers
-  (`apcs.mapper.math`, `apcs.rope.runner`). ⚠️ It is **not** vendored here; the
-  experiment scripts will fail on import without it. See
-  [Known gaps](#known-gaps).
+- **[`apcs`](https://github.com/xuemzhan/apcs)**, a separate package that supplies
+  the mapper and RoPE helpers (`apcs.mapper.math`, `apcs.rope.runner`). Install it
+  with `pip install git+https://github.com/xuemzhan/apcs.git`, or clone it and
+  point `V3_APCS_DIR` at the clone. It is MIT licensed too.
 
 Paths are configurable through environment variables, so nothing is hard-coded to
 one machine:
@@ -169,7 +169,7 @@ one machine:
 | `V3_DATA_DIR` | `$V3_ROOT/data` | generated data JSONs |
 | `V3_REPORT_DIR` | `$V3_ROOT/reports` | experiment result JSONs |
 | `V3_MODELS_DIR` | `/root/.cache/modelscope/models` | Qwen3 snapshots |
-| `V3_APCS_DIR` | `/workspace/apcs` | the sibling `apcs` package |
+| `V3_APCS_DIR` | `/workspace/apcs` | a checkout of [`xuemzhan/apcs`](https://github.com/xuemzhan/apcs) |
 
 The data JSONs are **not** tracked (they are regenerable) and must exist first:
 
@@ -243,6 +243,7 @@ are gitignored — the sources are the deliverable.
 ├── tests/                  # unit and smoke tests
 ├── tools/                  # compile_paper.ps1 (bring your own Tectonic)
 ├── README.md               # this file (for readers)
+├── LICENSE                 # MIT
 └── ITERATION_LOG.md        # full session-by-session history (see the warning below)
 ```
 
@@ -277,11 +278,12 @@ entry, figure and table of the English edition reappears in the Chinese one.
 
 ## Known gaps
 
-- ⚠️ **The `apcs` package is external.** The experiment scripts import mapper and
-  RoPE helpers from `apcs` (`V3_APCS_DIR`), which is not part of this repository.
-  Tier 1 above does not need it; Tier 2 does. Until it is vendored or published,
-  the GPU-side results can be inspected and re-checked but not re-run from a
-  clean clone.
+- **The experiment code depends on a second repository.** The mapper and RoPE
+  helpers live in [`xuemzhan/apcs`](https://github.com/xuemzhan/apcs), which is
+  public and MIT licensed but versioned separately from this one. Tier 1 does not
+  need it; Tier 2 does. If you re-run the experiments and the numbers drift, check
+  which commit of `apcs` you installed before assuming the paper is wrong —
+  `V3_APCS_DIR` exists so you can pin a specific checkout.
 - **Small test sets, few clusters.** 56 held-out questions per seed, drawn from 8
   documents, so per-item intervals are wide; the paper reports
   document-clustered intervals wherever a claim depends on one. Treat single-seed
@@ -339,7 +341,12 @@ result JSONs, say so explicitly and point at the commit you used.
 
 ## License
 
-This repository carries **no license file yet**, which means the default
-all-rights-reserved terms apply. If you want to reuse the code, the figures or the
-result JSONs, contact the authors first. The license chosen for the paper when it
-is posted to arXiv will be recorded here.
+MIT — see [`LICENSE`](LICENSE). Copyright (c) 2026 Zhang Xuemin, Zhong Liheng,
+Hu Liangbin, Yu Junpeng, Yi Kun.
+
+That covers this repository: the code, the figures, the result JSONs, and both
+editions of the paper source. The dependency
+[`xuemzhan/apcs`](https://github.com/xuemzhan/apcs) is MIT licensed as well; its
+own `LICENSE` governs it. The license terms chosen for the arXiv posting of the
+paper are recorded in [`paper/arxiv_metadata.md`](paper/arxiv_metadata.md) and are
+a separate decision from the code license above.

@@ -73,6 +73,11 @@ statement only if you intend to make it public.
 **NEEDS INPUT.** Choose one, e.g. arXiv perpetual non-exclusive license to
 distribute 1.0.
 
+This is the license for the *paper posting* and is a separate decision from the
+repository license: the code, figures and result JSONs in this repository are MIT
+(`LICENSE` at the repository root), and the dependency `xuemzhan/apcs` is MIT as
+well. Picking arXiv's default distribution license here does not change those.
+
 ## Endorsement
 
 If this is a first submission to `cs.LG`, arXiv endorsement may be required.

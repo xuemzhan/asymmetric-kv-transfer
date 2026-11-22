@@ -1644,3 +1644,32 @@ table/figure/tabular 环境与花括号、`$` 全部配平。
   无缺锚点、无掉缩进。
 - **仍未做（如实记录）**：仍未选定 license（README 的 License 节如实说明
   当前无 license 文件、默认保留所有权利）；仍未把 `apcs` 纳入仓库或发布。
+
+---
+
+## W38 (2026-11-22): MIT 许可 + `apcs` 指向公开仓库
+
+- **License**：仓库此前没有 license 文件（默认保留所有权利），现补 MIT。
+  新增 `LICENSE`（MIT，Copyright (c) 2026 五位作者，无 BOM，UTF-8），
+  README 的 License 节从"尚未声明"改为如实陈述 MIT 并指向 `LICENSE`，
+  同时写清覆盖范围（代码、图、reports JSON、中英文稿件源）与
+  "`apcs` 另受其自身 LICENSE 管辖"。
+- **`apcs` 不再是"未发布"**：用户给出公开仓库
+  `https://github.com/xuemzhan/apcs`。经 GitHub API 核实：公开、默认分支 `main`、
+  `license.spdx_id = MIT`、含 `pyproject.toml` 与 `requirements.txt`，其仓库描述
+  与本工作同一主题（跨模型 KV 缓存翻译审计）。据此：
+  1. Tier 2 的 requirement 改为给出 `pip install git+https://github.com/xuemzhan/apcs.git`
+     与 `V3_APCS_DIR` 两种用法；
+  2. Known gaps 第一条从"未纳入也未发布，干净克隆无法重跑"改写为
+     "依赖第二个仓库，版本独立演进——重跑若数字漂移，先核对装的是哪个 commit"；
+  3. 环境变量表的 `V3_APCS_DIR` 一行指向该仓库；
+  4. README 顶部加一行 `License: MIT`，仓库结构清单补 `LICENSE`。
+- **arXiv 纸面许可与仓库许可是两件事**：`paper/arxiv_metadata.md` 的 License 节
+  仍是 arXiv 投稿时的选择（NEEDS INPUT 未动），但补一段说明：仓库代码/图/ JSON
+  是 MIT，arXiv 选默认分发许可不改变这一点。避免后续把两者混为一谈。
+- **验证**：`LICENSE` 首字节 `77,73,84`（无 BOM）；相对链接、锚点、列表缩进
+  机械检查通过；五个稿件守卫全部 exit 0（T1 只断言 README 含新标题，
+  本次改动不影响它）。
+- **未做**：未改动 arXiv 投稿许可本身（仍待作者选择）；未把 `apcs` 的 commit
+  固定在文档里——`apcs` 仓库持续更新，钉版本应由使用者按需在 `V3_APCS_DIR`
+  里完成，故未写入具体 SHA。
