@@ -1,4 +1,4 @@
-# Build every edition of the paper with the repository-local Tectonic binary.
+# Build every edition of the paper.
 #
 #   English edition      paper/main.pdf
 #   Chinese edition      paper/main_zh.pdf
@@ -8,27 +8,56 @@
 # sources stay byte-identical (the SYNC assertion in
 # paper/audit/verify_audit4_edits.py checks exactly that).
 #
-# Usage (from the repository root):
+# Usage (from anywhere):
 #   powershell -File tools/compile_paper.ps1
 #   powershell -File tools/compile_paper.ps1 -SkipArxiv
+#   powershell -File tools/compile_paper.ps1 -Tectonic C:\path\to\tectonic.exe
 #
+# Needs a Tectonic binary: tools/tectonic/tectonic.exe if present, else -Tectonic,
+# else `tectonic` on PATH. The binary is not committed; see Resolve-Tectonic below.
 # The compiled PDFs are gitignored on purpose: the sources are the deliverable.
 
 param(
-    [switch]$SkipArxiv
+    [switch]$SkipArxiv,
+    [string]$TectonicPath
 )
 
 $ErrorActionPreference = 'Stop'
 
 $ToolsDir = $PSScriptRoot
 $RepoDir = Split-Path -Parent $ToolsDir
-$Tectonic = Join-Path $ToolsDir 'tectonic\tectonic.exe'
 $PaperDir = Join-Path $RepoDir 'paper'
 $ArxivDir = Join-Path $PaperDir 'arxiv_submission'
 
-if (-not (Test-Path -LiteralPath $Tectonic)) {
-    throw "Tectonic binary not found: $Tectonic"
+# The Tectonic binary is not committed (it is a ~20 MB download), so resolve it in
+# this order: an explicit -Tectonic path, the bundled tools/tectonic/ location, then
+# whatever `tectonic` is on PATH.
+function Resolve-Tectonic {
+    param([string]$Explicit)
+
+    $candidates = @()
+    if ($Explicit) { $candidates += $Explicit }
+    $candidates += (Join-Path $ToolsDir 'tectonic\tectonic.exe')
+    $candidates += (Join-Path $ToolsDir 'tectonic\tectonic')
+    foreach ($candidate in $candidates) {
+        if ($candidate -and (Test-Path -LiteralPath $candidate)) { return $candidate }
+    }
+    $onPath = Get-Command 'tectonic' -ErrorAction SilentlyContinue
+    if ($onPath) { return $onPath.Source }
+
+    throw @'
+Tectonic not found. Provide it in any of these ways:
+  1. put the binary at tools/tectonic/tectonic.exe (or tools/tectonic/tectonic);
+  2. pass -Tectonic <path-to-binary>;
+  3. install it on PATH.
+Download: https://github.com/tectonic-typesetting/tectonic/releases
+(verified with Tectonic 0.17.0). Any other LaTeX toolchain also works —
+the three sources are plain self-contained .tex files.
+'@
 }
+
+$Tectonic = Resolve-Tectonic -Explicit $TectonicPath
+Write-Host "tectonic: $Tectonic"
 
 function Invoke-Tectonic {
     param([string]$WorkDir, [string]$Source)
