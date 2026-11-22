@@ -1,5 +1,5 @@
 % ============================================================================
-% Cross-Model KV Transfer Needs Functional Compatibility
+% Beyond Representation Fidelity: Functional Compatibility for Cross-Model KV Transfer
 % Rewritten after the corrected-evaluation audit (paper/audit/METRIC_CORRECTION.md).
 % Figures: paper/figures/gen_paper_figures.py (figures4papers house style).
 % Every empirical number here is transcribed from the project result summaries
@@ -25,19 +25,24 @@
 \setlength{\tabcolsep}{4pt}
 
 % --- PDF metadata (arXiv submission) ---------------------------------------
-% The author list must be the real one before posting; this draft is anonymous.
 \hypersetup{
-  pdftitle={Cross-Model KV Transfer Needs Functional Compatibility: Why Representation Alignment Is Not Enough},
-  pdfauthor={Anonymous Author(s)},
+  pdftitle={Beyond Representation Fidelity: Functional Compatibility for Cross-Model KV Transfer},
+  pdfauthor={Zhang Xuemin, Zhong Liheng, Hu Liangbin, Yu Junpeng, Yi Kun},
   pdfsubject={Machine Learning; Natural Language Processing; Efficient Inference},
-  pdfkeywords={KV cache transfer, cross-model inference, functional compatibility, representation alignment, evaluation methodology, parameter-efficient adaptation},
+  pdfkeywords={KV cache transfer, cross-model inference, functional compatibility, representation fidelity, consumer-space alignment, evaluation methodology},
   bookmarksnumbered=true,
 }
 
-\title{Cross-Model KV Transfer Needs Functional Compatibility: \\
-Why Representation Alignment Is Not Enough}
+\title{Beyond Representation Fidelity: \\
+Functional Compatibility for Cross-Model KV Transfer}
 
-\author{Anonymous Author(s) \\ \texttt{anonymous@example.com}}
+\author{%
+  Zhang Xuemin\thanks{\texttt{zxm0813@gmail.com}}
+  \and Zhong Liheng\thanks{\texttt{lihengzhong@berkeley.edu}}
+  \and Hu Liangbin\thanks{\texttt{huliangbing2000@163.com}}
+  \and Yu Junpeng\thanks{\texttt{yujunpeng@cetc.com.cn}}
+  \and Yi Kun\thanks{\texttt{yikun@bit.edu.cn}}%
+}
 \date{}
 
 \begin{document}
@@ -79,7 +84,9 @@ evaluator does detect content corruption. SQuAD replicates
 the negative result (Self $0.367$; K-only, V-only, and Joint $0.000$; K-only
 $\dll$ $+5.24$).
 
-The failure lies in how the receiving model reads the state. Under a mapper fit
+The failure lies in how the receiving model reads the state. We decompose the
+receiver's output perturbation into a routing term and a consumption term, and
+the four injection arms switch them on and off. Under a mapper fit
 in representation space, layer alignment looks irrelevant: scrambling the layer
 map costs nothing. Under a mapper fit in consumption space the same scrambling
 collapses V-only EM from $0.91$ to $0.11$--$0.23$, so the earlier null result was
@@ -87,8 +94,8 @@ a floor effect of the mapper and alignment does matter once the consumer reads
 the state correctly. Two failures are kept apart below: under mapped teacher keys
 the student's top-1 attention agreement with its own routing is $0.59$--$0.70$
 (a key-side diagnostic), and a routing-aware key mapper that shrinks routing
-divergence by $17$--$43\%$ still leaves the key arm at the floor, so closing the
-routing gap is necessary but not sufficient; the value arm, which never sees a
+divergence by $17$--$43\%$ still leaves the key arm at the floor, so routing
+alignment alone is not sufficient; the value arm, which never sees a
 mapped key, is limited by how the receiver consumes it. Fitting the value mapper
 where the student reads value raises V-only EM from $0.113$ to $0.90$--$0.94$
 ($1.7$B$\to0.6$B) and from $0.000$ to $0.25$--$0.27$ ($8$B$\to0.6$B), while a
@@ -116,12 +123,12 @@ teacher states is intermediate (Joint $0.46$ and $0.13$). The repair does not
 transfer across domains, and on SQuAD it does not reappear within one either:
 retrained on SQuAD calibration documents, every transfer arm still answers
 $0.000$ of the held-out questions across three document splits; a calibration set
-of the same size drawn from the other domain fails identically and $85$ documents
-volume that binds; we name this \emph{task-conditioned} functional compatibility.
-All experiments are
-compatibility. All experiments are
-within a single model family, and the
-adapter is trained on the task distribution it is evaluated on.
+of the same size drawn from the other domain fails identically, and $85$ documents
+mixing both still fail, so it is the distribution rather than the calibration
+volume that binds. We read this as evidence that functional compatibility is
+\emph{task-conditioned} rather than a property of the model pair.
+All experiments are within a single model family, and the adapter is trained on
+the task distribution it is evaluated on.
 \end{abstract}
 % ============================================================================
 \section{Introduction}
@@ -192,14 +199,26 @@ Figure~\ref{fig:setting}). Our contributions are:
   $1.7$B$\to0.6$B and by $38$--$43\%$ on $8$B$\to0.6$B does not move the task arm
   off the floor (K-only EM at most $0.089$ in any run, against $0.899$ for the
   student's own cache) and its shuffled-target control is not worse, so the
-  routing term is necessary and not sufficient. The value arm never sees a mapped
+  routing term. Since reducing routing divergence leaves the task arm at the floor,
+  routing alignment alone is not sufficient. We test no converse, so we do not
+  claim routing compatibility is necessary---only that it is not sufficient. The
+  value arm never sees a mapped
   key, so its failure is not addressing; it is a consumption-space mismatch, which
   is why the two failures are kept apart rather than folded into one mechanism.
 
-\item \textbf{Consumer-space alignment.} The target of alignment matters more
-  than its accuracy. Fitting the value mapper where the student reads value
-  recovers most of V-only transfer without touching a single consumer weight:
-  an attention-output-aware mapper raises EM from $0.113$ to $0.935$
+\item \textbf{An error law for the consumer space.} The target of alignment
+  matters more than its accuracy. Concurrent work reaches the same target object
+  by learning a coupled key--value correction against receiver
+  behaviour~\cite{cachelink2026} or by distilling the receiver's own
+  predictions~\cite{kvlingo2026}, and we do not claim the target as new. What we
+  add is directional evidence about the two error measures rather than the idea of
+  fitting the receiver: across a sweep of a one-parameter mapper objective,
+  state-space error is \emph{positively} related to task EM inside every run while
+  consumer-space error is strongly negatively related, so the two measurements
+  disagree in sign and not merely in precision. Fitting the value
+  mapper where the student reads value recovers most of V-only transfer without
+  touching a single consumer weight: an attention-output-aware mapper raises EM
+  from $0.113$ to $0.935$
   ($1.7$B$\to0.6$B) and from $0.000$ to $0.250$ ($8$B$\to0.6$B), a
   $W_O$-aware mapper reaches $0.899$ and $0.268$, and a mapper with shuffled
   targets stays at $0.077$ and $0.065$. Measuring error against the state a mapper
@@ -216,10 +235,13 @@ Figure~\ref{fig:setting}). Our contributions are:
   V-only EM falling from $0.911$ to $0.107$--$0.232$ with non-overlapping
   document-clustered intervals.
 
-\item \textbf{Repairability and its boundary.} A rank-8 correction of the
+\item \textbf{Repairability, used as an intervention.} A rank-8 correction of the
   student's output projections ($\approx0.7$M parameters), trained by next-token
   cross-entropy on calibration answers under injected teacher KV while the
-  student and mapper stay frozen, restores K/V/joint EM to $0.94/0.94/0.83$ for
+  student and mapper stay frozen, is used here as an intervention rather than as a
+  proposed method: if a small receiver-side adaptation makes an unusable teacher
+  state usable, the failure is producer--consumer incompatibility rather than
+  absent information. It restores K/V/joint EM to $0.94/0.94/0.83$ for
   $1.7$B$\to0.6$B (joint arm spread $0.55$--$0.96$ across seeds) and
   $0.79/0.36/0.47$ for $8$B$\to0.6$B, measured against an \emph{adapted} Self of
   $0.940\pm0.041$ rather than the unadapted $0.899$. With the \emph{final}
@@ -243,8 +265,21 @@ Figure~\ref{fig:setting}). Our contributions are:
   and $85$ documents mixing both still fail. Compatibility is therefore
   conditioned on the task distribution and not a property of the model pair
   alone.
+  We scope the repair claim accordingly: it holds on the equal-depth pair inside
+  one task distribution, and on the flagship pair we report an open question
+  rather than a partial repair.
 
 \end{enumerate}
+
+Taken together, what this paper claims is not a new translator. Receiver-aware
+translation already exists in concurrent work, and several systems beat us on
+downstream quality. The claim is a set of four things that hold together: the
+arm decomposition of the handoff into a routing term and a consumption term; a
+causal audit of the proxy that this literature evaluates with; an error law
+showing that the state-space and consumer-space error measures disagree in sign;
+and a boundary result in which the same model pair is repairable on one
+distribution and not on another. The rank-8 adaptation appears below as an
+intervention that establishes repairability, not as a method we propose to deploy.
 
 The practical message separates two levels of compatibility. At the level of
 \emph{state space}, matching raw KV representations is not sufficient: a mapper
@@ -289,13 +324,66 @@ a model family, and report that keys are more predictable than values.
 Cache-to-Cache~\cite{fu2026c2c} transfers semantic states between LLMs for direct
 communication; Mixture-of-Translators~\cite{lee2026translators} translates caches
 across heterogeneous LLMs; LatentAlign~\cite{dery2026latentalign} aligns latent
-spaces through KV-cache alignment. Prior work transfers full KV states with
-engineered mappings and evaluates with teacher-forced likelihood or greedy
-overlap. Our contribution is diagnostic and constructive: our legacy task
-evaluator could report apparent transfer where none exists functionally, and,
-more generally, teacher-forced likelihood alone is insufficient evidence of
-functional transfer. We localize the failure to the consumer and recover transfer
-by adapting the consumer rather than the state.
+spaces through KV-cache alignment. Those systems transfer full KV states with
+engineered mappings and evaluate with teacher-forced likelihood or greedy overlap,
+and our starting point was the same: our legacy task
+evaluator could report apparent transfer where none exists functionally, and
+teacher-forced likelihood alone is insufficient evidence of functional transfer.
+
+A large concurrent literature now builds serving systems on this idea and reports
+outcomes substantially better than ours.
+CacheBridge~\cite{cachebridge2026} co-designs an attention-calibrated mapper with
+the serving loop and retains most of re-prefill task quality on agent, chat,
+reasoning, and retrieval workloads across several model families;
+ACCT~\cite{acct2026} compiles a source cache into sparse target states and matches
+the target's own inference under a reduced KV budget;
+CacheLink~\cite{cachelink2026} learns a coupled key--value correction against
+receiver behaviour and states explicitly that reconstruction fidelity is a poor
+proxy for receiver utility;
+KV-Lingo~\cite{kvlingo2026} trains per-layer translators by distillation from the
+receiver's own predictions;
+BridgeKV~\cite{bridgekv2026} adds nonlinear per-component maps and a second
+low-rank adaptation stage;
+a universal context-reuse layer~\cite{contextreuse2026} reports gains over the
+native target on a long-context benchmark and near-native cross-family handoff;
+HeteroFold~\cite{heterofold2026} and Swarm Telepathy~\cite{swarmtelepathy2026}
+transfer across model families;
+and RaReCache~\cite{rarecache2026} attributes the residual gap to a small set of
+information-dense positions and recomputes them.
+Two features separate that line from this paper.
+The mapper is fitted to receiver behaviour---by distillation, by a behavioural
+objective, by a nonlinear component, or by a trainable correction
+stage---rather than to state distance; and the quality is measured on general
+long-context and agentic benchmarks with a large receiver.
+We cite these works as concurrent: they appeared while this study was being
+written, we do not claim priority over the consumer-space insight several of them
+share with us, and Section~\ref{sec:discussion-reconcile} asks where their results
+and ours can both be true.
+
+\subsection{What counts as evidence of transfer}
+\label{sec:rw-evidence}
+The first contribution of this paper is an evaluation claim, and it is no longer
+ours alone.
+A causal audit~\cite{latentaudit2026} replaces the sender's message at the
+receiver's boundary with controlled substitutes and shows that an aggregate task
+effect does not identify whether the receiver used the content generated for the
+evaluated example.
+PACT-Check~\cite{pactcheck2026} finds that the gains of a trained bridge can be
+reproduced by uninformative sender signals, by self-communication, and by
+receiver-only training, and proposes an accounting that separates them.
+The Functional Cache Divergence of~\cite{funccache2026} shows that a reused cache
+can retain useful task information without reproducing the native model's
+behaviour, and that agreement on the first token does not imply agreement in
+answer content.
+A study of where to spend a repair budget~\cite{repairbudget2026} reports that a
+recomputed cache which stays far from the full-prefill cache is nevertheless the
+better choice, under the name \emph{contextual compatibility}.
+These results and ours are one observation reached from several directions: a
+handed-off state is worth what the receiver does with it, not what it resembles.
+We keep our form of the claim because it is measured on a task rather than on a
+proxy, because it is paired with the arm decomposition of
+Section~\ref{sec:decomp}, and because our content controls break the key--value
+correspondence rather than only the content.
 
 \subsection{KV Cache Optimization}
 \label{sec:rw-kvopt}
@@ -314,6 +402,28 @@ stitching~\cite{bansal2021stitching} modify or combine weights. Our consumption
 adapter is closest in spirit to parameter-efficient adaptation: it adds a small
 low-rank module while the pretrained model and the state mapper stay frozen.
 
+\subsection{Representational Alignment Across Models}
+\label{sec:rw-align}
+The hypothesis that independently trained networks converge on a shared
+representation up to a simple map is the Platonic Representation
+Hypothesis~\cite{prh2024}, and relative representations~\cite{relrepr2022} turn it
+into a communication channel by expressing a state through its distances to a
+shared set of anchors.
+Model stitching~\cite{bansal2021stitching} established that a small learned
+interface can relate two representation spaces functionally.
+Recent work sharpens which part of a representation is expected to converge: a
+structure-over-geometry account~\cite{structuregeo2026} argues that what converges
+is the relational structure rather than the coordinates, and
+MATCHA~\cite{matcha2026} learns layer correspondences jointly with the feature map
+and reports that they are many-to-many bands rather than the depth-proportional
+pairing used here as the default.
+We read this literature as supporting rather than contradicting our conclusion: a
+shared or linearly mappable geometry is what makes a linear translator possible in
+the first place, and our finding is that such a translator can reconstruct the
+state while the receiver still cannot use it.
+The target that the convergence results identify is structure; the target that a
+usable handoff needs is the receiver's own computation.
+
 \subsection{Attention and Positional Structure}
 \label{sec:rw-attn}
 The Transformer~\cite{vaswani2017attention} separates keys (addressing) from
@@ -322,6 +432,19 @@ strip positional structure before mapping keys, and treat the consumer's routing
 ($A=\mathrm{softmax}(QK^{\top})$) and output pathway ($O=AVW_O$) as the objects
 of study.
 
+
+\paragraph{Terms.}
+Three quantities are named in this paper and they are not interchangeable.
+\emph{Reconstruction fidelity} is the distance between a mapped state and the
+state the receiver would have produced itself.
+\emph{Consumer-space alignment} is fitting a mapper on the quantity the receiver
+computes from the state---its attention output, its $o$-projection, or its
+next-token prediction---rather than on the state itself.
+\emph{Functional compatibility} is the property that the receiver answers
+questions from a handed-off state, and it is what our primary metric measures.
+Concurrent work uses \emph{contextual compatibility}~\cite{repairbudget2026} for a
+related but narrower notion, the dependence of usable context on the other
+material in the cache.
 % ============================================================================
 \section{Method}
 
@@ -457,7 +580,7 @@ all four injection arms; parameters are not shared across conditions.
 
 \subsection{Models and pairs}
 \label{sec:models}
-All models are from the Qwen3 family: $0.6$B, $1.7$B, $4$B, and $8$B
+All models are from the Qwen3 family~\cite{qwen3report2025}: $0.6$B, $1.7$B, $4$B, and $8$B
 parameters. The $8$B and $4$B models have $36$ layers and the $1.7$B and $0.6$B
 models have $28$ layers; all use $8$ key/value heads and head dimension $128$,
 with grouped-query attention at the query side. We evaluate all six ordered pairs
@@ -1088,11 +1211,11 @@ adapter's own SQuAD reading follows the calibration mix rather than transfer: it
 reaches $0.556$ under the synthetic-only control and $0.422$ under the mixed one,
 against $0.489$ for the SQuAD-only control, while no transfer arm leaves the floor.
 Extra calibration data is therefore not the binding
-factor; the distribution is. We name the phenomenon \emph{task-conditioned
-functional compatibility}: the same producer--consumer pair is repairable on one
-distribution and not on another. Two caveats remain: the evidence rests on a
-single second domain, and its held-out Self ceiling is $0.20$--$0.40$, which
-bounds how much either fix could demonstrate.
+factor; the distribution is. On the evidence of these two domains we describe the
+same producer--consumer pair as \emph{task-conditioned} functional compatibility:
+it is repairable on one distribution and not on another. Two caveats remain: the
+evidence rests on a single second domain, and its held-out Self ceiling is
+$0.20$--$0.40$, which bounds how much either fix could demonstrate.
 
 \begin{table}[t]
 \centering
@@ -1274,8 +1397,11 @@ run.
 routing (top-1 agreement $0.59$--$0.70$ against attention cosine
 $0.93$--$0.97$), and re-weighting the key fit by the student's attention shrinks
 that divergence by $17$--$43\%$ without moving the task arm
-(Table~\ref{tab:routingkey}). The key-side mismatch is therefore diagnosable and,
-on this evidence, not repairable by routing-space alignment; the value arm never
+(Table~\ref{tab:routingkey}). The key-side mismatch is therefore diagnosable, and
+shrinking it from the routing side does not repair the task arm on this evidence;
+we claim no converse and cannot say that routing compatibility is necessary,
+because no experiment here destroys routing compatibility in a condition that
+otherwise transfers. The value arm never
 sees a mapped key and is not explained by it.
 \emph{(iv) Joint handoff.} A full handoff must satisfy both forms of
 compatibility and is therefore consistently fragile; it does not reliably combine
@@ -1316,6 +1442,57 @@ evaluated within one task distribution, we state the requirement as
 \emph{task-conditioned functional compatibility}: what has to be compatible is
 the producer, the consumer, and the distribution the state was produced on,
 taken together.
+
+\subsection{Why a negative result coexists with positive systems}
+\label{sec:discussion-reconcile}
+Section~\ref{sec:rw-transfer} cited systems that report near-native quality from
+cross-model cache transfer while we report a floor on every teacher arm.
+Both can be true, and the three differences that separate the two settings are
+testable rather than rhetorical.
+
+\emph{The mapper family.}
+Every mapper in this paper is linear: the per-(layer, head) ridge fit, its
+attention-mass reweighting, the two consumer-space objectives, and the
+one-parameter interpolation between them.
+The systems that report recovery use a behavioural objective such as distillation
+from the receiver's own predictions, a nonlinear component, or a trainable
+correction stage.
+Our negative result therefore bounds linear mappers and does not bound
+representation alignment as such.
+That a state can be reconstructible by a linear map and still be unusable is our
+claim; it does not follow that no mapper of any family can transport it.
+
+\emph{The key side is untested under the objective we advocate.}
+We fit the value mapper where the receiver reads value, but for keys we reweight a
+representation-space regression by the student's attention mass.
+That is not the symmetric experiment.
+The symmetric one regresses on the receiver's pre-softmax scores---mapping teacher
+keys so that $Q_S\hat K^{\top}M^{\top}$ approximates $Q_SK_S^{\top}$, a closed-form
+least-squares problem in the same parameter---and we report its absence as a
+limitation of this paper rather than as evidence that the key side cannot be
+repaired.
+
+
+Either outcome would be informative, and we have run neither. If the symmetric
+objective left the key arm at the floor, then matching the receiver's pre-softmax
+scores is not what the routing side needs, and the decomposition would be hiding
+a further query--key interaction. If it recovered the arm, the two sides of the
+handoff would close symmetrically: routing-space alignment for keys and
+consumption-space alignment for values.
+\emph{The task and the metric.}
+Our primary metric is exact match on questions built from a hidden knowledge
+graph, over a small set of test documents; the concurrent systems measure
+long-context, agentic, and retrieval quality.
+Exact match is indifferent to a state that carries most of the answer, and at our
+item count it cannot resolve a partial recovery.
+We therefore read the floor on the teacher arms as a statement about what exact
+match accepts, and we rely on the content controls of Section~\ref{sec:controls}
+and the routing diagnostics of Section~\ref{sec:two-failures} to carry the
+argument independently of the metric.
+
+The three differences also say what we would test first if we extended this work:
+a behavioural key objective, a nonlinear mapper, and a metric that credits partial
+recovery.
 
 \subsection{Limitations}
 \label{sec:limitations}
@@ -1431,12 +1608,18 @@ where the receiver consumes them, however small their raw representation error i
 (the value side). Standard linear maps make teacher state predictable and raise
 teacher-forced likelihood, but under a corrected evaluator those states do not
 answer questions, and content-free caches reproduce the likelihood gains that
-made the transfer look real. Mappers fit in the consumer's space recover the value
-arm on the equal-depth pair without touching a single consumer weight---which the
-error budget confirms is the right target, since raw representation error does not
+made the transfer look real.
+Rather than the presence of a receiver-aware translator---which concurrent work
+now provides---the contribution is the decomposition, the audit of the proxy this
+literature evaluates with, an error law in which state-space and consumer-space
+error disagree in sign, and the boundary we can and cannot cross.
+Mappers fit in the consumer's space recover the value
+arm on the equal-depth pair without touching a single consumer weight---the error
+budget identifies that space as the target, since raw representation error does not
 rank the mappers by task performance while error measured where the receiver reads
 the state does---and a small rank-8 adaptation of the student's output projections
-recovers most of the K, V, and joint arms there. On the flagship pair the frozen
+serves as an intervention showing the arm is repairable there. On the flagship
+pair the frozen
 adapter reads the injected content on the equal-depth pair but not on the
 flagship one, where the margin stays inside our pre-registered noise band, and on
 a second domain neither the mapper nor the adapter repairs anything even when
@@ -1544,10 +1727,9 @@ Geoffrey Hinton, Oriol Vinyals, and Jeff Dean.
 \newblock {\em arXiv preprint arXiv:1503.02531}, 2015.
 
 \bibitem{lee2026translators}
-Jin-woo Lee, Minkyung Song, Junghyun Oh, Seunghoon Han, Soyoung Park, Gwangseon
-  Jang, and Sungsu Lim.
-\newblock Mixture-of-translators: Translating kv caches across heterogeneous
-  large language models.
+Jin-woo Lee, Minkyung Song, Junghyun Oh, Seunghoon Han, Gwangseon Jang, Soyoung
+  Park, and Sungsu Lim.
+\newblock Kv cache translation across heterogeneous large language models.
 \newblock {\em arXiv preprint arXiv:2607.28979}, 2026.
 
 \bibitem{leviathan2023fast}
@@ -1597,6 +1779,115 @@ Hugo Touvron, Thibaut Lavril, Gautier Izacard, et~al.
 Ashish Vaswani, Noam Shazeer, Niki Parmar, et~al.
 \newblock Attention is all you need.
 \newblock {\em Advances in Neural Information Processing Systems}, 30, 2017.
+
+\bibitem{cachebridge2026}
+Xingyu Qu, Siyuan Lu, Zhiyu Chen, Sheng Wang, and Tao Lin.
+\newblock Cachebridge: Efficient cross-model kv transfer for multi-model llm
+  serving.
+\newblock {\em arXiv preprint arXiv:2609.00891}, 2026.
+
+\bibitem{acct2026}
+Yuzhe Liu, Haolin Tian, and Tonghan Wang.
+\newblock Acct: Asymmetric cross-llm context transfer.
+\newblock {\em arXiv preprint arXiv:2610.42116}, 2026.
+
+\bibitem{cachelink2026}
+Haomiao Qiu, Yining Tang, Zijia Song, Ruizi Han, Ziyue Qiao, and Miao Zhang.
+\newblock Cachelink: Functional kv transport for zero-prefill cross-model context
+  handoff.
+\newblock {\em arXiv preprint arXiv:2610.15509}, 2026.
+
+\bibitem{kvlingo2026}
+Val{\'e}rie Castin, Keitaro Sakamoto, Anastasiia Filippova, Jo{\~a}o Monteiro,
+  Marco Cuturi, and Pierre Ablin.
+\newblock Kv-lingo: Learning kv-cache translators with distillation.
+\newblock {\em arXiv preprint arXiv:2609.32610}, 2026.
+
+\bibitem{bridgekv2026}
+Payman Behnam, Debopam Sanyal, Pranav Ponnusamy, Kusum Meda Ravi, Pranav Sastry,
+  Mani Chandana Bandaru, Alind Khare, Myungjin Lee, and Alexey Tumanov.
+\newblock Bridgekv: Large-model prefill and small-model decoding for llm inference
+  via kv cache translation.
+\newblock {\em arXiv preprint arXiv:2611.11761}, 2026.
+
+\bibitem{contextreuse2026}
+Yi Li, Dongming Jiang, Yi Zhao, and Bingzhe Li.
+\newblock A universal context-reuse layer for cross-model kv sharing.
+\newblock {\em arXiv preprint arXiv:2608.30963}, 2026.
+
+\bibitem{heterofold2026}
+Vincent-Daniel Yun, Woosang Lim, Haneul Yoo, Sungjoo Yoo, Murali Annavaram, and
+  Sai Praneeth Karimireddy.
+\newblock Prefill-free cross-family kv cache transfer for heterogeneous multi-agent
+  llms.
+\newblock {\em arXiv preprint arXiv:2609.32259}, 2026.
+
+\bibitem{swarmtelepathy2026}
+Abdulrahman Alabdulkareem, Irene Tenison, Yang Zhang, Yada Zhu, Boris Katz, and
+  Dan Gutfreund.
+\newblock Swarm telepathy: Prefill-free kv-cache transfer across families.
+\newblock {\em arXiv preprint arXiv:2610.15095}, 2026.
+
+\bibitem{rarecache2026}
+Sreetama Sarkar, Saptarshi Mitra, Sitao Huang, Souvik Kundu, and Peter~A. Beerel.
+\newblock Rarecache: Bridging the gap in cross-model kv cache reuse via rank
+  disagreement-based selective recomputation.
+\newblock {\em arXiv preprint arXiv:2610.11358}, 2026.
+
+\bibitem{pactcheck2026}
+Zhenyi Shen, Junru Lu, Wei Liu, Jiangnan Ye, Jiazheng Li, Di Yin, Xing Sun,
+  Tameem Adel, Yali Du, Lin Gui, and Yulan He.
+\newblock On the opportunities and challenges of prefill-to-autoregressive
+  cross-model transfer.
+\newblock {\em arXiv preprint arXiv:2611.06976}, 2026.
+
+\bibitem{latentaudit2026}
+Huixiang Zhang and Mahzabeen Emu.
+\newblock Do latent channels actually communicate? a causal audit of latent
+  multi-agent llm.
+\newblock {\em arXiv preprint arXiv:2607.26773}, 2026.
+
+\bibitem{funccache2026}
+Zhikun Tao, Fangyong Jin, and Junping Zhao.
+\newblock Can kv cache be reused across model updates? a deepseek-v4-flash case
+  study.
+\newblock {\em arXiv preprint arXiv:2611.14051}, 2026.
+
+\bibitem{repairbudget2026}
+Yuxing Peng, Zhiqing Tang, and Weijia Jia.
+\newblock Where should a kv-cache repair budget go? distractor structure and
+  contextual compatibility in non-prefix reuse.
+\newblock {\em arXiv preprint arXiv:2611.06397}, 2026.
+
+\bibitem{matcha2026}
+Alina Sudakov, Guy Bar-Shalom, Fabrizio Frasca, and Haggai Maron.
+\newblock Learning cross-model activation alignments with explicit many-to-many
+  layer maps.
+\newblock {\em arXiv preprint arXiv:2610.09058}, 2026.
+
+\bibitem{prh2024}
+Minyoung Huh, Brian Cheung, Tongzhou Wang, and Phillip Isola.
+\newblock The platonic representation hypothesis.
+\newblock In {\em International Conference on Machine Learning}, 2024.
+\newblock arXiv:2405.07987.
+
+\bibitem{structuregeo2026}
+Junwon You, Mihyun Jang, Sangwoo Mo, and Jae-Hun Jung.
+\newblock What converges in the platonic representation hypothesis? structure over
+  geometry.
+\newblock {\em arXiv preprint arXiv:2609.27252}, 2026.
+
+\bibitem{relrepr2022}
+Luca Moschella, Valentino Maiorca, Marco Fumero, Antonio Norelli, Francesco
+  Locatello, and Emanuele Rodol{\`a}.
+\newblock Relative representations enable zero-shot latent space communication.
+\newblock In {\em International Conference on Learning Representations}, 2023.
+\newblock arXiv:2209.15430.
+
+\bibitem{qwen3report2025}
+An Yang, Anfeng Li, Baosong Yang, et~al.
+\newblock Qwen3 technical report.
+\newblock {\em arXiv preprint arXiv:2505.09388}, 2025.
 
 \end{thebibliography}
 

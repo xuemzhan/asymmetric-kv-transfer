@@ -20,7 +20,11 @@ paper/*.aux
 paper/*.log
 paper/*.out
 paper/main.pdf
+paper/main_zh.pdf
 paper/*.bbl
+paper/arxiv_submission/*.aux
+paper/arxiv_submission/*.log
+paper/arxiv_submission/*.out
 paper/*.blg
 paper/main.bcf
 paper/main.run.xml

@@ -1,8 +1,10 @@
 """A4: state-space vs consumption-space error budget (audit3 section 11).
 
-The paper's central mechanism claim is that raw representation alignment is
+The paper's central mechanism claim is that raw representation fidelity is
 insufficient and alignment in the receiver's consumption space is what tracks
-task performance, but `tab:mappers` only reports EM. This script puts the
+task performance (W36: "fidelity", not "alignment" — the paper claims no more
+than that state-space distance fails to predict usability). `tab:mappers` only
+reports EM. This script puts the
 missing quantities next to it, for every mapper variant on the same run:
 
   e_raw  = ||V_hat - V_S||_F^2            / ||V_S||_F^2

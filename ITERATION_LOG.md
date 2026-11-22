@@ -1422,3 +1422,196 @@ learned 层选择**不能**救 V。B1 结论两对一致：LL 对 layer map 的�
 另外做了一次"替换尾行残留"的**全量审计**（本轮我的范围替换又出现两次：Table 4 表注、
 `arxiv_metadata` 的 `.bbl` 句，均已修正），六个改动文件均无残留重复行，`main.tex` 的
 table/figure/tabular 环境与花括号、`$` 全部配平。
+
+---
+
+## W33 (2026-09-21): 作者信息落地 + 中文译本 + 双语 PDF（无实验、无数字改动）
+
+- **作者落地**：`paper/main.tex` 与 `paper/arxiv_submission/main.tex` 的标题块填入五位作者
+  —— Zhang Xuemin `zxm0813@gmail.com`、Zhong Liheng `lihengzhong@berkeley.edu`、
+  Hu Liangbin `huliangbing2000@163.com`、Yu Junpeng `yujunpeng@cetc.com.cn`、
+  Yi Kun `yikun@cetc.com.cn`，并同步 `pdfauthor`。两处 `Anonymous Author(s)` 已不存在
+  （`arxiv_metadata.md` 里 W32 登记的 BLOCKING 项就此关闭）。作者块用五列
+  `\author{...\and...}` + 每人一个 `\thanks` 邮箱脚注；**未提供单位/资助**，故未填。
+- **副作用：页数 26 → 27**（首页作者脚注占位），`arxiv_metadata.md` 的 Comments 与打包
+  复验记录已同步。
+- **摘要串行回归修复**：W32 的范围替换把摘要末句写坏——原文被拼成
+  `$85$ documents` + `volume that binds;` + 重复句 `All experiments are`。按
+  `arxiv_metadata.md` 的 W32 镜像（该镜像本身是完好的）恢复原句：
+  "…and $85$ documents mixing both still fail, so it is the distribution rather than the
+  calibration volume that binds. We name this \emph{task-conditioned} functional
+  compatibility."。只改句子组织，**不涉任何数字、结论或口径**；同时修掉 W32 遗留的
+  "All experiments are" 重复。
+- **中文译本**：新增 `paper/main_zh.tex`（`ctex` + XeTeX，`fontset=windows`；正文宋体、
+  标题黑体），编译产物 `paper/main_zh.pdf`——27 页、11 表、8 图，图表沿用英文稿同一批矢量
+  PDF，参考文献保持英文原样，标签/引用/附录结构与英文稿一一对应。正文首页加一行说明
+  "本文为同名英文稿的中文译本"。
+- **新守卫 `paper/audit/verify_zh_parity.py`**：断言中文稿与英文稿在**数字字面量（1297 个）**、
+  `\label`（49）、`\ref`（67）、`\eqref`（1）、`\cite` 键（15）、`\bibitem` 顺序（18）、
+  图环境（8）、表环境（11）、每张表的行数、`\section` 数（10）上逐一对应。首次运行即抓出
+  翻译时多写的一个 `$0$`（"接近 $0$ 或等于 $0$" → "接近或等于 $0$"），修后 exit 0。
+  该守卫把"翻译不得改动数字"从约定变成可执行断言。
+- **元数据/文档同步**：`paper/arxiv_metadata.md` 补作者段（含"未提供单位"的边界说明、
+  中文版不属于 arXiv 包）、Comments 改 27 页、复验记录更新到 W33；`README.md` 的结构清单
+  与构建说明补上中文版（含 ctex/中文字体依赖与 parity 守卫），Status 段从
+  "anonymous draft / 24 pages" 更正为"五位作者 / 27 页"。
+- **验证（全部本机）**：`verify_zh_parity.py`、`scripts/verify_corrected_paper.py`、
+  `verify_audit2/3/4_edits.py` 全部 exit 0；`tests/test_stats_utils.py` exit 0
+  （需 `PYTHONIOENCODING=utf-8`，否则打印 ✓ 时触发 GBK 编码错，属环境问题非测试失败）；
+  `tests/test_w2_baseline_fix.py` 因缺 8B 模型快照 SKIP。三份 PDF（`paper/main.pdf`、
+  `paper/main_zh.pdf`、`paper/arxiv_submission/main.pdf`）Tectonic 编译 0 error、
+  0 undefined reference/citation、0 Overfull、0 缺字；`main.tex` 与
+  `arxiv_submission/main.tex` 逐字节一致（守卫 SYNC 通过）；中英 PDF 的矢量图元完全相同
+  （各 1448 drawing，同页码分布），确认中文稿没有丢图。
+- **仍未做（如实记录）**：作者单位、通讯作者标注、致谢与资助信息未提供，故留空；
+  中文稿未套期刊/会议双栏模板，也未做术语表或中英对照排版。
+
+---
+
+## W34 (2026-11-22): 两个月后外部文献复审（audit5）+ 邮箱更正
+
+- **触发**：W33 冻结（2026-09-21）后两个月论文未动、未投 arXiv。本次不重跑实验、
+  不改任何实验数字，只做（a）全网文献复审与新颖性判断，（b）一处作者信息更正。
+- **检索**：arXiv OAI API，窗口 `submittedDate:[202606010000 TO 202611300000]`，
+  8 组宽扫 + 7 组定向查询。四条核心引用（`heo2026crossmodel` / `fu2026c2c` /
+  `dery2026latentalign` / `lee2026translators`）用 `id_list` 逐条回查，**全部真实存在**；
+  唯一偏差是 `lee2026translators` 题名与 arXiv 现题名不符（MoT 是方法名）。
+- **复审结论（写入 `paper/audit/audit5_external_2026-11.md`）**：
+  (i) C1（likelihood 不是 transfer 证据）被 PACT-Check `2611.06976`、
+  因果审计 `2607.26773`、Functional Cache Divergence `2611.14051` 独立复现，
+  从"我们的实现有 bug"升级为"这条线的评估范式有系统性缺陷"——**目前最值钱的资产**；
+  (ii) C3（消费空间对齐）的独立发现权被 CacheLink `2610.15509`、KV-Lingo `2609.32610`
+  占据，C4（mapper + 小 adapter）被 BridgeKV `2611.11761` 覆盖，新颖性窗口已关闭一半；
+  (iii) 本文负结果与 CacheBridge `2609.00891`、ACCT `2610.42116`、
+  Universal Context-Reuse Layer `2608.30963` 等正结果直接冲突，冲突点落在
+  "mapper 仅线性 / 严格 EM + 单一合成域 / K 侧从未用行为目标"三条软肋上；
+  (iv) 口号 `representation alignment is the wrong target object` 未与 PRH
+  (`2405.07987`) 及其"结构 over 几何"版本 `2609.27252` 对话；(v) 层映射设定与
+  MATCHA `2610.09058`（many-to-many band）脱节。
+- **处置建议（未执行，待决策）**：P0 五条为纯写作改动（Related Work 三组补齐、
+  贡献重排、Discussion 新增冲突解释节、修题名与补 Qwen3 技术报告引用、
+  C4 口径收窄到 equal-depth）；P1 四条需 1–2 GPU-day（K 侧 logit 空间闭式最小二乘、
+  非线性 mapper 对照、many-to-many 层映射对照、answer-margin 指标）；P2 四条为加分项。
+  投稿策略建议 TMLR 优先。
+- **邮箱更正**：Yi Kun `yikun@cetc.com.cn` → `yikun@bit.edu.cn`，四处同步：
+  `paper/main.tex`、`paper/arxiv_submission/main.tex`（由 `main.tex` 复制，逐字节一致）、
+  `paper/main_zh.tex`、`paper/arxiv_metadata.md` 的作者清单。本条为 W33 记录的
+  后续事实，W33 段内的旧邮箱按历史如实保留、不回改。
+- **验证**：`verify_zh_parity.py`、`scripts/verify_corrected_paper.py`、
+  `verify_audit2/3/4_edits.py` 全部 exit 0（邮箱不改变数字与 label 计数，parity 不受影响）；
+  `main.tex` 与 `arxiv_submission/main.tex` SHA256 一致。
+- **未做（如实记录）**：本机无 LaTeX（`tectonic`/`pdflatex`/`xelatex` 均缺失），
+  三份 PDF **未重新编译**，页面上的旧邮箱要等有 TeX 的机器重编译后才会更新；
+  论文正文一个字未改，audit5 的建议均未落地。
+
+---
+
+## W35 (2026-11-22): audit5 的 P0 全部落地 + 三份 PDF 重编译
+
+- **触发**：用户要求「基于上述意见修改论文然后重新生成 pdf」。本机无 GPU
+  （`nvidia-smi` 缺失、`torch 2.14.0+cpu`、`cuda_available=False`），故 P1/P2 的
+  四条实验（K 侧行为目标、非线性 mapper、many-to-many 层映射、answer-margin）
+  **一条也没跑**；本轮只落地 P0 的纯写作改动，且未改动任何实验数字。
+- **工具链**：本机原本没有任何 LaTeX。下载 Tectonic 0.17.0（`x86_64-pc-windows-msvc`）
+  到 `$PI_SCRATCH_DIR/tectonic`，bundle 缓存指向 `$PI_SCRATCH_DIR/tectonic-cache`，
+  不污染工作区与系统目录。
+- **正文改动（英文 `paper/main.tex`，中文 `paper/main_zh.tex` 一一对应）**：
+  1. **§2.1 扩写**：在原有四条引用后新增同期系统段（CacheBridge / ACCT / CacheLink /
+     KV-Lingo / BridgeKV / Universal Context-Reuse Layer / HeteroFold /
+     Swarm Telepathy / RaReCache），并明确「作为同期工作引用、不主张消费空间洞见的
+    优先权」，指向新的 §7.3。
+  2. **新增 §2.2「什么才算迁移的证据」**：把 PACT-Check、因果审计、
+     Functional Cache Divergence、repair-budget 四篇与本文 C1 的关系写清楚——
+     独立同向、互为背书。
+  3. **新增 §2.5「跨模型表示对齐」**：PRH、relative representations、model stitching、
+     structure-over-geometry、MATCHA。把口号与整条表示对齐文献接通，并说明本文的结论
+     是「支持而非否定」（线性可映射的几何是线性翻译器得以存在的前提）。
+  4. **新增术语段（`\paragraph{Terms.}`）**：重建保真度 / 消费空间对齐 /
+     功能兼容性 / 上下文兼容性四者显式区分。
+  5. **贡献 3 降级**：明确「目标对象不是我们首提」，本文补的是闭式实例、误差预算与
+     四臂分解。
+  6. **贡献 4 收窄**：修复主张限定为「单一任务分布内的等深对」，旗舰对写为开放问题。
+  7. **新增 §7.3「为什么一个负结果能与多个正面系统同时成立」**：逐条写出 P0 要求的三处
+     可检验差异——(a) 本文 mapper 全为线性、竞争工作是行为目标/非线性/可训练修正；
+     (b) 键侧从未在本文自己主张的目标下检验，对称做法是
+     $Q_S\hat K^{\top}M^{\top}\approx Q_SK_S^{\top}$ 的闭式最小二乘；
+     (c) 严格 EM + 单一合成域 vs 通用长上下文/agent 基准。并把三条差异写成
+     「若继续做会先测什么」。
+  8. **`lee2026translators` 题名修正**：改为 arXiv 现题名
+     「Kv cache translation across heterogeneous large language models」，
+     作者顺序按 arXiv 更正（Gwangseon Jang 在 Soyoung Park 之前）。
+  9. **补 Qwen3 技术报告引用**（`qwen3report2025`，arXiv:2505.09388）于 §4.1。
+  10. **新增 18 条参考文献**（作者、年份、arXiv 号均经 arXiv `id_list` 回查，无编造），
+      文献表 18 → 36 条；新条目追加在 `\end{thebibliography}` 前，既有条目顺序未动。
+- **一处守卫回退与恢复**：重写 §2.1 时删掉了
+  「our legacy task evaluator could report apparent transfer…」与
+  「teacher-forced likelihood alone is insufficient evidence of…」两句，
+  `verify_audit4_edits.py` 的 T5 `present()` 断言随即失败。判断这两句内容本身正确、
+  属于 T5 要求保留的措辞，故**恢复**（并把中文稿的对应句一并补全），而不是放宽守卫。
+- **验证（全部本机）**：
+  - 编译：`paper/main.pdf` 30 页（原 27）、`paper/main_zh.pdf` 30 页、
+    `paper/arxiv_submission/main.pdf` 30 页，三份均 0 error、0 undefined
+    reference/citation、0 Overfull `\hbox`、0 LaTeX Warning、0 缺字；
+  - 图形完整性：三份 PDF 的 FormXObject 均为 16、ImageXObject 均为 0，
+    中英矢量内容一致，未丢图；
+  - `main.tex` 与 `arxiv_submission/main.tex` SHA256 一致；
+  - 五个守卫（`verify_zh_parity` / `verify_corrected_paper` / `verify_audit2/3/4_edits`）
+    全部 exit 0；中文 parity 计数：数字 1333、label 52、ref 72、eqref 1、
+    cite 37、bibitem 36、图 8、表 11、章节 10，逐项与英文稿相等。
+- **文档同步**：`paper/arxiv_metadata.md`（页数 27→30、文献 18→36、Comments 字段、
+  复验记录）、`README.md` 的 Status 段（27→30 页，并把未做的 GPU 工作指向 audit5）。
+- **仍未做（如实记录）**：audit5 的 P1（K 侧 logit 空间闭式最小二乘、非线性 mapper
+  对照、many-to-many 层映射对照、answer-margin 指标）与 P2（seed 增至 5、系统延迟
+  测量、换 ceiling 更高的第二域、arXiv 提交清单三项）全部未做——本机无 GPU、无模型
+  推理环境。论文正文的实验数字一个字未改。
+
+---
+
+## W36 (2026-11-22): 按 audit6 审稿结论定稿 —— 撤"necessary"、重排 novelty、换标题
+
+- **触发**：`paper/audit/audit6.md`（模拟 ICLR/NeurIPS 审稿，6/10 Weak Accept）
+  给出三条必须改的优先级项；审稿人明确说「此时已经不应该继续堆大量实验」。
+  处置记录见新建的 `paper/audit/response_to_audit6.md`。
+- **第一优先级（audit6 §6/§12/§13）：撤掉 key-side 的 "necessary"**。
+  Abstract、贡献 2、Discussion 7.1(iii) 三处把
+  "necessary but not sufficient" 全部改成 "routing alignment alone is not
+  sufficient"，并显式写出「没有做逆命题实验，因此不主张必要性」。
+  **保留** Analysis 6.1 的 "Layer alignment is therefore necessary but not
+  sufficient"——那句指层映射，证据形态是「破坏后崩溃」（V-only EM 0.911→0.107–0.232，
+  聚类区间不重叠），与 routing 的情形不同。
+- **第二优先级（audit6 §5/§10）：novelty 重排为四项而不是 mapper/adapter**。
+  Introduction 的 enumerate 后新增总结段（decomposition + proxy audit +
+  consumer-space error law + task-conditioned boundary，并写明
+  "what this paper claims is not a new translator"）；贡献 3 改题为
+  "An error law for the consumer space"、贡献 4 改题为
+  "Repairability, used as an intervention"（接受审稿人给的定位：
+  适配器是证明可修复性的干预，不是提出的方法）；Conclusion 同步。
+- **第三优先级（audit6 §9）：换标题**。
+  *Cross-Model KV Transfer Needs Functional Compatibility: Why Representation
+  Alignment Is Not Enough* → ***Beyond Representation Fidelity: Functional
+  Compatibility for Cross-Model KV Transfer***。理由：本文击破的是 state
+  reconstruction **fidelity**，不是 alignment 这一整条线；旧标题与 §2.5、
+  Discussion 7.1 的立场自相矛盾。同步 `\title`/`pdftitle`/`pdfkeywords`/文件头
+  注释、中文稿标题块与元数据、`arxiv_submission/main.tex`、`README.md`、
+  `arxiv_metadata.md`（含其 ASCII 摘要镜像的三处改动）。
+- **连带项（audit6 §8）**：`task-conditioned` 从「命名一个定律」降为
+  「证据支持的解释」——Abstract 与 §5.5 各改一处措辞，摘要镜像同步。
+- **守卫更新**：`verify_audit4_edits.py` 的 T1 与 T2 断言随正文失效，按既有惯例
+  重指向新措辞并加注释（T1 新增 `TITLE_W35`/`TITLE_W33` 双向断言，
+  检查强度只增不减；T2 换成两个新贡献标题）。其余四个守卫未改动。
+- **代码**：`experiments/phaseB_errorbudget.py` 的 docstring 从
+  "raw representation alignment" 改为 "raw representation fidelity" 并注明原因；
+  `py_compile` 通过。
+- **验证（全部本机）**：Tectonic 0.17.0 编译三份 PDF —— `paper/main.pdf` 30 页、
+  `paper/main_zh.pdf` 31 页、`paper/arxiv_submission/main.pdf` 30 页，
+  均 0 error / 0 undefined / 0 Overfull / 0 LaTeX Warning / 0 缺字；
+  中文 parity 数字 1334、label 52、ref 72、eqref 1、cite 37、bibitem 36、
+  图 8、表 11、章节 10，与英文稿逐项相等；五个守卫全部 exit 0；
+  `main.tex` 与 `arxiv_submission/main.tex` SHA256 一致。
+  过程中修掉了四处自己引入的重复行/误删行（两处英文、两处中文），均由守卫与
+  编译日志捕获后修复。
+- **仍未做（如实记录）**：audit6 §7 的对称 pre-softmax key mapper
+  （`Q_S K̂ᵀ Mᵀ ≈ Q_S K_Sᵀ` 闭式最小二乘）与 §8 的 controlled distribution
+  shift 都没跑——本机无 GPU（`nvidia-smi` 缺失、`torch 2.14.0+cpu`）。前者以
+  「明确局限 + 两种可能结果的解读」写入 Discussion 7.3，未被静默略过。
+  audit5 的 P1/P2 八条同样仍未做。稿件中的实验数字一个未改。

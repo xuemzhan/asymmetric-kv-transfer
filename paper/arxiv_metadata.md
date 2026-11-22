@@ -1,6 +1,12 @@
 # arXiv Submission Metadata
 
-Prepared 2026-09-12; metadata and abstract re-synced with `paper/main.tex` on 2026-09-19.
+Prepared 2026-09-12; metadata and abstract re-synced with `paper/main.tex` on
+2026-09-19; author block filled in and the abstract mirror re-checked against
+`paper/main.tex` on 2026-09-21 (W33); page count and bibliography size re-checked
+after the 2026-11-22 related-work revision (W35); title, abstract mirror and page
+count re-checked after the audit6 submission revision (W36: retitled, the
+"necessary" claim withdrawn, the mapper and the adapter demoted from headline
+contributions).
 
 ## Files to upload
 
@@ -16,26 +22,38 @@ figures/fig_layers.pdf
 figures/fig_sweep.pdf
 ```
 
-No `.bbl` is required: the bibliography is inline (`thebibliography`, 18
+No `.bbl` is required: the bibliography is inline (`thebibliography`, 36
 entries). The bundle compiles standalone from an empty directory with no other
 repository files present (re-verified in W32 with Tectonic 0.17.0: 26 pages, 0
-errors, 0 undefined references or citations).
+errors, 0 undefined references or citations; re-verified in W33 after the author
+block was filled in: 27 pages; re-verified in W35 after the audit5 related-work
+revision: 30 pages, 0 errors, 0 undefined references or citations).
 
 ## Title
 
-Cross-Model KV Transfer Needs Functional Compatibility: Why Representation
-Alignment Is Not Enough
+Beyond Representation Fidelity: Functional Compatibility for Cross-Model KV
+Transfer
 
 ## Authors
 
-**BLOCKING.** arXiv does not accept anonymous submissions. The bundle currently
-reads `Anonymous Author(s)` in two places:
+Supplied and landed in W33; `paper/main.tex` and
+`paper/arxiv_submission/main.tex` carry the same block (they are byte-identical),
+and `pdfauthor` was updated to match. Order as given:
 
-- `main.tex` line 40: `\author{Anonymous Author(s) \\ \texttt{anonymous@example.com}}`
-- `main.tex` line 31: `pdfauthor={Anonymous Author(s)}`
+1. Zhang Xuemin — `zxm0813@gmail.com`
+2. Zhong Liheng — `lihengzhong@berkeley.edu`
+3. Hu Liangbin — `huliangbing2000@163.com`
+4. Yu Junpeng — `yujunpeng@cetc.com.cn`
+5. Yi Kun — `yikun@bit.edu.cn`
 
-Supply the real author list (names, affiliations, emails, order) and both will
-be updated.
+The block is a five-column `\author{...\and...}` list with each address as a
+`\thanks` footnote on page 1, so no affiliation block is implied: affiliations
+were not supplied. If affiliations are needed for arXiv, they must be added
+here and in `main.tex` together.
+
+The Chinese edition of the paper (`paper/main_zh.tex`, `paper/main_zh.pdf`) is a
+translation of the same source and carries the same author block; it is not part
+of this arXiv bundle.
 
 ## Categories
 
@@ -43,8 +61,7 @@ be updated.
 - Cross-list: `cs.CL`, `cs.AI`
 
 ## Comments field
-
-Suggested: `26 pages, 11 tables, 8 figures. Code and result summaries accompanying the paper.`
+Suggested: `30 pages, 11 tables, 8 figures. Code and result summaries accompanying the paper.`
 
 **OPEN:** no repository URL is cited anywhere in the paper. The git remote for
 this working copy is `https://github.com/xuemzhan/asymmetric-kv-transfer`. Add
@@ -90,7 +107,9 @@ key-value correspondence instead of permuting both drives EM to 0.000, so the
 evaluator does detect content corruption. SQuAD replicates the negative result
 (Self 0.367; K-only, V-only, and Joint 0.000; K-only dLL +5.24).
 
-The failure lies in how the receiving model reads the state. Under a mapper fit in
+The failure lies in how the receiving model reads the state. We decompose the
+receiver's output perturbation into a routing term and a consumption term, and the
+four injection arms switch them on and off. Under a mapper fit in
 representation space, layer alignment looks irrelevant: scrambling the layer map
 costs nothing. Under a mapper fit in consumption space the same scrambling
 collapses V-only EM from 0.91 to 0.11-0.23, so the earlier null result was a floor
@@ -98,8 +117,8 @@ effect of the mapper and alignment does matter once the consumer reads the state
 correctly. Two failures are kept apart below: under mapped teacher keys the
 student's top-1 attention agreement with its own routing is 0.59-0.70 (a key-side
 diagnostic), and a routing-aware key mapper that shrinks routing divergence by
-17-43% still leaves the key arm at the floor, so closing the routing gap is
-necessary but not sufficient; the value arm, which never sees a mapped key, is
+17-43% still leaves the key arm at the floor, so routing alignment alone is not
+sufficient; the value arm, which never sees a mapped key, is
 limited by how the receiver consumes it. Fitting the value mapper where the
 student reads value
 raises V-only EM from 0.113 to 0.90-0.94 (1.7B->0.6B) and from 0.000 to 0.25-0.27
@@ -126,14 +145,15 @@ domains, and on SQuAD it does not reappear within one either: retrained on SQuAD
 calibration documents, every transfer arm still answers 0.000 of the held-out
 questions across three document splits; a calibration set of the same size drawn
 from the other domain fails identically, and 85 documents mixing both still fail,
-so it is the distribution rather than the calibration volume that binds. We name
-this task-conditioned functional compatibility. All experiments are within a
+so it is the distribution rather than the calibration volume that binds. We read
+this as evidence that functional compatibility is task-conditioned rather than a
+property of the model pair. All experiments are within a
 single model family, and the adapter is trained on the task distribution it is
 evaluated on.
 
 ## Pre-submission checklist
 
-- [ ] Real author list substituted (2 places; see above)
+- [x] Real author list substituted (2 places; see above) — W33
 - [ ] License selected
 - [ ] Repository URL added, or the omission deliberately accepted
 - [ ] Endorsement for the primary category, if required

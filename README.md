@@ -1,14 +1,18 @@
 # Asymmetric KV Transfer (V3)
 
-Research artifact for the paper **“Cross-Model KV Transfer Needs Functional Compatibility:
-Why Representation Alignment Is Not Enough”** (`paper/main.tex`).
+Research artifact for the paper **“Beyond Representation Fidelity: Functional
+Compatibility for Cross-Model KV Transfer”** (`paper/main.tex`).
 
 We revisit KV-cache transfer between language models within the Qwen3 family
 (0.6B–8B, six teacher–student pairs, three seeds). The artifact contains a
 diagnostic **negative result** — under a corrected evaluator, teacher KV does
-not transfer task performance — followed by a constructive **consumption-side
-fix** that recovers much of it by changing how the receiving model reads the
-state.
+not transfer task performance. The paper's contribution is not a new translator:
+it is (i) a four-arm decomposition of the handoff into a routing term and a
+consumption term, (ii) a causal audit of teacher-forced likelihood as evidence,
+(iii) an error law in which state-space and consumer-space error disagree in
+sign, and (iv) a boundary result in which the same pair is repairable on one
+distribution and not on another. A small consumer-side adapter appears as an
+intervention that establishes repairability, not as a proposed method.
 
 ## Headline findings
 
@@ -26,9 +30,10 @@ state.
   all-zero cache (+2.75) reproduce 89–105% of the K-only LL gain while each
   yields EM ≈ 0.
 - **Two separate failures.** Mapped teacher keys perturb routing (top-1 attention
-  agreement 0.59–0.70) and a routing-aware key mapper that shrinks that divergence
   by 17–43% still leaves K-only EM at the floor (at most 0.089 against a Self of
-  0.899), with its shuffled-target control not worse; the value arm is limited by
+  0.899), with its shuffled-target control not worse, so routing alignment alone
+  is not sufficient; no experiment here tests the converse, so necessity is not
+  claimed. The value arm is limited by
   how the receiver consumes it. Consumption-space (output-aware / W_O-aware) value
   mappers raise V-only EM from 0.113 to 0.90–0.94 (1.7B→0.6B) and from 0.000 to
   0.25–0.27 (8B→0.6B), while a shuffled-target mapper stays at 0.08/0.07.
@@ -39,7 +44,7 @@ state.
   attention-output and o-projection error are strongly negatively related with
   bootstrap intervals disjoint from the raw interval in every run; the only
   negative pooled raw value (−0.267) is a between-pair scale artifact.
-- **A small adapter restores transfer.** A rank-8 correction of the student's
+- **A small adapter, used as an intervention, restores transfer.** A rank-8 correction of the student's
   output projections (~0.7M params), trained by next-token cross-entropy under
   injected teacher KV, restores K/V/Joint EM to 0.94/0.94/0.83 (1.7B→0.6B) and
   0.79/0.36/0.47 (8B→0.6B).
@@ -78,6 +83,7 @@ state.
 │   └── archive/          #   superseded v1 reports
 ├── paper/                # Paper sources
 │   ├── main.tex          #   canonical, self-contained paper
+│   ├── main_zh.tex       #   Chinese edition of the same paper (main_zh.pdf)
 │   ├── arxiv_submission/ #   arXiv bundle
 │   ├── figures/          #   active PDFs + gen_paper_figures.py
 │   ├── audit/            #   audit1-4, revision plans, paper-number guards
@@ -159,12 +165,29 @@ root.
 vector PDFs in `paper/figures/`. Build with any LaTeX toolchain, e.g.:
 
 ```bash
-cd paper
-pdflatex main && bibtex main && pdflatex main && pdflatex main
+powershell -File tools/compile_paper.ps1
 ```
 
-On Windows the bundled Tectonic wrapper is `tools/compile_paper.ps1`
-(`powershell -File tools/compile_paper.ps1`).
+`tools/compile_paper.ps1` is the single build entry point. It refreshes
+`paper/arxiv_submission/main.tex` from `paper/main.tex` (asserting the two stay
+byte-identical), then builds all three editions with the bundled Tectonic 0.17.0
+binary and prints a page count plus the undefined-reference, overfull-box,
+LaTeX-warning and missing-glyph counts for each:
+
+| target | source | output |
+|---|---|---|
+| English edition | `paper/main.tex` | `paper/main.pdf` |
+| Chinese edition | `paper/main_zh.tex` | `paper/main_zh.pdf` |
+| arXiv bundle | `paper/arxiv_submission/main.tex` | `paper/arxiv_submission/main.pdf` |
+
+Pass `-SkipArxiv` to skip the third build. The compiled PDFs are gitignored: the
+sources are the deliverable.
+
+The Chinese edition uses the `ctex` package, so it needs the XeTeX engine and a
+CJK font set; Tectonic handles both. It mirrors `paper/main.tex` number for
+number: `paper/audit/verify_zh_parity.py` asserts that every numeric literal,
+label, reference, citation, bibliography entry, figure and table of the English
+edition reappears in the Chinese one.
 
 ## Reproducibility and provenance
 
@@ -183,9 +206,13 @@ On Windows the bundled Tectonic wrapper is `tools/compile_paper.ps1`
 
 ## Status
 
-The paper is an anonymous draft under review (24 pages with the appendices;
-re-verified with a Tectonic build). The author list and citation will be filled
-in before posting. The pending GPU-side work is scheduled in
-`paper/audit/REVISION_PLAN4.md` (routing-aware key mapper, mapper-objective
-sweep, calibration-volume control); none of it has been run, and the scripts it
-needs do not exist in this repository yet.
+The paper carries its real author list (five authors, W33). It was retitled and
+re-scoped for submission in W36, following the audit6 review: the English edition
+is 30 pages with the appendices and the Chinese edition is 31 (reverified by
+`tools/compile_paper.ps1`, Tectonic 0.17.0, 0 errors and 0 undefined references in
+all three builds). The Chinese edition of the same source is `paper/main_zh.pdf`,
+kept in step with the English source by `paper/audit/verify_zh_parity.py`. The
+unrun GPU-side work is listed in `paper/audit/response_to_audit6.md` (behavioural
+key objective, controlled distribution shift) and `paper/audit/audit5_external_2026-11.md`
+(nonlinear mapper, many-to-many layer map, answer-margin metric); none of it has
+been run, and the scripts it needs do not exist in this repository yet.

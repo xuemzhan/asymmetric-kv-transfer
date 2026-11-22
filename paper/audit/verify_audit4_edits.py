@@ -44,6 +44,11 @@ ARCHIVE = os.path.join(ROOT, "paper", "archive")
 
 OLD_TITLE = "Needs a Compatible Consumer"
 NEW_TITLE = "Needs Functional Compatibility"
+# W35 (audit6, Priority 3): retitled from "…Needs Functional Compatibility: Why
+# Representation Alignment Is Not Enough" to "Beyond Representation Fidelity…".
+# T1 now requires the W35 wording and forbids the W33 wording in every mirror.
+TITLE_W35 = "Beyond Representation Fidelity"
+TITLE_W33 = "Cross-Model KV Transfer Needs Functional Compatibility"
 V1_DOCS = ("BRIEF.md", "project_context.md", "architecture.md",
            "v3_data_baseline.md")
 
@@ -137,21 +142,26 @@ def main() -> int:
     meta = read(ARXIV_META)
 
     # ------------------------------------------------- T1: title and metadata
-    present("T1", tex, "\\title{Cross-Model KV Transfer Needs Functional")
-    present("T1", tex, "pdftitle={Cross-Model KV Transfer Needs Functional")
-    present("T1", arxiv, "\\title{Cross-Model KV Transfer Needs Functional")
-    present("T1", readme, NEW_TITLE)
-    present("T1", meta, NEW_TITLE)
+    present("T1", tex, "\\title{%s" % TITLE_W35)
+    present("T1", tex, "pdftitle={%s" % TITLE_W35)
+    present("T1", arxiv, "\\title{%s" % TITLE_W35)
+    present("T1", readme, TITLE_W35)
+    present("T1", meta, TITLE_W35)
     for name, text in (("main.tex", tex), ("arxiv_submission/main.tex", arxiv),
                        ("README.md", readme), ("arxiv_metadata.md", meta)):
         absent("T1", text, OLD_TITLE)
+        absent("T1", text, TITLE_W33)
     absent("T1", tex, "Consumption-Side Fix")
 
     # ---------------------------------------------------- T2: contributions
+    # W35 (audit6, Priority 2): contributions 3 and 4 were reframed from
+    # "Consumer-space alignment" / "Repairability and its boundary" to "An error
+    # law for the consumer space" / "Repairability, used as an intervention", so
+    # the mapper and the adapter are no longer presented as the contribution.
     for item in ("\\textbf{An evaluation principle.}",
                  "\\textbf{A functional compatibility decomposition.}",
-                 "\\textbf{Consumer-space alignment.}",
-                 "\\textbf{Repairability and its boundary.}"):
+                 "\\textbf{An error law for the consumer space.}",
+                 "\\textbf{Repairability, used as an intervention.}"):
         present("T2", tex, item)
     absent("T2", tex, "\\textbf{A consumer-side diagnosis.}")
     absent("T2", tex, "\\textbf{A consumption-side fix.}")
