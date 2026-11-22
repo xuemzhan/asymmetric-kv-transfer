@@ -1615,3 +1615,32 @@ table/figure/tabular 环境与花括号、`$` 全部配平。
   shift 都没跑——本机无 GPU（`nvidia-smi` 缺失、`torch 2.14.0+cpu`）。前者以
   「明确局限 + 两种可能结果的解读」写入 Discussion 7.3，未被静默略过。
   audit5 的 P1/P2 八条同样仍未做。稿件中的实验数字一个未改。
+
+---
+
+## W37 (2026-11-22): README 改写为面向外部读者 + 构建脚本可从干净克隆运行
+
+- **触发**：用户指出 README 是给其他读者看的，不是作者自己的记录。原稿确实
+  在讲内部轮次（W31/W33/W36）、把未做的实验指向 audit 文件、并把"论文主张什么"
+  埋在历史叙述里。
+- **结构重写**：问题→五条发现（带支撑数字）→六对模型对的 EM 表→
+  **"What we do not claim"**（不可读成"跨模型迁移不可能"/"路由兼容性必要"/
+  "rank-8 适配器是提出的方法"）→ 两级使用说明 → 仓库结构 → 溯源与正确性 →
+  Known gaps → 内部史附录（带"含已作废数字"警告）→ Citation(BibTeX) → License。
+- **修掉两处事实错误**：旧 "Two separate failures" 要点在早前编辑中丢了中段，
+  读起来是断句；旧构建节声称 `tools/` 里自带 Tectonic 二进制，但 `.gitignore`
+  第 36 行排除 `tools/tectonic/`，干净克隆并没有它。
+- **可复现性表述分级**：Tier 1（无 GPU、无权重、无外部包）能重跑全部图、表与守卫；
+  Tier 2 需 CUDA + Qwen3 快照 + 外部 `apcs` 包，并明确写出 `apcs` 未随仓库分发。
+  把作者机器的 `/workspace/...` 绝对路径换成 `V3_*` 环境变量表
+  （`V3_ROOT`/`V3_DATA_DIR`/`V3_REPORT_DIR`/`V3_MODELS_DIR`/`V3_APCS_DIR`）。
+- **代码**：`tools/compile_paper.ps1` 增加 `-TectonicPath`，引擎解析改为
+  「显式路径 → `tools/tectonic/` → PATH」，都找不到时输出下载地址而不是
+  一句 "binary not found"，使文档里的构建命令在干净克隆上可用。
+- **验证**：`-TectonicPath` 下三份 PDF 全部重建（30/31/30 页，0 error、
+  0 undefined、0 Overfull、0 warning、0 缺字）；为写 README 而实测的声明也都成立——
+  图脚本在副本目录 + `V3_ROOT` 下生成 8 张图，`tests/test_stats_utils.py` exit 0，
+  五个稿件守卫全部 exit 0；相对链接、标题锚点、列表缩进用脚本机械检查，无断链、
+  无缺锚点、无掉缩进。
+- **仍未做（如实记录）**：仍未选定 license（README 的 License 节如实说明
+  当前无 license 文件、默认保留所有权利）；仍未把 `apcs` 纳入仓库或发布。
