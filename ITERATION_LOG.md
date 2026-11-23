@@ -1673,3 +1673,24 @@ table/figure/tabular 环境与花括号、`$` 全部配平。
 - **未做**：未改动 arXiv 投稿许可本身（仍待作者选择）；未把 `apcs` 的 commit
   固定在文档里——`apcs` 仓库持续更新，钉版本应由使用者按需在 `V3_APCS_DIR`
   里完成，故未写入具体 SHA。
+
+---
+
+## W39 (2026-11-23): 邮箱更正（Yu Junpeng）
+
+- **邮箱更正**：Yu Junpeng `yujunpeng@cetc.com.cn` → `yjp603@163.com`，四处同步：
+  `paper/main.tex`、`paper/arxiv_submission/main.tex`（两份逐字节一致）、
+  `paper/main_zh.tex`、`paper/arxiv_metadata.md` 的作者清单。W33 段内的旧邮箱与 W34
+  对 Yi Kun 的更正记录属历史事实，按原样保留、不回改。
+- **验证**：两份 `main.tex` SHA256 一致；`pdfauthor` 只有姓名、不含邮箱，无需改动；
+  `repo` 内其余邮箱（Zhang Xuemin / Zhong Liheng / Hu Liangbin / Yi Kun）未动。
+- **PDF 重编译**：先误判"本机无 LaTeX"（`pdflatex`/`xelatex`/`latexmk` 确实不在 PATH），
+  但仓库自带的 `tools/tectonic/tectonic.exe`（51.5 MB）可直接用，
+  `powershell -File tools/compile_paper.ps1` 一次跑通三份：英文 30 页、中文 31 页、
+  arXiv 30 页，三份均 `undefined=0 overfull=0 warnings=0 missingchar=0 [clean]`，exit 0。
+  首页作者脚注已核实为 `yjp603@163.com`（`pypdf` 抽第 1 页文本，旧邮箱 0 命中）。
+  构建脚本按设计用 `paper/main.tex` 覆盖 `arxiv_submission/main.tex` 并断言 SHA256 一致，
+  故两份英文源仍是字节相同的。
+- **注意**：`paper/*.pdf` 被 `.gitignore:26` 忽略（源文件才是交付物），三份 PDF 不进版本库；
+  另外 Tectonic 报 `Fontconfig error: Cannot load default config file`，
+  但中文字体走 `C:/WINDOWS/fonts/sim*.ttf` 直取、`missingchar=0`，不影响字形。

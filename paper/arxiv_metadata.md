@@ -43,7 +43,7 @@ and `pdfauthor` was updated to match. Order as given:
 1. Zhang Xuemin — `zxm0813@gmail.com`
 2. Zhong Liheng — `lihengzhong@berkeley.edu`
 3. Hu Liangbin — `huliangbing2000@163.com`
-4. Yu Junpeng — `yujunpeng@cetc.com.cn`
+4. Yu Junpeng — `yjp603@163.com`
 5. Yi Kun — `yikun@bit.edu.cn`
 
 The block is a five-column `\author{...\and...}` list with each address as a
